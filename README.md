@@ -12,12 +12,5 @@ f5n can run the following on ARM with Android API>22 [more details](https://hasi
  5. [f5c](https://github.com/hasindu2008/f5c) call-methylation
  6. [f5c](https://github.com/hasindu2008/f5c) event alignment
 
-we build a standalone application and a cluster of nodes where a master orchestrates other nodes. 
-
-```mermaid
-graph LR
-C(master) -- orchestrate  --> D
-A[minION+MinIT ] -- ONT data --> B(local database)
-B -- data batch --> D((slaves))
-```
-in this way ONT data can be correct for errors in the field, on the fly!
+We build a standalone application and a cluster of nodes where a master orchestrates other nodes. 
+In this way ONT data can be correct for errors in the field, on the fly!
