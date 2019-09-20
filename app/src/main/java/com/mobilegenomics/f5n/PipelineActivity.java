@@ -35,6 +35,8 @@ public class PipelineActivity extends AppCompatActivity {
         button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(final View v) {
+                GUIConfiguration.eraseSelectedPipeline();
+                GUIConfiguration.resetSteps();
                 for (PipelineStep step : PipelineStep.values()) {
                     CheckBox checkBox = findViewById(step.getValue());
                     if (checkBox.isChecked()) {

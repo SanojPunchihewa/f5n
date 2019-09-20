@@ -15,6 +15,10 @@ public class GUIConfiguration {
         selectedPipelineSteps.add(step);
     }
 
+    public static void eraseSelectedPipeline() {
+        selectedPipelineSteps.clear();
+    }
+
     public static void printList() {
         for (PipelineStep step : selectedPipelineSteps) {
             Log.d("STEPS = ", step.toString());
@@ -22,6 +26,8 @@ public class GUIConfiguration {
     }
 
     public static void configureSteps() {
+        // clear() vs new check what is better
+        steps = new ArrayList<>();
         for (PipelineStep pipelineStep : selectedPipelineSteps) {
             Step step = new Step();
             step.setStep(pipelineStep);
@@ -37,6 +43,10 @@ public class GUIConfiguration {
     public static Step getPreviousStep() {
         // TODO Fix boundary conditions
         return steps.get(--current);
+    }
+
+    public static void resetSteps() {
+        current = 0;
     }
 
 }

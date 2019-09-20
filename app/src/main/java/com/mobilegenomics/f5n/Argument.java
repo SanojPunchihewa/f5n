@@ -12,6 +12,8 @@ public class Argument {
 
     private boolean hasFlag;
 
+    private boolean setByUser;
+
     private String flag;
 
     public Argument(final String argName, final String argValue, final String argDescription, final boolean hasFlag,
@@ -21,6 +23,7 @@ public class Argument {
         this.argDescription = argDescription;
         this.hasFlag = hasFlag;
         this.flag = flag;
+        this.setByUser = false;
     }
 
     public String getArgName() {
@@ -66,6 +69,15 @@ public class Argument {
     @NonNull
     @Override
     public String toString() {
+        // TODO Check for NULL
         return this.hasFlag ? this.flag + " " + this.argValue : this.argValue;
+    }
+
+    public boolean isSetByUser() {
+        return setByUser;
+    }
+
+    public void setSetByUser(final boolean setByUser) {
+        this.setByUser = setByUser;
     }
 }

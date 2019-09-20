@@ -5,6 +5,8 @@ import java.util.ArrayList;
 
 public class Step {
 
+    private int argumentsCount;
+
     private ArrayList<Argument> arguments;
 
     private PipelineStep stepName;
@@ -26,19 +28,32 @@ public class Step {
         this.arguments = new ArrayList<>();
         switch (this.stepName) {
             case MINIMAP2_SEQUENCE_ALIGNMENT:
+                this.argumentsCount = 3;
                 this.minimap2Arguments();
+                break;
             case SAMTOOL_SORT:
+                this.argumentsCount = 2;
                 this.samtoolSortArguments();
+                break;
             case SAMTOOL_INDEX:
+                this.argumentsCount = 2;
                 this.samtoolIndexArguments();
+                break;
             case F5C_INDEX:
+                this.argumentsCount = 2;
                 this.f5cIndexArguments();
+                break;
             case F5C_CALL_METHYLATION:
+                this.argumentsCount = 2;
                 this.f5cCallMethylationArguments();
+                break;
             case F5C_EVENT_ALIGNMENT:
+                this.argumentsCount = 2;
                 this.f5cEventAlignArguments();
+                break;
             default:
                 Log.e("STEP", "cannot come here");
+                break;
         }
     }
 
