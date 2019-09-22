@@ -3,7 +3,7 @@
 Motivated from [f5p](https://github.com/hasindu2008/f5p) - we build a network of mobiles to process [ONT](https://nanoporetech.com/) data. The work is under construction! 
 
 ### Overview
-f5n can run the following on ARM with Android API>22 [more details](https://hasindu2008.github.io/linux-tools-on-phone/)
+f5n can run the following on ARM devices [more details](https://hasindu2008.github.io/linux-tools-on-phone/)
 
  1. [minimap2](https://github.com/lh3/minimap2) sequence alignment
  2. [samtools](https://github.com/samtools/samtools) sort
