@@ -1,20 +1,32 @@
 package com.mobilegenomics.f5n;
 
+import android.annotation.SuppressLint;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import com.developer.filepicker.controller.DialogSelectionListener;
+import com.developer.filepicker.model.DialogConfigs;
+import com.developer.filepicker.model.DialogProperties;
+import com.developer.filepicker.view.FilePickerDialog;
+import java.io.File;
 import java.util.ArrayList;
 
 public class StepActivity extends AppCompatActivity {
@@ -23,10 +35,38 @@ public class StepActivity extends AppCompatActivity {
 
     private int argument_id = 0;
 
+    private String folderPath;
+
+    private EditText editTextFolderPath;
+
+    private ImageButton btnCopyPath;
+
+    private TextView txtStepName;
+
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.layout_vertical);
+        setContentView(R.layout.layout_step);
+
+        editTextFolderPath = findViewById(R.id.edit_text_folder_path);
+        editTextFolderPath.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(final View v, final MotionEvent event) {
+                openFileManager();
+                return false;
+            }
+        });
+        btnCopyPath = findViewById(R.id.btn_copy_path);
+        btnCopyPath.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("folderpath", folderPath);
+                clipboard.setPrimaryClip(clip);
+            }
+        });
+        txtStepName = findViewById(R.id.txt_step_name);
 
         LinearLayout linearLayout = findViewById(R.id.vertical_linear_layout);
 
@@ -34,11 +74,9 @@ public class StepActivity extends AppCompatActivity {
         final Step step = GUIConfiguration.getNextStep();
         arguments = step.getArguments();
 
-        TextView txtCurrentStep = new TextView(this);
-        txtCurrentStep.setText(GUIConfiguration.getCurrentStepCount() + "");
-        linearLayout.addView(txtCurrentStep);
+        txtStepName.setText(step.getStep().getCommand());
 
-        for (Argument argument : arguments) {
+        for (final Argument argument : arguments) {
             LinearLayout linearLayoutHorizontal = new LinearLayout(this);
             LinearLayout.LayoutParams linearLayout_LayoutParams =
                     new LinearLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
@@ -51,6 +89,12 @@ public class StepActivity extends AppCompatActivity {
             CheckBox checkBox = new CheckBox(this);
             checkBox.setText(argument.getArgName());
             checkBox.setChecked(argument.isRequired());
+            checkBox.setOnTouchListener(new OnTouchListener() {
+                @Override
+                public boolean onTouch(final View v, final MotionEvent event) {
+                    return argument.isRequired();
+                }
+            });
             checkBox.setId(argument_id);
             LinearLayout.LayoutParams checkBox_LayoutParams =
                     new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -59,14 +103,17 @@ public class StepActivity extends AppCompatActivity {
             linearLayoutHorizontal.addView(checkBox);
             checkBox.setLayoutParams(checkBox_LayoutParams);
 
-            EditText editText = new EditText(this);
-            editText.setId(argument_id + 1000);
-            LinearLayout.LayoutParams editText_LayoutParams =
-                    new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT);
-            editText_LayoutParams.weight = 3;
-            linearLayoutHorizontal.addView(editText);
-            editText.setLayoutParams(editText_LayoutParams);
+            if (!argument.isFlagOnly()) {
+                EditText editText = new EditText(this);
+                editText.setId(argument_id + 1000);
+                LinearLayout.LayoutParams editText_LayoutParams =
+                        new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT);
+                editText_LayoutParams.weight = 3;
+                editText.setText(argument.getArgValue());
+                linearLayoutHorizontal.addView(editText);
+                editText.setLayoutParams(editText_LayoutParams);
+            }
             argument_id++;
         }
 
@@ -80,12 +127,12 @@ public class StepActivity extends AppCompatActivity {
                 for (Argument argument : arguments) {
                     CheckBox checkBox = findViewById(arg_id);
                     if (checkBox.isChecked()) {
-                        EditText editText = findViewById(arg_id + 1000);
-                        if (editText.getText() != null && !TextUtils.isEmpty(editText.getText().toString())) {
-                            argument.setArgValue(editText.getText().toString());
-                            argument.setSetByUser(true);
-                        } else {
-                            if (argument.isRequired()) {
+                        argument.setSetByUser(true);
+                        if (!argument.isFlagOnly()) {
+                            EditText editText = findViewById(arg_id + 1000);
+                            if (editText.getText() != null && !TextUtils.isEmpty(editText.getText().toString())) {
+                                argument.setArgValue(editText.getText().toString());
+                            } else {
                                 haveSetAllRequiredArgs = false;
                                 editText.setError("This field is required!");
                             }
@@ -121,15 +168,35 @@ public class StepActivity extends AppCompatActivity {
         linearLayout.addView(btnBack);
     }
 
+    private void openFileManager() {
+
+        DialogProperties properties = new DialogProperties();
+
+        properties.selection_mode = DialogConfigs.SINGLE_MODE;
+        properties.selection_type = DialogConfigs.DIR_SELECT;
+        properties.root = new File(DialogConfigs.DEFAULT_DIR);
+        properties.error_dir = new File(DialogConfigs.DEFAULT_DIR);
+        properties.offset = new File(DialogConfigs.DEFAULT_DIR);
+        properties.extensions = null;
+
+        FilePickerDialog dialog = new FilePickerDialog(StepActivity.this, properties);
+        dialog.setTitle("Select a Folder");
+
+        dialog.setDialogSelectionListener(new DialogSelectionListener() {
+            @Override
+            public void onSelectedFilePaths(String[] files) {
+                //files is the array of the paths of files selected by the Application User.
+                folderPath = files[0];
+                editTextFolderPath.setText(folderPath);
+            }
+        });
+
+        dialog.show();
+    }
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         GUIConfiguration.reduceStepCount();
-    }
-
-    @Override
-    protected void onRestoreInstanceState(final Bundle savedInstanceState) {
-        // TODO Find a better solution
-        // super.onRestoreInstanceState(savedInstanceState);
     }
 }
