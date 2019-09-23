@@ -19,6 +19,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".StepActivity" />
+        <activity android:name=".ConfirmationActivity" />
     </application>
 
 </manifest>

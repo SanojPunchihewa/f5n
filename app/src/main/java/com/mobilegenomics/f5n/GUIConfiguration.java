@@ -59,4 +59,17 @@ public class GUIConfiguration {
         return current;
     }
 
+    public static boolean isFinalStep() {
+        return current == selectedPipelineSteps.size();
+    }
+
+    public static String[] getSelectedCommandStrings() {
+        String[] commandArray = new String[steps.size()];
+        int stepId = 0;
+        for (Step step : steps) {
+            commandArray[stepId++] = step.getCommandString();
+        }
+        return commandArray;
+    }
+
 }
