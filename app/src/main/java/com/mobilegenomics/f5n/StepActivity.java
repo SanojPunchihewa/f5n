@@ -1,5 +1,6 @@
 package com.mobilegenomics.f5n;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -11,6 +12,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
@@ -31,6 +33,10 @@ public class StepActivity extends AppCompatActivity {
         arguments = step.getArguments();
 
         int argument_id = 0;
+
+        TextView txtCurrentStep = new TextView(this);
+        txtCurrentStep.setText(GUIConfiguration.getCurrentStepCount() + "");
+        linearLayout.addView(txtCurrentStep);
 
         for (Argument argument : arguments) {
             LinearLayout linearLayoutHorizontal = new LinearLayout(this);
@@ -63,9 +69,9 @@ public class StepActivity extends AppCompatActivity {
             argument_id++;
         }
 
-        Button button = new Button(this);
-        button.setText("Next");
-        button.setOnClickListener(new OnClickListener() {
+        Button btnNext = new Button(this);
+        btnNext.setText("Next");
+        btnNext.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(final View v) {
                 int arg_id = 0;
@@ -77,7 +83,7 @@ public class StepActivity extends AppCompatActivity {
                             argument.setArgValue(editText.getText().toString());
                             argument.setSetByUser(true);
                         }
-                    } else {
+                    } else { // not needed as UI keeps a saved instance
                         argument.setSetByUser(false);
                     }
                     arg_id++;
@@ -85,11 +91,28 @@ public class StepActivity extends AppCompatActivity {
                 for (Argument argument : arguments) {
                     Log.e("ARGS", argument.getArgName() + " = " + argument.getArgValue());
                 }
-                recreate();
+//                recreate();
+                startActivity(new Intent(StepActivity.this, StepActivity.class));
+
             }
         });
-        linearLayout.addView(button);
+        linearLayout.addView(btnNext);
 
+        Button btnBack = new Button(this);
+        btnBack.setText("Back");
+        btnBack.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                onBackPressed();
+            }
+        });
+        linearLayout.addView(btnBack);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        GUIConfiguration.reduceStepCount();
     }
 
     @Override

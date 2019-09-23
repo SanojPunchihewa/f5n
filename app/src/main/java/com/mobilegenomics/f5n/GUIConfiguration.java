@@ -45,8 +45,18 @@ public class GUIConfiguration {
         return steps.get(--current);
     }
 
+    public static void reduceStepCount() {
+        // TODO Fix boundary conditions
+        // Since UI is navigated using a stack, we just need to reduce the count
+        current--;
+    }
+
     public static void resetSteps() {
         current = 0;
+    }
+
+    public static int getCurrentStepCount() {
+        return current;
     }
 
 }
