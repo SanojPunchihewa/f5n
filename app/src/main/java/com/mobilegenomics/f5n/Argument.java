@@ -18,6 +18,12 @@ public class Argument {
 
     private boolean required;
 
+    public boolean isFlagOnly() {
+        return flagOnly;
+    }
+
+    private boolean flagOnly;
+
     public boolean isRequired() {
         return required;
     }
@@ -28,7 +34,7 @@ public class Argument {
 
     public Argument(final boolean required, final String argName, final String argValue, final String argDescription,
             final boolean hasFlag,
-            final String flag) {
+            final String flag, final boolean flagOnly) {
         this.argName = argName;
         this.argValue = argValue;
         this.argDescription = argDescription;
@@ -36,6 +42,7 @@ public class Argument {
         this.flag = flag;
         this.setByUser = false;
         this.required = required;
+        this.flagOnly = flagOnly;
     }
 
     public String getArgName() {
@@ -82,8 +89,12 @@ public class Argument {
     @Override
     public String toString() {
         // TODO Check for NULL
-        if (this.argValue != null) {
-            return this.hasFlag ? this.flag + " " + this.argValue : this.argValue;
+        if (this.setByUser) {
+            if (this.argValue != null) {
+                return this.hasFlag ? this.flag + " " + this.argValue : this.argValue;
+            } else {
+                return this.flag;
+            }
         }
         return "";
     }
