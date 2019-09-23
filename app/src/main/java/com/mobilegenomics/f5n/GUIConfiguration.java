@@ -11,6 +11,8 @@ public class GUIConfiguration {
 
     private static int current = 0;
 
+    private static ArrayList<PipelineComponent> pipelineComponents;
+
     public static void addPipelineStep(PipelineStep step) {
         selectedPipelineSteps.add(step);
     }
@@ -45,8 +47,45 @@ public class GUIConfiguration {
         return steps.get(--current);
     }
 
+    public static void reduceStepCount() {
+        // TODO Fix boundary conditions
+        // Since UI is navigated using a stack, we just need to reduce the count
+        current--;
+    }
+
     public static void resetSteps() {
         current = 0;
+    }
+
+    public static int getCurrentStepCount() {
+        return current;
+    }
+
+    public static boolean isFinalStep() {
+        return current == selectedPipelineSteps.size();
+    }
+
+    public static String[] getSelectedCommandStrings() {
+        String[] commandArray = new String[steps.size()];
+        int stepId = 0;
+        for (Step step : steps) {
+            commandArray[stepId++] = step.getCommandString();
+        }
+        return commandArray;
+    }
+
+    public static void createPipeline() {
+        pipelineComponents = new ArrayList<>();
+        for (Step step : steps) {
+            PipelineComponent pipelineComponent = new PipelineComponent(step.getStep(), step.getCommandString());
+            pipelineComponents.add(pipelineComponent);
+        }
+    }
+
+    public static void runPipeline() {
+        for (PipelineComponent pipelineComponent : pipelineComponents) {
+            pipelineComponent.run();
+        }
     }
 
 }
