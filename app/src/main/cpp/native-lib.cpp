@@ -7,17 +7,8 @@
 #include <stdio.h>
 #include <iostream>
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_com_example_hello_1f5c_MainActivity_stringFromJNI(
-    JNIEnv *env,
-    jobject /* this */) {
-  std::string hello = "Hello from C++";
-  return env->NewStringUTF(hello.c_str());
-}
-
-
 extern "C" JNIEXPORT jint JNICALL
-Java_com_example_hello_1f5c_MainActivity_init(JNIEnv *env, jclass clazz, jstring command) {
+Java_com_mobilegenomics_f5n_NativeCommands_init(JNIEnv *env, jobject, jstring command) {
   // try{TODO:exceptions
   // Convert command to cpp
   //TODO:casting not good
@@ -47,7 +38,7 @@ Java_com_example_hello_1f5c_MainActivity_init(JNIEnv *env, jclass clazz, jstring
 }
 
 extern "C" JNIEXPORT jint JNICALL
-Java_com_example_hello_1f5c_MainActivity_initminimap2(JNIEnv *env, jclass type, jstring command) {
+Java_com_mobilegenomics_f5n_NativeCommands_initminimap2(JNIEnv *env, jobject type, jstring command) {
   // try{TODO:exceptions
   // Convert command to cpp
   //TODO:casting not good
@@ -72,7 +63,7 @@ Java_com_example_hello_1f5c_MainActivity_initminimap2(JNIEnv *env, jclass type, 
 }
 
 extern "C" JNIEXPORT jint JNICALL
-Java_com_example_hello_1f5c_MainActivity_initsamtool(JNIEnv *env, jclass clazz, jstring command) {
+Java_com_mobilegenomics_f5n_NativeCommands_initsamtool(JNIEnv *env, jobject clazz, jstring command) {
   char *command_c = (char *) env->GetStringUTFChars(command, nullptr);
 
   enum { kMaxArgs = 64 };

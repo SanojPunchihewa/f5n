@@ -11,6 +11,8 @@ public class GUIConfiguration {
 
     private static int current = 0;
 
+    private static ArrayList<PipelineComponent> pipelineComponents;
+
     public static void addPipelineStep(PipelineStep step) {
         selectedPipelineSteps.add(step);
     }
@@ -70,6 +72,20 @@ public class GUIConfiguration {
             commandArray[stepId++] = step.getCommandString();
         }
         return commandArray;
+    }
+
+    public static void createPipeline() {
+        pipelineComponents = new ArrayList<>();
+        for (Step step : steps) {
+            PipelineComponent pipelineComponent = new PipelineComponent(step.getStep(), step.getCommandString());
+            pipelineComponents.add(pipelineComponent);
+        }
+    }
+
+    public static void runPipeline() {
+        for (PipelineComponent pipelineComponent : pipelineComponents) {
+            pipelineComponent.run();
+        }
     }
 
 }

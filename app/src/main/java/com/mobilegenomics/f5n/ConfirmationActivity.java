@@ -1,12 +1,19 @@
 package com.mobilegenomics.f5n;
 
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class ConfirmationActivity extends AppCompatActivity {
+
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -24,5 +31,54 @@ public class ConfirmationActivity extends AppCompatActivity {
             linearLayout.addView(txtCommand);
         }
 
+        Button btnProceed = new Button(this);
+        btnProceed.setText("Run the Pipeline");
+        btnProceed.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                GUIConfiguration.createPipeline();
+                new RunPipeline().execute();
+            }
+        });
+        linearLayout.addView(btnProceed);
+
     }
+
+    public class RunPipeline extends AsyncTask<String, Integer, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            showProgressWindow();
+        }
+
+        @Override
+        protected String doInBackground(final String... strings) {
+            GUIConfiguration.runPipeline();
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(final Integer... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected void onPostExecute(final String s) {
+            super.onPostExecute(s);
+            hideProgressWindow();
+        }
+    }
+
+    private void showProgressWindow() {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Running...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+    }
+
+    private void hideProgressWindow() {
+        progressDialog.dismiss();
+    }
+
 }
