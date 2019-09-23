@@ -11,6 +11,8 @@ public class Step {
 
     private PipelineStep stepName;
 
+    private StringBuilder command;
+
     public PipelineStep getStepName() {
         return stepName;
     }
@@ -58,50 +60,63 @@ public class Step {
     }
 
     private void minimap2Arguments() {
-        Argument argument = new Argument("reference index", null, "Path to the reference index file", false, null);
+        Argument argument = new Argument(true, "reference index", null, "Path to the reference index file", false,
+                null);
         arguments.add(argument);
-        argument = new Argument("query sequence", null, "Path to the query sequence file", false, null);
+        argument = new Argument(true, "query sequence", null, "Path to the query sequence file", false, null);
         arguments.add(argument);
-        argument = new Argument("output file", null, "Path to the output sam file", true, "-o");
+        argument = new Argument(false, "output file", null, "Path to the output sam file", true, "-o");
         arguments.add(argument);
     }
 
     private void samtoolSortArguments() {
-        Argument argument = new Argument("input sam", null, "Path to the input index sam file", false, null);
-        arguments.add(argument);
-        argument = new Argument("output bam", null, "Path to the output bam file", true, "-o");
-        arguments.add(argument);
+//        Argument argument = new Argument(true, "input sam", null, "Path to the input index sam file", false, null);
+//        arguments.add(argument);
+//        argument = new Argument(true, "output bam", null, "Path to the output bam file", true, "-o");
+//        arguments.add(argument);
     }
 
     // TODO
     private void samtoolIndexArguments() {
-        Argument argument = new Argument("input sam", null, "Path to the input index sam file", false, null);
-        arguments.add(argument);
-        argument = new Argument("output bam", null, "Path to the output bam file", true, "-o");
-        arguments.add(argument);
+//        Argument argument = new Argument("input sam", null, "Path to the input index sam file", false, null);
+//        arguments.add(argument);
+//        argument = new Argument("output bam", null, "Path to the output bam file", true, "-o");
+//        arguments.add(argument);
     }
 
     // TODO
     private void f5cIndexArguments() {
-        Argument argument = new Argument("input sam", null, "Path to the input index sam file", false, null);
-        arguments.add(argument);
-        argument = new Argument("output bam", null, "Path to the output bam file", true, "-o");
-        arguments.add(argument);
+//        Argument argument = new Argument("input sam", null, "Path to the input index sam file", false, null);
+//        arguments.add(argument);
+//        argument = new Argument("output bam", null, "Path to the output bam file", true, "-o");
+//        arguments.add(argument);
     }
 
     // TODO
     private void f5cCallMethylationArguments() {
-        Argument argument = new Argument("input sam", null, "Path to the input index sam file", false, null);
-        arguments.add(argument);
-        argument = new Argument("output bam", null, "Path to the output bam file", true, "-o");
-        arguments.add(argument);
+//        Argument argument = new Argument("input sam", null, "Path to the input index sam file", false, null);
+//        arguments.add(argument);
+//        argument = new Argument("output bam", null, "Path to the output bam file", true, "-o");
+//        arguments.add(argument);
     }
 
     // TODO
     private void f5cEventAlignArguments() {
-        Argument argument = new Argument("input sam", null, "Path to the input index sam file", false, null);
-        arguments.add(argument);
-        argument = new Argument("output bam", null, "Path to the output bam file", true, "-o");
-        arguments.add(argument);
+//        Argument argument = new Argument("input sam", null, "Path to the input index sam file", false, null);
+//        arguments.add(argument);
+//        argument = new Argument("output bam", null, "Path to the output bam file", true, "-o");
+//        arguments.add(argument);
+    }
+
+    public void buildCommandString() {
+        command = new StringBuilder(stepName.name());
+        for (Argument argument : arguments) {
+            command.append(" ");
+            command.append(argument.toString());
+        }
+    }
+
+    public String getCommandString() {
+        return command.toString();
     }
 }
