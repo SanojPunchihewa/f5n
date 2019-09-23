@@ -87,7 +87,10 @@ public class StepActivity extends AppCompatActivity {
             linearLayoutHorizontal.setLayoutParams(linearLayout_LayoutParams);
 
             CheckBox checkBox = new CheckBox(this);
-            checkBox.setText(argument.getArgName());
+
+            String text = argument.isHasFlag() ? argument.getArgName() + "( " + argument.getFlag() + " )"
+                    : argument.getArgName();
+            checkBox.setText(text);
             checkBox.setChecked(argument.isRequired());
             checkBox.setOnTouchListener(new OnTouchListener() {
                 @Override
