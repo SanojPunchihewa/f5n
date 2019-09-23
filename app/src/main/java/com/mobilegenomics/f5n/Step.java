@@ -60,12 +60,12 @@ public class Step {
     }
 
     private void minimap2Arguments() {
-        Argument argument = new Argument(false, "reference index", null, "Path to the reference index file", false,
+        Argument argument = new Argument(true, "reference index", null, "Path to the reference index file", false,
                 null, false);
         arguments.add(argument);
-        argument = new Argument(false, "query sequence", null, "Path to the query sequence file", false, null, false);
+        argument = new Argument(true, "query sequence", null, "Path to the query sequence file", false, null, false);
         arguments.add(argument);
-        argument = new Argument(false, "output file", null, "Path to the output sam file", true, "-o", false);
+        argument = new Argument(true, "output file", null, "Path to the output sam file", true, "-o", false);
         arguments.add(argument);
         argument = new Argument(false, "Output format SAM", null,
                 "Generate CIGAR and output alignments in SAM ", true, "-a", true);
@@ -102,88 +102,65 @@ public class Step {
 
     private void f5cIndexArguments() {
         //Build an index mapping from basecalled reads to the signals measured by the sequencer (same as nanopolish index)
-        // Test
-        Argument argument = new Argument(true, "fast5 files", "/mnt/sdcard/f5c/test/ecoli_2kb_region/fast5_files/",
+        Argument argument = new Argument(true, "fast5 files", null,
                 "path to the directory containing the raw ONT signal files. This option can be given multiple times.",
                 true, "--directory", false);
         arguments.add(argument);
-        argument = new Argument(true, "fast(a or q) reads", "/mnt/sdcard/f5c/test/ecoli_2kb_region/reads.fasta",
+        argument = new Argument(true, "fast(a or q) reads", null,
                 "Path to the reads.fasta or fastq file", false, null, false);
         arguments.add(argument);
-
-//        Argument argument = new Argument(true, "fast5 files", null,
-//                "path to the directory containing the raw ONT signal files. This option can be given multiple times.",
-//                true, "--directory", false);
-//        arguments.add(argument);
-//        argument = new Argument(true, "fast(a or q) reads", null,
-//                "Path to the reads.fasta or fastq file", false, null, false);
-//        arguments.add(argument);
-//        argument = new Argument(false, "summary file", null,
-//                "the sequencing summary file from albacore, providing this option will make indexing much faster",
-//                true, "--sequencing-summary", false);
-//        arguments.add(argument);
-//        argument = new Argument(false, "paths to summary files", null,
-//                "file containing the paths to the sequencing summary files (one per line)",
-//                true, "--summary-fofn", false);
-//        arguments.add(argument);
-//        argument = new Argument(false, "verbose", null,
-//                "display verbose output",
-//                true, "--verbose", true);
-//        arguments.add(argument);
+        argument = new Argument(false, "summary file", null,
+                "the sequencing summary file from albacore, providing this option will make indexing much faster",
+                true, "--sequencing-summary", false);
+        arguments.add(argument);
+        argument = new Argument(false, "paths to summary files", null,
+                "file containing the paths to the sequencing summary files (one per line)",
+                true, "--summary-fofn", false);
+        arguments.add(argument);
+        argument = new Argument(false, "verbose", null,
+                "display verbose output",
+                true, "--verbose", true);
+        arguments.add(argument);
 
     }
 
     private void f5cCallMethylationArguments() {
         //Classify nucleotides as methylated or not (optimised nanopolish call-methylation)
-        // Test
-        Argument argument = new Argument(true, "fast5 files", "/mnt/sdcard/f5c/test/ecoli_2kb_region/reads.fasta",
-                "fastq/fasta read file", true, "-r", false);
+        Argument argument = new Argument(true, "fastq/fasta read file", null, "fastq/fasta read file", true, "-r",
+                false);
         arguments.add(argument);
-        argument = new Argument(true, "sorted bam file", "/mnt/sdcard/f5c/test/ecoli_2kb_region/reads.sorted.bam",
-                "sorted bam file",
-                true, "-b", false);
+        argument = new Argument(true, "sorted bam file", null, "sorted bam file", true, "-b", false);
         arguments.add(argument);
-        argument = new Argument(true, "reference genome", "/mnt/sdcard/f5c/test/ecoli_2kb_region/draft.fa",
-                "reference genome", true, "-g", false);
+        argument = new Argument(true, "output tsv file", null, "tsv file from call-methylation", true, "-o", false);
         arguments.add(argument);
-        argument = new Argument(true, "output tsv file", "/mnt/sdcard/f5c/test/ecoli_2kb_region/meth.tsv",
-                "tsv file from call-methylation", true, "-o", false);
+        argument = new Argument(true, "reference genome", null, "reference genome", true, "-g", false);
         arguments.add(argument);
-
-//        Argument argument = new Argument(true, "fast5 files", null, "fastq/fasta read file", true, "-r", false);
-//        arguments.add(argument);
-//        argument = new Argument(true, "sorted bam file", null, "sorted bam file", true, "-b", false);
-//        arguments.add(argument);
-//        argument = new Argument(true, "output tsv file", null, "tsv file from call-methylation", true, "-o", false);
-//        arguments.add(argument);
-//        argument = new Argument(true, "reference genome", null, "reference genome", true, "-g", false);
-//        arguments.add(argument);
-//        argument = new Argument(false, "number of threads", null, "number of threads [8]", true, "-t", false);
-//        arguments.add(argument);
-//        argument = new Argument(false, "batch size", null,
-//                "batch size (max number of reads loaded at once) [512]", true, "-K", false);
-//        arguments.add(argument);
-//        argument = new Argument(false, "max Bases", null,
-//                "max number of bases loaded at once [2.0M]", true, "-B", false);
-//        arguments.add(argument);
-//        argument = new Argument(false, "help", null,
-//                "help", true, "-h", true);
-//        arguments.add(argument);
-//        argument = new Argument(false, "min map quality", null,
-//                "minimum mapping quality [30]", true, "--min-mapq", false);
-//        arguments.add(argument);
-//        argument = new Argument(false, "consider secondary map", null,
-//                "consider secondary mappings or not [no]", true, "--secondary=", false);
-//        arguments.add(argument);
-//        argument = new Argument(false, "skip unreadable or terminate", null,
-//                "skip any unreadable fast5 or terminate program [yes]", true, "--skip-unreadable=", false);
-//        arguments.add(argument);
-//        argument = new Argument(false, "verbosity", null,
-//                "verbosity level [0]", true, "--verbose", false);
-//        arguments.add(argument);
-//        argument = new Argument(false, "version", null,
-//                "print version", true, "--version",true);
-//        arguments.add(argument);
+        argument = new Argument(false, "number of threads", null, "number of threads [8]", true, "-t", false);
+        arguments.add(argument);
+        argument = new Argument(false, "batch size", null,
+                "batch size (max number of reads loaded at once) [512]", true, "-K", false);
+        arguments.add(argument);
+        argument = new Argument(false, "max Bases", null,
+                "max number of bases loaded at once [2.0M]", true, "-B", false);
+        arguments.add(argument);
+        argument = new Argument(false, "help", null,
+                "help", true, "-h", true);
+        arguments.add(argument);
+        argument = new Argument(false, "min map quality", null,
+                "minimum mapping quality [30]", true, "--min-mapq", false);
+        arguments.add(argument);
+        argument = new Argument(false, "consider secondary map", null,
+                "consider secondary mappings or not [no]", true, "--secondary=", false);
+        arguments.add(argument);
+        argument = new Argument(false, "skip unreadable or terminate", null,
+                "skip any unreadable fast5 or terminate program [yes]", true, "--skip-unreadable=", false);
+        arguments.add(argument);
+        argument = new Argument(false, "verbosity", null,
+                "verbosity level [0]", true, "--verbose", false);
+        arguments.add(argument);
+        argument = new Argument(false, "version", null,
+                "print version", true, "--version", true);
+        arguments.add(argument);
     }
 
     private void f5cEventAlignArguments() {
