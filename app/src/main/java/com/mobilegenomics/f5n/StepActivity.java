@@ -12,13 +12,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -77,17 +76,12 @@ public class StepActivity extends AppCompatActivity {
         txtStepName.setText(step.getStep().getCommand());
 
         for (final Argument argument : arguments) {
-            LinearLayout linearLayoutHorizontal = new LinearLayout(this);
-            LinearLayout.LayoutParams linearLayout_LayoutParams =
-                    new LinearLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT);
-            linearLayout_LayoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
-            linearLayoutHorizontal.setOrientation(LinearLayout.HORIZONTAL);
-            linearLayout.addView(linearLayoutHorizontal);
-            linearLayoutHorizontal.setLayoutParams(linearLayout_LayoutParams);
 
             CheckBox checkBox = new CheckBox(this);
-            checkBox.setText(argument.getArgName());
+
+            String text = argument.isHasFlag() ? argument.getArgName() + "( " + argument.getFlag() + " )"
+                    : argument.getArgName();
+            checkBox.setText(text);
             checkBox.setChecked(argument.isRequired());
             checkBox.setOnTouchListener(new OnTouchListener() {
                 @Override
@@ -99,19 +93,19 @@ public class StepActivity extends AppCompatActivity {
             LinearLayout.LayoutParams checkBox_LayoutParams =
                     new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                             LinearLayout.LayoutParams.WRAP_CONTENT);
-            checkBox_LayoutParams.weight = 1;
-            linearLayoutHorizontal.addView(checkBox);
+            // checkBox_LayoutParams.weight = 1;
+            linearLayout.addView(checkBox);
             checkBox.setLayoutParams(checkBox_LayoutParams);
 
             if (!argument.isFlagOnly()) {
                 EditText editText = new EditText(this);
                 editText.setId(argument_id + 1000);
                 LinearLayout.LayoutParams editText_LayoutParams =
-                        new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                        new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
                                 LinearLayout.LayoutParams.WRAP_CONTENT);
-                editText_LayoutParams.weight = 3;
+                // editText_LayoutParams.weight = 3;
                 editText.setText(argument.getArgValue());
-                linearLayoutHorizontal.addView(editText);
+                linearLayout.addView(editText);
                 editText.setLayoutParams(editText_LayoutParams);
             }
             argument_id++;

@@ -126,9 +126,12 @@ public class Step {
 
     private void f5cCallMethylationArguments() {
         //Classify nucleotides as methylated or not (optimised nanopolish call-methylation)
-        Argument argument = new Argument(true, "fast5 files", null, "fastq/fasta read file", true, "-r", false);
+        Argument argument = new Argument(true, "fastq/fasta read file", null, "fastq/fasta read file", true, "-r",
+                false);
         arguments.add(argument);
         argument = new Argument(true, "sorted bam file", null, "sorted bam file", true, "-b", false);
+        arguments.add(argument);
+        argument = new Argument(true, "output tsv file", null, "tsv file from call-methylation", true, "-o", false);
         arguments.add(argument);
         argument = new Argument(true, "reference genome", null, "reference genome", true, "-g", false);
         arguments.add(argument);
@@ -155,9 +158,9 @@ public class Step {
         argument = new Argument(false, "verbosity", null,
                 "verbosity level [0]", true, "--verbose", false);
         arguments.add(argument);
-//        argument = new Argument(false, "version", null,
-//                "print version", true, "--version",true);
-//        arguments.add(argument);
+        argument = new Argument(false, "version", null,
+                "print version", true, "--version", true);
+        arguments.add(argument);
     }
 
     private void f5cEventAlignArguments() {
@@ -171,6 +174,9 @@ public class Step {
         arguments.add(argument);
         argument = new Argument(true, "reference genome", null,
                 "path to reference genome", true, "-g", false);
+        arguments.add(argument);
+        argument = new Argument(true, "output file", null,
+                "path to output summary", true, "-o", false);
         arguments.add(argument);
         argument = new Argument(false, "threads", "8",
                 "Number of threads[8]", true, "-t", false);
