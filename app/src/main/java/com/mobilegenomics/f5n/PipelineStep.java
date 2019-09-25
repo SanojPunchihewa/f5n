@@ -3,7 +3,7 @@ package com.mobilegenomics.f5n;
 public enum PipelineStep {
     //    MINIMAP2_SEQUENCE_ALIGNMENT(0,
 //        "minimap2 -x map-ont -a /mnt/sdcard/f5c/test/ecoli_2kb_region/draft.fa /mnt/sdcard/f5c/test/ecoli_2kb_region/reads.fasta"),
-    MINIMAP2_SEQUENCE_ALIGNMENT(0, "minimap2 -x map-ont"),
+    MINIMAP2_SEQUENCE_ALIGNMENT(0, "minimap2 -ax map-ont"),
     SAMTOOL_SORT(1, "samtool sort"),
     SAMTOOL_INDEX(2, "samtool index"),
     F5C_INDEX(3, "f5c index"),

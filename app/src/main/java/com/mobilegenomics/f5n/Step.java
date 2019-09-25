@@ -61,11 +61,12 @@ public class Step {
 
     private void minimap2Arguments() {
         Argument argument = new Argument(true, "reference index", null, "Path to the reference index file", false,
-                null, false);
+                null, false, true);
         arguments.add(argument);
-        argument = new Argument(true, "query sequence", null, "Path to the query sequence file", false, null, false);
+        argument = new Argument(true, "query sequence", null, "Path to the query sequence file", false, null, false,
+                true);
         arguments.add(argument);
-        argument = new Argument(true, "output file", null, "Path to the output sam file", true, "-o", false);
+        argument = new Argument(true, "output file", null, "Path to the output sam file", true, "-o", false, true);
         arguments.add(argument);
         argument = new Argument(false, "Output format SAM", null,
                 "Generate CIGAR and output alignments in SAM ", true, "-a", true);
@@ -85,16 +86,18 @@ public class Step {
     }
 
     private void samtoolSortArguments() {
-        Argument argument = new Argument(true, "input sam", null, "Path to the input sam file", false, null, false);
+        Argument argument = new Argument(true, "input sam", null, "Path to the input sam file", false, null, false,
+                true);
         arguments.add(argument);
-        argument = new Argument(true, "output file", null, "Path to the output file", true, "-o", false);
+        argument = new Argument(true, "output file", null, "Path to the output file", true, "-o", false, true);
         arguments.add(argument);
         argument = new Argument(false, "threads", null, "Number of threads[1]", true, "-@", false);
         arguments.add(argument);
     }
 
     private void samtoolIndexArguments() {
-        Argument argument = new Argument(true, "input bam", null, "Path to the input bam file", false, null, false);
+        Argument argument = new Argument(true, "input bam", null, "Path to the input bam file", false, null, false,
+                true);
         arguments.add(argument);
         argument = new Argument(false, "threads", null, "Number of threads[1]", true, "-@", false);
         arguments.add(argument);
@@ -104,10 +107,10 @@ public class Step {
         //Build an index mapping from basecalled reads to the signals measured by the sequencer (same as nanopolish index)
         Argument argument = new Argument(true, "fast5 files", null,
                 "path to the directory containing the raw ONT signal files. This option can be given multiple times.",
-                true, "--directory", false);
+                true, "--directory", false, true);
         arguments.add(argument);
         argument = new Argument(true, "fast(a or q) reads", null,
-                "Path to the reads.fasta or fastq file", false, null, false);
+                "Path to the reads.fasta or fastq file", false, null, false, true);
         arguments.add(argument);
         argument = new Argument(false, "summary file", null,
                 "the sequencing summary file from albacore, providing this option will make indexing much faster",
@@ -115,7 +118,7 @@ public class Step {
         arguments.add(argument);
         argument = new Argument(false, "paths to summary files", null,
                 "file containing the paths to the sequencing summary files (one per line)",
-                true, "--summary-fofn", false);
+                true, "--summary-fofn", false, true);
         arguments.add(argument);
         argument = new Argument(false, "verbose", null,
                 "display verbose output",
@@ -127,13 +130,14 @@ public class Step {
     private void f5cCallMethylationArguments() {
         //Classify nucleotides as methylated or not (optimised nanopolish call-methylation)
         Argument argument = new Argument(true, "fastq/fasta read file", null, "fastq/fasta read file", true, "-r",
-                false);
+                false, true);
         arguments.add(argument);
-        argument = new Argument(true, "sorted bam file", null, "sorted bam file", true, "-b", false);
+        argument = new Argument(true, "sorted bam file", null, "sorted bam file", true, "-b", false, true);
         arguments.add(argument);
-        argument = new Argument(true, "output tsv file", null, "tsv file from call-methylation", true, "-o", false);
+        argument = new Argument(true, "reference genome", null, "reference genome", true, "-g", false, true);
         arguments.add(argument);
-        argument = new Argument(true, "reference genome", null, "reference genome", true, "-g", false);
+        argument = new Argument(true, "output tsv file", null, "tsv file from call-methylation", true, "-o", false,
+                true);
         arguments.add(argument);
         argument = new Argument(false, "number of threads", null, "number of threads [8]", true, "-t", false);
         arguments.add(argument);
@@ -167,16 +171,16 @@ public class Step {
 
         //Align nanopore events to reference k-mers (optimised nanopolish eventalign)
         Argument argument = new Argument(true, "fastq/fasta read file", null,
-                "fastq/fasta read file", true, "-r", false);
+                "fastq/fasta read file", true, "-r", false, true);
         arguments.add(argument);
         argument = new Argument(true, "sorted bam", null,
-                "path to sorted bam file", true, "-b", false);
+                "path to sorted bam file", true, "-b", false, true);
         arguments.add(argument);
         argument = new Argument(true, "reference genome", null,
-                "path to reference genome", true, "-g", false);
+                "path to reference genome", true, "-g", false, true);
         arguments.add(argument);
         argument = new Argument(true, "output file", null,
-                "path to output summary", true, "-o", false);
+                "path to output summary", true, "-o", false, true);
         arguments.add(argument);
         argument = new Argument(false, "threads", "8",
                 "Number of threads[8]", true, "-t", false);

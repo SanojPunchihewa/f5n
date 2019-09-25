@@ -18,11 +18,17 @@ public class Argument {
 
     private boolean required;
 
+    public boolean isFile() {
+        return file;
+    }
+
     public boolean isFlagOnly() {
         return flagOnly;
     }
 
     private boolean flagOnly;
+
+    private boolean file;
 
     public boolean isRequired() {
         return required;
@@ -43,6 +49,21 @@ public class Argument {
         this.setByUser = false;
         this.required = required;
         this.flagOnly = flagOnly;
+        this.file = false;
+    }
+
+    public Argument(final boolean required, final String argName, final String argValue, final String argDescription,
+            final boolean hasFlag,
+            final String flag, final boolean flagOnly, final boolean isFile) {
+        this.argName = argName;
+        this.argValue = argValue;
+        this.argDescription = argDescription;
+        this.hasFlag = hasFlag;
+        this.flag = flag;
+        this.setByUser = false;
+        this.required = required;
+        this.flagOnly = flagOnly;
+        this.file = isFile;
     }
 
     public String getArgName() {
