@@ -174,6 +174,7 @@ public class Step {
         arguments.add(argument);
         argument = new Argument(true, "reference genome", null,
                 "path to reference genome", true, "-g", false);
+        arguments.add(argument);
         argument = new Argument(true, "output file", null,
                 "path to output summary", true, "-o", false);
         arguments.add(argument);
