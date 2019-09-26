@@ -19,11 +19,9 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.developer.filepicker.controller.DialogSelectionListener;
@@ -33,6 +31,7 @@ import com.developer.filepicker.view.FilePickerDialog;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class StepActivity extends AppCompatActivity {
 
@@ -44,11 +43,11 @@ public class StepActivity extends AppCompatActivity {
 
     private EditText editTextFolderPath;
 
-    private ImageButton btnCopyPath;
+    private Button btnCopyPath;
 
-    private ImageButton btnOpenFolder;
+    private Button btnOpenFolder;
 
-    private ImageButton btnSyncFolder;
+    private Button btnPastePath;
 
     private TextView txtStepName;
 
@@ -103,13 +102,15 @@ public class StepActivity extends AppCompatActivity {
                 openFileManager();
             }
         });
-        btnSyncFolder = findViewById(R.id.btn_sync_path);
-        btnSyncFolder.setOnClickListener(new OnClickListener() {
+        btnPastePath = findViewById(R.id.btn_paste_path);
+        btnPastePath.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(final View v) {
-                if (folderPath == null | TextUtils.isEmpty(folderPath)) {
-                    Toast.makeText(StepActivity.this, "Please select a folder first", Toast.LENGTH_LONG).show();
-                } else {
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData.Item item = Objects.requireNonNull(clipboard.getPrimaryClip()).getItemAt(0);
+                folderPath = item.getText().toString();
+                if (folderPath != null && !TextUtils.isEmpty(folderPath)) {
+                    editTextFolderPath.setText(folderPath);
                     getFileNameList(folderPath);
                 }
             }
@@ -243,6 +244,7 @@ public class StepActivity extends AppCompatActivity {
                 //files is the array of the paths of files selected by the Application User.
                 folderPath = files[0];
                 editTextFolderPath.setText(folderPath);
+                getFileNameList(folderPath);
                 dialog.dismiss();
             }
         });
