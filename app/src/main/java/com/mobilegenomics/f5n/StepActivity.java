@@ -37,7 +37,7 @@ public class StepActivity extends AppCompatActivity {
 
     private int argument_id = 0;
 
-    private String folderPath = "/mnt/sdcard/f5c/test/ecoli_2kb_region";
+    private String folderPath;
 
     private EditText editTextFolderPath;
 
