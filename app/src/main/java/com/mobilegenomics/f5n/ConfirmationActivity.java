@@ -115,7 +115,7 @@ public class ConfirmationActivity extends AppCompatActivity {
 
                 String line;
 
-                Pattern pattern = Pattern.compile("f5c-android:(.*)", 0);
+                Pattern pattern = Pattern.compile("f5c-android:(.*)|minimap2-native:(.*)", 0);
                 Matcher matcher;
 
                 while ((line = bufferedReader.readLine()) != null) {
@@ -123,7 +123,13 @@ public class ConfirmationActivity extends AppCompatActivity {
                     if (!matcher.find()) {
                         continue;
                     }
-                    log.append(matcher.group(1));
+                    // TODO find a better way to append all the matching groups
+                    if (matcher.group(1) != null) {
+                        log.append(matcher.group(1));
+                    } else if (matcher.group(2) != null) {
+                        log.append(matcher.group(2));
+                    }
+
                     log.append('\n');
                 }
 
