@@ -6,6 +6,16 @@
 #include <zlib.h>
 #include <stdio.h>
 #include <iostream>
+#include <setjmp.h>
+
+jmp_buf jmpBuf;
+
+// this is the handler for the risky code
+// if we reach here, it means somebody
+// tried to call exit
+void stopExit() {
+  siglongjmp(jmpBuf, 1);
+}
 
 extern "C" JNIEXPORT jint JNICALL
 Java_com_mobilegenomics_f5n_NativeCommands_init(JNIEnv *env, jobject, jstring command) {
@@ -28,13 +38,21 @@ Java_com_mobilegenomics_f5n_NativeCommands_init(JNIEnv *env, jobject, jstring co
     p2 = strtok(0, " ");
   }
   argv[argc] = 0;
-  jint result = init(argc, argv);
+  jint result;
+  // http://jnicookbook.owsiak.org/recipe-no-016/
+  atexit(stopExit);
+
+  if (sigsetjmp(jmpBuf, 1) == 0) {
+    result = init(argc, argv);
+  } else {
+    char exceptionBuffer[1024];
+    sprintf(exceptionBuffer, "F5C_EXCEPTION");
+    (env)->ThrowNew((env)->FindClass("java/lang/Exception"), exceptionBuffer);
+  }
 
   env->ReleaseStringUTFChars(command, command_c);
 
   return result;
-//    return 100;
-  // } CATCH_AND_RETHROW;
 }
 
 extern "C" JNIEXPORT jint JNICALL
@@ -55,7 +73,18 @@ Java_com_mobilegenomics_f5n_NativeCommands_initminimap2(JNIEnv *env, jobject typ
     p2 = strtok(0, " ");
   }
   argv[argc] = 0;
-  jint result = init_minimap2(argc, argv);
+
+  jint result;
+  // http://jnicookbook.owsiak.org/recipe-no-016/
+  atexit(stopExit);
+
+  if (sigsetjmp(jmpBuf, 1) == 0) {
+    result = init_minimap2(argc, argv);
+  } else {
+    char exceptionBuffer[1024];
+    sprintf(exceptionBuffer, "MINIMAP2_EXCEPTION");
+    (env)->ThrowNew((env)->FindClass("java/lang/Exception"), exceptionBuffer);
+  }
 
   env->ReleaseStringUTFChars(command, command_c);
 
@@ -77,7 +106,17 @@ Java_com_mobilegenomics_f5n_NativeCommands_initsamtool(JNIEnv *env, jobject claz
     p2 = strtok(0, " ");
   }
   argv[argc] = 0;
-  jint result = init_samtools(argc, argv);
+  jint result;
+  // http://jnicookbook.owsiak.org/recipe-no-016/
+  atexit(stopExit);
+
+  if (sigsetjmp(jmpBuf, 1) == 0) {
+    result = init_samtools(argc, argv);
+  } else {
+    char exceptionBuffer[1024];
+    sprintf(exceptionBuffer, "SAMTOOL_EXCEPTION");
+    (env)->ThrowNew((env)->FindClass("java/lang/Exception"), exceptionBuffer);
+  }
 
   env->ReleaseStringUTFChars(command, command_c);
 

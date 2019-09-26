@@ -105,11 +105,11 @@ public class Step {
 
     private void f5cIndexArguments() {
         //Build an index mapping from basecalled reads to the signals measured by the sequencer (same as nanopolish index)
-        Argument argument = new Argument(true, "fast5 files", null,
+        Argument argument = new Argument(true, "fast5 files", "fast5_files/",
                 "path to the directory containing the raw ONT signal files. This option can be given multiple times.",
                 true, "--directory", false, true);
         arguments.add(argument);
-        argument = new Argument(true, "fast(a or q) reads", null,
+        argument = new Argument(true, "fast(a or q) reads", "reads.fasta",
                 "Path to the reads.fasta or fastq file", false, null, false, true);
         arguments.add(argument);
         argument = new Argument(false, "summary file", null,
