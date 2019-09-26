@@ -1,6 +1,7 @@
 package com.mobilegenomics.f5n;
 
 import android.app.ProgressDialog;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,11 +9,14 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ConfirmationActivity extends AppCompatActivity {
@@ -37,10 +41,6 @@ public class ConfirmationActivity extends AppCompatActivity {
             linearLayout.addView(txtCommand);
         }
 
-        txtLogs = new TextView(this);
-        // txtLogs.setMaxLines(10);
-        linearLayout.addView(txtLogs);
-
         Button btnProceed = new Button(this);
         btnProceed.setText("Run the Pipeline");
         btnProceed.setOnClickListener(new OnClickListener() {
@@ -51,6 +51,25 @@ public class ConfirmationActivity extends AppCompatActivity {
             }
         });
         linearLayout.addView(btnProceed);
+
+        View separator1 = new View(this);
+        separator1.setLayoutParams(new LinearLayout.LayoutParams(
+                LayoutParams.MATCH_PARENT,
+                5
+        ));
+        separator1.setBackgroundColor(Color.parseColor("#000000"));
+        linearLayout.addView(separator1);
+
+        txtLogs = new TextView(this);
+        linearLayout.addView(txtLogs);
+        View separator2 = new View(this);
+        separator2.setLayoutParams(new LinearLayout.LayoutParams(
+                LayoutParams.MATCH_PARENT,
+                5
+        ));
+        separator2.setBackgroundColor(Color.parseColor("#000000"));
+        linearLayout.addView(separator2);
+
     }
 
     public class RunPipeline extends AsyncTask<String, Integer, String> {
@@ -59,6 +78,11 @@ public class ConfirmationActivity extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             showProgressWindow();
+            try {
+                Runtime.getRuntime().exec("logcat -c");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
@@ -83,10 +107,6 @@ public class ConfirmationActivity extends AppCompatActivity {
             try {
                 Process process = Runtime.getRuntime().exec("logcat -d");
 
-                System.out.println("Out");
-                System.err.println("Err");
-                Log.e("TAG", "LOG_ERR");
-
                 BufferedReader bufferedReader = new BufferedReader(
 
                         new InputStreamReader(process.getInputStream()));
@@ -95,21 +115,30 @@ public class ConfirmationActivity extends AppCompatActivity {
 
                 String line;
 
-                Pattern pattern = Pattern.compile("f5c-android", 0);
+                Pattern pattern = Pattern.compile("f5c-android:(.*)|minimap2-native:(.*)|samtools-native:(.*)", 0);
+                Matcher matcher;
 
                 while ((line = bufferedReader.readLine()) != null) {
-                    if (pattern != null
-                            && !pattern.matcher(line).find()) {
+                    matcher = pattern.matcher(line);
+                    if (!matcher.find()) {
                         continue;
                     }
-                    log.append(line);
+                    // TODO find a better way to append all the matching groups
+                    if (matcher.group(1) != null) {
+                        log.append(matcher.group(1));
+                    } else if (matcher.group(2) != null) {
+                        log.append(matcher.group(2));
+                    } else if (matcher.group(3) != null) {
+                        log.append(matcher.group(3));
+                    }
+
                     log.append('\n');
                 }
 
                 txtLogs.setText(log);
 
             } catch (Exception e) {
-
+                Log.e("LOGCAT", "Cannot read from logcat :" + e);
             }
         }
     }
