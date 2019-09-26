@@ -2,6 +2,7 @@ package com.mobilegenomics.f5n;
 
 import android.util.Log;
 import java.util.ArrayList;
+import java.util.List;
 
 public class GUIConfiguration {
 
@@ -84,8 +85,15 @@ public class GUIConfiguration {
 
     public static void runPipeline() {
         for (PipelineComponent pipelineComponent : pipelineComponents) {
+            long start = System.currentTimeMillis();
             pipelineComponent.run();
+            long time = System.currentTimeMillis() - start;
+            pipelineComponent.setRuntime(TimeFormat.millisToShortDHMS(time));
         }
+    }
+
+    public static List<PipelineComponent> getPipeline() {
+        return pipelineComponents;
     }
 
 }

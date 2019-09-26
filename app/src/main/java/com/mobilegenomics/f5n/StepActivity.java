@@ -6,7 +6,9 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -17,7 +19,6 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
@@ -30,6 +31,7 @@ import com.developer.filepicker.view.FilePickerDialog;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class StepActivity extends AppCompatActivity {
 
@@ -41,7 +43,11 @@ public class StepActivity extends AppCompatActivity {
 
     private EditText editTextFolderPath;
 
-    private ImageButton btnCopyPath;
+    private Button btnCopyPath;
+
+    private Button btnOpenFolder;
+
+    private Button btnPastePath;
 
     private TextView txtStepName;
 
@@ -63,13 +69,23 @@ public class StepActivity extends AppCompatActivity {
 //        adapter = new CustomerAdapter(this, android.R.layout.simple_dropdown_item_1line, fileNames);
 
         editTextFolderPath = findViewById(R.id.edit_text_folder_path);
-        editTextFolderPath.setOnTouchListener(new OnTouchListener() {
+        editTextFolderPath.addTextChangedListener(new TextWatcher() {
             @Override
-            public boolean onTouch(final View v, final MotionEvent event) {
-                openFileManager();
-                return false;
+            public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(final Editable s) {
+                folderPath = s.toString();
             }
         });
+
         btnCopyPath = findViewById(R.id.btn_copy_path);
         btnCopyPath.setOnClickListener(new OnClickListener() {
             @Override
@@ -77,6 +93,26 @@ public class StepActivity extends AppCompatActivity {
                 ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                 ClipData clip = ClipData.newPlainText("folderpath", folderPath);
                 clipboard.setPrimaryClip(clip);
+            }
+        });
+        btnOpenFolder = findViewById(R.id.btn_open_folder);
+        btnOpenFolder.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                openFileManager();
+            }
+        });
+        btnPastePath = findViewById(R.id.btn_paste_path);
+        btnPastePath.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData.Item item = Objects.requireNonNull(clipboard.getPrimaryClip()).getItemAt(0);
+                folderPath = item.getText().toString();
+                if (folderPath != null && !TextUtils.isEmpty(folderPath)) {
+                    editTextFolderPath.setText(folderPath);
+                    getFileNameList(folderPath);
+                }
             }
         });
         txtStepName = findViewById(R.id.txt_step_name);
@@ -147,7 +183,9 @@ public class StepActivity extends AppCompatActivity {
                             if (editText.getText() != null && !TextUtils.isEmpty(editText.getText().toString())) {
                                 String argValue = editText.getText().toString();
                                 if (argument.isFile()) {
-                                    argValue = folderPath + "/" + argValue;
+                                    if (folderPath != null && !TextUtils.isEmpty(folderPath)) {
+                                        argValue = folderPath + "/" + argValue;
+                                    }
                                 }
                                 argument.setArgValue(argValue);
                             } else {
