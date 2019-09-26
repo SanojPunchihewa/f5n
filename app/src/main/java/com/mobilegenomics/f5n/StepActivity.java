@@ -6,7 +6,9 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -21,6 +23,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.developer.filepicker.controller.DialogSelectionListener;
@@ -43,6 +46,10 @@ public class StepActivity extends AppCompatActivity {
 
     private ImageButton btnCopyPath;
 
+    private ImageButton btnOpenFolder;
+
+    private ImageButton btnSyncFolder;
+
     private TextView txtStepName;
 
     ArrayAdapter<String> adapter;
@@ -63,13 +70,23 @@ public class StepActivity extends AppCompatActivity {
 //        adapter = new CustomerAdapter(this, android.R.layout.simple_dropdown_item_1line, fileNames);
 
         editTextFolderPath = findViewById(R.id.edit_text_folder_path);
-        editTextFolderPath.setOnTouchListener(new OnTouchListener() {
+        editTextFolderPath.addTextChangedListener(new TextWatcher() {
             @Override
-            public boolean onTouch(final View v, final MotionEvent event) {
-                openFileManager();
-                return false;
+            public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(final Editable s) {
+                folderPath = s.toString();
             }
         });
+
         btnCopyPath = findViewById(R.id.btn_copy_path);
         btnCopyPath.setOnClickListener(new OnClickListener() {
             @Override
@@ -77,6 +94,24 @@ public class StepActivity extends AppCompatActivity {
                 ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                 ClipData clip = ClipData.newPlainText("folderpath", folderPath);
                 clipboard.setPrimaryClip(clip);
+            }
+        });
+        btnOpenFolder = findViewById(R.id.btn_open_folder);
+        btnOpenFolder.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                openFileManager();
+            }
+        });
+        btnSyncFolder = findViewById(R.id.btn_sync_path);
+        btnSyncFolder.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                if (folderPath == null | TextUtils.isEmpty(folderPath)) {
+                    Toast.makeText(StepActivity.this, "Please select a folder first", Toast.LENGTH_LONG).show();
+                } else {
+                    getFileNameList(folderPath);
+                }
             }
         });
         txtStepName = findViewById(R.id.txt_step_name);
@@ -206,7 +241,6 @@ public class StepActivity extends AppCompatActivity {
                 //files is the array of the paths of files selected by the Application User.
                 folderPath = files[0];
                 editTextFolderPath.setText(folderPath);
-                getFileNameList(folderPath);
                 dialog.dismiss();
             }
         });

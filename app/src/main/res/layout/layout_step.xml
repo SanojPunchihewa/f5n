@@ -20,12 +20,24 @@
         android:paddingLeft="15dp"
         android:paddingRight="15dp">
 
+        <ImageButton
+            android:id="@+id/btn_open_folder"
+            android:src="@drawable/ic_folder_open_black_24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
         <EditText
             android:id="@+id/edit_text_folder_path"
             android:hint="Path to test Data Folder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
+
+        <ImageButton
+            android:id="@+id/btn_sync_path"
+            android:src="@drawable/ic_sync_black_24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
         <ImageButton
             android:id="@+id/btn_copy_path"
