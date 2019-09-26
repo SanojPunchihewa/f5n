@@ -2,13 +2,23 @@ package com.mobilegenomics.f5n;
 
 public class PipelineComponent implements runNative {
 
-    PipelineStep pipelineStep;
+    public PipelineStep getPipelineStep() {
+        return pipelineStep;
+    }
+
+    private PipelineStep pipelineStep;
 
     private String command;
+
+    private String runtime;
 
     public PipelineComponent(PipelineStep pipelineStep, String command) {
         this.pipelineStep = pipelineStep;
         this.command = command;
+    }
+
+    public String getRuntime() {
+        return runtime;
     }
 
     @Override
@@ -25,6 +35,10 @@ public class PipelineComponent implements runNative {
             status = NativeCommands.getNativeInstance().init(command);
         }
         return status;
+    }
+
+    public void setRuntime(final String runtime) {
+        this.runtime = runtime;
     }
 }
 

@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,12 +26,14 @@ public class ConfirmationActivity extends AppCompatActivity {
 
     TextView txtLogs;
 
+    LinearLayout linearLayout;
+
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_vertical);
 
-        LinearLayout linearLayout = findViewById(R.id.vertical_linear_layout);
+        linearLayout = findViewById(R.id.vertical_linear_layout);
 
         String[] commands = GUIConfiguration.getSelectedCommandStrings();
 
@@ -139,6 +142,13 @@ public class ConfirmationActivity extends AppCompatActivity {
 
             } catch (Exception e) {
                 Log.e("LOGCAT", "Cannot read from logcat :" + e);
+            }
+            List<PipelineComponent> pipelineComponents = GUIConfiguration.getPipeline();
+            for (PipelineComponent pipelineComponent : pipelineComponents) {
+                TextView txtRuntime = new TextView(ConfirmationActivity.this);
+                txtRuntime.setText(
+                        pipelineComponent.getPipelineStep().getCommand() + " took " + pipelineComponent.getRuntime());
+                linearLayout.addView(txtRuntime);
             }
         }
     }
