@@ -182,7 +182,9 @@ public class StepActivity extends AppCompatActivity {
                             if (editText.getText() != null && !TextUtils.isEmpty(editText.getText().toString())) {
                                 String argValue = editText.getText().toString();
                                 if (argument.isFile()) {
-                                    argValue = folderPath + "/" + argValue;
+                                    if (folderPath != null && !TextUtils.isEmpty(folderPath)) {
+                                        argValue = folderPath + "/" + argValue;
+                                    }
                                 }
                                 argument.setArgValue(argValue);
                             } else {
