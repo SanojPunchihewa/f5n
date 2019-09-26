@@ -3,6 +3,7 @@ package com.mobilegenomics.f5n;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -41,7 +42,6 @@ public class ConfirmationActivity extends AppCompatActivity {
             }
         });
         linearLayout.addView(btnProceed);
-
     }
 
     public class RunPipeline extends AsyncTask<String, Integer, String> {
@@ -54,7 +54,11 @@ public class ConfirmationActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(final String... strings) {
-            GUIConfiguration.runPipeline();
+            try {
+                GUIConfiguration.runPipeline();
+            } catch (Exception e) {
+                Log.e("NATIVE-LIB", "Exception thrown by native code : " + e);
+            }
             return null;
         }
 
