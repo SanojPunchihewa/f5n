@@ -12,6 +12,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -27,6 +29,7 @@ import com.developer.filepicker.model.DialogProperties;
 import com.developer.filepicker.view.FilePickerDialog;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 public class StepActivity extends AppCompatActivity {
 
@@ -42,11 +45,22 @@ public class StepActivity extends AppCompatActivity {
 
     private TextView txtStepName;
 
+    ArrayAdapter<String> adapter;
+
+    private List<String> fileNames;
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_step);
+
+        fileNames = new ArrayList<>();
+
+        adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_dropdown_item_1line, fileNames);
+
+//        adapter = new CustomerAdapter(this, android.R.layout.simple_dropdown_item_1line, fileNames);
 
         editTextFolderPath = findViewById(R.id.edit_text_folder_path);
         editTextFolderPath.setOnTouchListener(new OnTouchListener() {
@@ -98,15 +112,21 @@ public class StepActivity extends AppCompatActivity {
             checkBox.setLayoutParams(checkBox_LayoutParams);
 
             if (!argument.isFlagOnly()) {
-                EditText editText = new EditText(this);
+                final EditText editText;
+                if (argument.isFile()) {
+                    editText = new AutoCompleteTextView(this);
+                    ((AutoCompleteTextView) editText).setAdapter(adapter);
+                } else {
+                    editText = new EditText(this);
+                }
                 editText.setId(argument_id + 1000);
+                editText.setText(argument.getArgValue());
+                linearLayout.addView(editText);
                 LinearLayout.LayoutParams editText_LayoutParams =
                         new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
                                 LinearLayout.LayoutParams.WRAP_CONTENT);
-                // editText_LayoutParams.weight = 3;
-                editText.setText(argument.getArgValue());
-                linearLayout.addView(editText);
                 editText.setLayoutParams(editText_LayoutParams);
+
             }
             argument_id++;
         }
@@ -125,7 +145,11 @@ public class StepActivity extends AppCompatActivity {
                         if (!argument.isFlagOnly()) {
                             EditText editText = findViewById(arg_id + 1000);
                             if (editText.getText() != null && !TextUtils.isEmpty(editText.getText().toString())) {
-                                argument.setArgValue(editText.getText().toString());
+                                String argValue = editText.getText().toString();
+                                if (argument.isFile()) {
+                                    argValue = folderPath + "/" + argValue;
+                                }
+                                argument.setArgValue(argValue);
                             } else {
                                 haveSetAllRequiredArgs = false;
                                 editText.setError("This field is required!");
@@ -137,7 +161,7 @@ public class StepActivity extends AppCompatActivity {
                     arg_id++;
                 }
                 for (Argument argument : arguments) {
-                    Log.e("ARGS", argument.getArgName() + " = " + argument.getArgValue());
+                    Log.d("ARGS", argument.getArgName() + " = " + argument.getArgValue());
                 }
                 step.buildCommandString();
                 if (haveSetAllRequiredArgs) {
@@ -173,7 +197,7 @@ public class StepActivity extends AppCompatActivity {
         properties.offset = new File(DialogConfigs.DEFAULT_DIR);
         properties.extensions = null;
 
-        FilePickerDialog dialog = new FilePickerDialog(StepActivity.this, properties);
+        final FilePickerDialog dialog = new FilePickerDialog(StepActivity.this, properties);
         dialog.setTitle("Select a Folder");
 
         dialog.setDialogSelectionListener(new DialogSelectionListener() {
@@ -182,10 +206,23 @@ public class StepActivity extends AppCompatActivity {
                 //files is the array of the paths of files selected by the Application User.
                 folderPath = files[0];
                 editTextFolderPath.setText(folderPath);
+                getFileNameList(folderPath);
+                dialog.dismiss();
             }
         });
 
         dialog.show();
+    }
+
+    private void getFileNameList(String folderPath) {
+
+        adapter.clear();
+        adapter.notifyDataSetChanged();
+        File[] files = new File(folderPath).listFiles();
+        for (File file : files) {
+            adapter.add(file.getName());
+        }
+        adapter.notifyDataSetChanged();
     }
 
     @Override
