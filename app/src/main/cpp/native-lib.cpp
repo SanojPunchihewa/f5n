@@ -6,18 +6,19 @@
 #include <zlib.h>
 #include <stdio.h>
 #include <iostream>
+#include <setjmp.h>
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_com_example_hello_1f5c_MainActivity_stringFromJNI(
-    JNIEnv *env,
-    jobject /* this */) {
-  std::string hello = "Hello from C++";
-  return env->NewStringUTF(hello.c_str());
+jmp_buf jmpBuf;
+
+// this is the handler for the risky code
+// if we reach here, it means somebody
+// tried to call exit
+void stopExit() {
+  siglongjmp(jmpBuf, 1);
 }
 
-
 extern "C" JNIEXPORT jint JNICALL
-Java_com_example_hello_1f5c_MainActivity_init(JNIEnv *env, jclass clazz, jstring command) {
+Java_com_mobilegenomics_f5n_NativeCommands_init(JNIEnv *env, jobject, jstring command) {
   // try{TODO:exceptions
   // Convert command to cpp
   //TODO:casting not good
@@ -37,17 +38,25 @@ Java_com_example_hello_1f5c_MainActivity_init(JNIEnv *env, jclass clazz, jstring
     p2 = strtok(0, " ");
   }
   argv[argc] = 0;
-  jint result = init(argc, argv);
+  jint result;
+  // http://jnicookbook.owsiak.org/recipe-no-016/
+  atexit(stopExit);
+
+  if (sigsetjmp(jmpBuf, 1) == 0) {
+    result = init(argc, argv);
+  } else {
+    char exceptionBuffer[1024];
+    sprintf(exceptionBuffer, "F5C_EXCEPTION");
+    (env)->ThrowNew((env)->FindClass("java/lang/Exception"), exceptionBuffer);
+  }
 
   env->ReleaseStringUTFChars(command, command_c);
 
   return result;
-//    return 100;
-  // } CATCH_AND_RETHROW;
 }
 
 extern "C" JNIEXPORT jint JNICALL
-Java_com_example_hello_1f5c_MainActivity_initminimap2(JNIEnv *env, jclass type, jstring command) {
+Java_com_mobilegenomics_f5n_NativeCommands_initminimap2(JNIEnv *env, jobject type, jstring command) {
   // try{TODO:exceptions
   // Convert command to cpp
   //TODO:casting not good
@@ -64,7 +73,18 @@ Java_com_example_hello_1f5c_MainActivity_initminimap2(JNIEnv *env, jclass type, 
     p2 = strtok(0, " ");
   }
   argv[argc] = 0;
-  jint result = init_minimap2(argc, argv);
+
+  jint result;
+  // http://jnicookbook.owsiak.org/recipe-no-016/
+  atexit(stopExit);
+
+  if (sigsetjmp(jmpBuf, 1) == 0) {
+    result = init_minimap2(argc, argv);
+  } else {
+    char exceptionBuffer[1024];
+    sprintf(exceptionBuffer, "MINIMAP2_EXCEPTION");
+    (env)->ThrowNew((env)->FindClass("java/lang/Exception"), exceptionBuffer);
+  }
 
   env->ReleaseStringUTFChars(command, command_c);
 
@@ -72,7 +92,7 @@ Java_com_example_hello_1f5c_MainActivity_initminimap2(JNIEnv *env, jclass type, 
 }
 
 extern "C" JNIEXPORT jint JNICALL
-Java_com_example_hello_1f5c_MainActivity_initsamtool(JNIEnv *env, jclass clazz, jstring command) {
+Java_com_mobilegenomics_f5n_NativeCommands_initsamtool(JNIEnv *env, jobject clazz, jstring command) {
   char *command_c = (char *) env->GetStringUTFChars(command, nullptr);
 
   enum { kMaxArgs = 64 };
@@ -86,7 +106,17 @@ Java_com_example_hello_1f5c_MainActivity_initsamtool(JNIEnv *env, jclass clazz, 
     p2 = strtok(0, " ");
   }
   argv[argc] = 0;
-  jint result = init_samtools(argc, argv);
+  jint result;
+  // http://jnicookbook.owsiak.org/recipe-no-016/
+  atexit(stopExit);
+
+  if (sigsetjmp(jmpBuf, 1) == 0) {
+    result = init_samtools(argc, argv);
+  } else {
+    char exceptionBuffer[1024];
+    sprintf(exceptionBuffer, "SAMTOOL_EXCEPTION");
+    (env)->ThrowNew((env)->FindClass("java/lang/Exception"), exceptionBuffer);
+  }
 
   env->ReleaseStringUTFChars(command, command_c);
 
