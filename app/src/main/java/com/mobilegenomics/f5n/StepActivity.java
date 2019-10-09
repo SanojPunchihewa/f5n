@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.developer.filepicker.controller.DialogSelectionListener;
@@ -257,9 +258,15 @@ public class StepActivity extends AppCompatActivity {
         adapter.clear();
         adapter.notifyDataSetChanged();
         File[] files = new File(folderPath).listFiles();
-        for (File file : files) {
-            adapter.add(file.getName());
+        try {
+            for (File file : files) {
+                adapter.add(file.getName());
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "Invalid File path", Toast.LENGTH_SHORT).show();
+            Log.e("STEP_ACTIVITY", "File Exception : " + e);
         }
+
         adapter.notifyDataSetChanged();
     }
 
