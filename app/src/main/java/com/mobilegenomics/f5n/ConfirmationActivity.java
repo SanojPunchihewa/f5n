@@ -118,7 +118,8 @@ public class ConfirmationActivity extends AppCompatActivity {
 
                 String line;
 
-                Pattern pattern = Pattern.compile("f5c-android:(.*)|minimap2-native:(.*)|samtools-native:(.*)", 0);
+                Pattern pattern = Pattern
+                        .compile("f5c-android.*:(.*)|minimap2-native.*:(.*)|samtools-native.*:(.*)", 0);
                 Matcher matcher;
 
                 while ((line = bufferedReader.readLine()) != null) {
