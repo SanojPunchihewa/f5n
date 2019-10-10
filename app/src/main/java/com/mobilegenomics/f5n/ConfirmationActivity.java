@@ -49,7 +49,7 @@ public class ConfirmationActivity extends AppCompatActivity {
         btnProceed.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(final View v) {
-                GUIConfiguration.createPipeline();
+//                GUIConfiguration.createPipeline();
                 new RunPipeline().execute();
             }
         });

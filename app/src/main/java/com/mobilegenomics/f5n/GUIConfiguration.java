@@ -96,4 +96,7 @@ public class GUIConfiguration {
         return pipelineComponents;
     }
 
+    public static ArrayList<Step> getSteps() {
+        return steps;
+    }
 }

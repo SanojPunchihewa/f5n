@@ -15,6 +15,10 @@ public class PipelineActivity extends AppCompatActivity {
 
     private ArrayList<CheckBox> pipelineSteps = new ArrayList<>();
 
+    private static final int MODE_GUI = 0;
+
+    private static final int MODE_TERMINAL = 1;
+
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,28 +34,62 @@ public class PipelineActivity extends AppCompatActivity {
             linearLayout.addView(checkBox);
         }
 
-        Button button = new Button(this);
-        button.setText("Next");
-        button.setOnClickListener(new OnClickListener() {
+        Button btnGUIMode = new Button(this);
+        btnGUIMode.setText("Use GUI Mode");
+        btnGUIMode.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(final View v) {
-                GUIConfiguration.eraseSelectedPipeline();
-                GUIConfiguration.resetSteps();
-                boolean clickedNone = true;
-                for (PipelineStep step : PipelineStep.values()) {
-                    CheckBox checkBox = findViewById(step.getValue());
-                    if (checkBox.isChecked()) {
-                        GUIConfiguration.addPipelineStep(step);
-                        clickedNone = false;
-                    }
-                }
-                if (!clickedNone) {
-                    GUIConfiguration.printList();
-                    GUIConfiguration.configureSteps();
-                    startActivity(new Intent(PipelineActivity.this, StepActivity.class));
-                }
+                initPipelineSteps(MODE_GUI);
+//                GUIConfiguration.eraseSelectedPipeline();
+//                GUIConfiguration.resetSteps();
+//                boolean clickedNone = true;
+//                for (PipelineStep step : PipelineStep.values()) {
+//                    CheckBox checkBox = findViewById(step.getValue());
+//                    if (checkBox.isChecked()) {
+//                        GUIConfiguration.addPipelineStep(step);
+//                        clickedNone = false;
+//                    }
+//                }
+//                if (!clickedNone) {
+//                    GUIConfiguration.printList();
+//                    GUIConfiguration.configureSteps();
+//                    startActivity(new Intent(PipelineActivity.this, StepActivity.class));
+//                }
             }
         });
-        linearLayout.addView(button);
+        linearLayout.addView(btnGUIMode);
+
+        Button btnTerminalMode = new Button(this);
+        btnTerminalMode.setText("Use Terminal Mode");
+        btnTerminalMode.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                initPipelineSteps(MODE_TERMINAL);
+            }
+        });
+        linearLayout.addView(btnTerminalMode);
+    }
+
+    private void initPipelineSteps(int mode) {
+        GUIConfiguration.eraseSelectedPipeline();
+        GUIConfiguration.resetSteps();
+        boolean clickedNone = true;
+        for (PipelineStep step : PipelineStep.values()) {
+            CheckBox checkBox = findViewById(step.getValue());
+            if (checkBox.isChecked()) {
+                GUIConfiguration.addPipelineStep(step);
+                clickedNone = false;
+            }
+        }
+        if (!clickedNone) {
+            GUIConfiguration.printList();
+            GUIConfiguration.configureSteps();
+            if (mode == MODE_GUI) {
+                startActivity(new Intent(PipelineActivity.this, StepActivity.class));
+            } else {
+                startActivity(new Intent(PipelineActivity.this, TerminalActivity.class));
+            }
+
+        }
     }
 }
