@@ -7,9 +7,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,9 +24,17 @@ import java.util.regex.Pattern;
 
 public class ConfirmationActivity extends AppCompatActivity {
 
+    private static final String TAG_F5C = "f5c-android";
+
+    private static final String TAG_MINIMAP2 = "minimap2-native";
+
+    private static final String TAG_SAMTOOLS = "samtools-native";
+
     private ProgressDialog progressDialog;
 
     TextView txtLogs;
+
+    ScrollView scrollView;
 
     LinearLayout linearLayout;
 
@@ -50,7 +60,8 @@ public class ConfirmationActivity extends AppCompatActivity {
             @Override
             public void onClick(final View v) {
                 GUIConfiguration.createPipeline();
-                new RunPipeline().execute();
+                new ShowLogCat().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                new RunPipeline().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
         });
         linearLayout.addView(btnProceed);
@@ -63,8 +74,13 @@ public class ConfirmationActivity extends AppCompatActivity {
         separator1.setBackgroundColor(Color.parseColor("#000000"));
         linearLayout.addView(separator1);
 
+        scrollView = new ScrollView(this);
+        linearLayout.addView(scrollView);
+
         txtLogs = new TextView(this);
-        linearLayout.addView(txtLogs);
+        scrollView.addView(txtLogs);
+        LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 700);
+        scrollView.setLayoutParams(params);
         View separator2 = new View(this);
         separator2.setLayoutParams(new LinearLayout.LayoutParams(
                 LayoutParams.MATCH_PARENT,
@@ -80,12 +96,6 @@ public class ConfirmationActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            showProgressWindow();
-            try {
-                Runtime.getRuntime().exec("logcat -c");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
 
         @Override
@@ -106,20 +116,38 @@ public class ConfirmationActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(final String s) {
             super.onPostExecute(s);
-            hideProgressWindow();
+            List<PipelineComponent> pipelineComponents = GUIConfiguration.getPipeline();
+            for (PipelineComponent pipelineComponent : pipelineComponents) {
+                TextView txtRuntime = new TextView(ConfirmationActivity.this);
+                txtRuntime.setText(
+                        pipelineComponent.getPipelineStep().getCommand() + " took " + pipelineComponent.getRuntime());
+                linearLayout.addView(txtRuntime);
+            }
+        }
+    }
+
+    public class ShowLogCat extends AsyncTask<Void, String, Void> {
+
+        @Override
+        protected void onPreExecute() {
             try {
-                Process process = Runtime.getRuntime().exec("logcat -d");
+                Runtime.getRuntime().exec("logcat -c");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                Process process = Runtime.getRuntime().exec("logcat");
                 BufferedReader bufferedReader = new BufferedReader(
-
                         new InputStreamReader(process.getInputStream()));
 
-                StringBuilder log = new StringBuilder();
-
-                String line;
+                String line = "", filtered = "";
 
                 Pattern pattern = Pattern
-                        .compile("f5c-android.*:(.*)|minimap2-native.*:(.*)|samtools-native.*:(.*)", 0);
+                        .compile(TAG_F5C + "(.*)|" + TAG_MINIMAP2 + "(.*)|" + TAG_SAMTOOLS + "(.*)", 0);
                 Matcher matcher;
 
                 while ((line = bufferedReader.readLine()) != null) {
@@ -129,28 +157,29 @@ public class ConfirmationActivity extends AppCompatActivity {
                     }
                     // TODO find a better way to append all the matching groups
                     if (matcher.group(1) != null) {
-                        log.append(matcher.group(1));
+                        filtered = TAG_F5C + matcher.group(1);
                     } else if (matcher.group(2) != null) {
-                        log.append(matcher.group(2));
+                        filtered = matcher.group(2);
                     } else if (matcher.group(3) != null) {
-                        log.append(matcher.group(3));
+                        filtered = matcher.group(3);
                     }
+                    publishProgress(filtered);
 
-                    log.append('\n');
                 }
-
-                txtLogs.setText(log);
-
-            } catch (Exception e) {
-                Log.e("LOGCAT", "Cannot read from logcat :" + e);
+            } catch (IOException e) {
             }
-            List<PipelineComponent> pipelineComponents = GUIConfiguration.getPipeline();
-            for (PipelineComponent pipelineComponent : pipelineComponents) {
-                TextView txtRuntime = new TextView(ConfirmationActivity.this);
-                txtRuntime.setText(
-                        pipelineComponent.getPipelineStep().getCommand() + " took " + pipelineComponent.getRuntime());
-                linearLayout.addView(txtRuntime);
-            }
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+            txtLogs.append(values[0] + "\n");
+            scrollView.post(new Runnable() {
+                @Override
+                public void run() {
+                    scrollView.fullScroll(View.FOCUS_DOWN);
+                }
+            });
         }
     }
 
