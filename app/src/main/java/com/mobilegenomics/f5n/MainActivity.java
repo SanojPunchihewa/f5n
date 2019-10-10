@@ -28,6 +28,10 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
+    public void downloadDataSet(View view) {
+        startActivity(new Intent(MainActivity.this, DownloadActivity.class));
+    }
+
     public void startStandaloneMode(View view) {
         startActivity(new Intent(MainActivity.this, PipelineActivity.class));
     }
