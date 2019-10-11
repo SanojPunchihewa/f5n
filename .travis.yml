@@ -44,10 +44,11 @@ cache:
 before_script:
   - export ANDROID_NDK_HOME=$ANDROID_HOME/ndk-bundle
   - chmod +x gradlew
-script:
   - echo cmake.dir=$PWD/cmake-3.10.2-Linux-x86_64 >> local.properties
   - cat local.properties
-  - if [[ "$TRAVIS_TAG" ]]; then ./gradlew assembleRelease; else ./gradlew clean; fi
+
+script: if [[ "$TRAVIS_TAG" ]]; then ./gradlew clean :app:assembleRelease --full-stacktrace; else ./gradlew clean test --full-stacktrace; fi
+
 deploy:
   provider: releases
   api_key:
