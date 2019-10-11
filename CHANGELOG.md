@@ -1,0 +1,5 @@
+# Changelog
+All notable changes to f5n will be documented in this file.
+
+## [0.0.1](https://github.com/SanojPunchihewa/f5n/releases/tag/0.0.1) - 2019-10-11
+- Initial release
