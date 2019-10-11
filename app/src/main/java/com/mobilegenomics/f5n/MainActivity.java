@@ -2,9 +2,12 @@ package com.mobilegenomics.f5n;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -25,6 +28,15 @@ public class MainActivity extends AppCompatActivity implements
         // Setup the permissions
         permissionUtils = new PermissionUtils(MainActivity.this);
         permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        try {
+            PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            String version = pInfo.versionName;
+            TextView txtVersionName = findViewById(R.id.txt_app_version);
+            txtVersionName.setText("App Version: " + version);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
 
     }
 
