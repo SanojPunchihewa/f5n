@@ -52,11 +52,10 @@ deploy:
   provider: releases
   api_key:
     secure: RldnfyiYI35DbRmHX86AVXTIbSet6krJA3AQqjF+aSMaE2+S+FIlAVAstQb2oFDAE/uHqOpod/D9lCgUwHdlgi3KVI5diMGV/HBU8iCtsAlIrID3AF9t9xPv/E9HS79fJ5fzdtKKR/XbqXzRKowrrjPOJ8Zb/Dh3AC3wAjJoNrBj1Jxje6/QCGnGwuF500OM8n9l9FeH7Ie4BRU+F8sUiW5xeaztuqUSFk4lQ9fb0KJLVEfWTxXpWPo14IElfpNmE2PhHOr2WEs49CjA8NJG04SKzQt2Z9Wp7v6lDsY9+TEgGYvBaeh3Ai9GJxlsFiWaivgek+aXet8rHkJuiHsJT65TufINDYkZqysKVxX7gJVM6XCsYSWakwPgvJqCuCLBEYgqDlmubjbBNr+sts0IbzFC7zPmfunW8WuQTZfygg5MykoTi7CdJI5M4SVcHsfcdx9JqrkEFqsC7UcLvcdG1p2B7K6PlVkkaYhIO8DiBShiAeD3GWbRFBiXPvid/mEwo2/eMk/ecQbxRos7LbJuV+iDMX0yqv1Cr0pu4lMO8t021Fmyv82CQGnUnsBvnvaiq/YfVy5oQNQkkzAN+yzFMDJiXkWsk786Cj21oMfKbUhS7TDwmoKnUTINoWGSsp33y6U616hLgYr1tqVW47PC9biNX/dU994Ewit+4jr8wpQ=
-  file:
-    - /home/travis/build/SanojPunchihewa/f5n/app/release/mobilegenomics-f5n-*-arm64-v8a-release.apk
-    - /home/travis/build/SanojPunchihewa/f5n/app/release/mobilegenomics-f5n-*-armeabi-v7a-release
+  file: app/build/outputs/apk/release/*
   file_glob: true
   skip_cleanup: true
+  overwrite: true
   draft: true
   on:
     repo: SanojPunchihewa/f5n
