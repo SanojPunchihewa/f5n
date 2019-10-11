@@ -1,5 +1,6 @@
 package com.mobilegenomics.f5n;
 
+import java.text.DateFormat;
 import java.util.concurrent.TimeUnit;
 
 public class TimeFormat {
@@ -22,6 +23,10 @@ public class TimeFormat {
             res = String.format("%02dh:%02dm:%02ds", hours, minutes, seconds);
         }
         return res;
+    }
+
+    public static String millisToDateTime(long date) {
+        return DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(date);
     }
 
 }
