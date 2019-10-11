@@ -43,6 +43,8 @@ public class ConfirmationActivity extends AppCompatActivity {
 
     LinearLayout linearLayout;
 
+    Button btnWriteLog;
+
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -94,7 +96,7 @@ public class ConfirmationActivity extends AppCompatActivity {
         separator2.setBackgroundColor(Color.parseColor("#000000"));
         linearLayout.addView(separator2);
 
-        Button btnWriteLog = new Button(this);
+        btnWriteLog = new Button(this);
         btnWriteLog.setText("Write Log to File");
         btnWriteLog.setOnClickListener(new OnClickListener() {
             @Override
@@ -102,6 +104,7 @@ public class ConfirmationActivity extends AppCompatActivity {
                 writeLogToFile();
             }
         });
+        btnWriteLog.setVisibility(View.GONE);
         linearLayout.addView(btnWriteLog);
 
     }
@@ -138,6 +141,7 @@ public class ConfirmationActivity extends AppCompatActivity {
                         pipelineComponent.getPipelineStep().getCommand() + " took " + pipelineComponent.getRuntime());
                 linearLayout.addView(txtRuntime);
             }
+            btnWriteLog.setVisibility(View.VISIBLE);
         }
     }
 
