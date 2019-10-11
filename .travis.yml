@@ -1,4 +1,4 @@
-if: (type = push AND branch = master AND tag IS present) OR (type = pull_request AND NOT branch = master)
+if: (type = push AND branch = master AND tag IS present) OR (type = pull_request)
 language: android
 sudo: required
 dist: trusty
@@ -47,10 +47,7 @@ before_script:
 script:
   - echo cmake.dir=$PWD/cmake-3.10.2-Linux-x86_64 >> local.properties
   - cat local.properties
-  - if [ tag IS present ];
-    then "./gradlew assembleRelease";
-    else "./gradlew clean build";
-    fi
+  - if [ tag IS present ]; then ./gradlew assembleRelease; else ./gradlew clean; fi
 deploy:
   provider: releases
   api_key:
