@@ -202,6 +202,10 @@ public class ConfirmationActivity extends AppCompatActivity {
 
         StringBuilder stringBuilder = new StringBuilder();
 
+        String header = "----------- Log for app session " + TimeFormat.millisToDateTime(System.currentTimeMillis())
+                + " -----------\n";
+        stringBuilder.append(header);
+
         List<PipelineComponent> pipelineComponents = GUIConfiguration.getPipeline();
         for (PipelineComponent pipelineComponent : pipelineComponents) {
             String command = "Command :\n" + pipelineComponent.getCommand() + "\n";
@@ -221,18 +225,21 @@ public class ConfirmationActivity extends AppCompatActivity {
             if (!dir.exists()) {
                 dir.mkdirs();
             }
-            // File logFile = new File(dir, "log.txt");
-            File logFile = new File(dir.getAbsolutePath() + "/log.txt");
+
+            File logFile = new File(dir.getAbsolutePath() + "/f5n-log.txt");
             if (!logFile.exists()) {
                 logFile.createNewFile();
             }
-            FileOutputStream fOut = new FileOutputStream(logFile);
+            FileOutputStream fOut = new FileOutputStream(logFile, true);
             OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
             myOutWriter.append(stringBuilder.toString());
             myOutWriter.append(logcat);
+            myOutWriter.append("-------------------- End of Log --------------------\n\n");
+            myOutWriter.flush();
             myOutWriter.close();
             fOut.close();
-            Toast.makeText(getApplicationContext(), "Finished writing to SD", Toast.LENGTH_LONG).show(); //##5
+            Toast.makeText(getApplicationContext(), "Finished writing to mobile-genomics in home", Toast.LENGTH_LONG)
+                    .show(); //##5
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), "Write failure", Toast.LENGTH_SHORT).show(); //##6
             Log.e("TAG", e.toString());
