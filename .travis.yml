@@ -47,7 +47,7 @@ before_script:
 script:
   - echo cmake.dir=$PWD/cmake-3.10.2-Linux-x86_64 >> local.properties
   - cat local.properties
-  - if [ tag IS present ]; then ./gradlew assembleRelease; else ./gradlew clean; fi
+  - if [[ "$TRAVIS_TAG" ]]; then ./gradlew assembleRelease; else ./gradlew clean; fi
 deploy:
   provider: releases
   api_key:
