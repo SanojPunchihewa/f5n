@@ -165,7 +165,11 @@ public class StepActivity extends AppCompatActivity {
                     editText = new EditText(this);
                 }
                 editText.setId(argument_id + 1000);
-                editText.setText(argument.getArgValue());
+                if (argument.isFile()) {
+                    editText.setText(argument.getFileName());
+                } else {
+                    editText.setText(argument.getArgValue());
+                }
                 linearLayout.addView(editText);
                 LinearLayout.LayoutParams editText_LayoutParams =
                         new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
@@ -193,10 +197,11 @@ public class StepActivity extends AppCompatActivity {
                                 String argValue = editText.getText().toString();
                                 if (argument.isFile()) {
                                     if (folderPath != null && !TextUtils.isEmpty(folderPath)) {
-                                        argValue = folderPath + "/" + argValue;
+                                        argument.setFolderPathAndFileName(folderPath, argValue);
                                     }
+                                } else {
+                                    argument.setArgValue(argValue);
                                 }
-                                argument.setArgValue(argValue);
                             } else {
                                 haveSetAllRequiredArgs = false;
                                 editText.setError("This field is required!");
