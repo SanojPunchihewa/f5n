@@ -96,4 +96,17 @@ public class GUIConfiguration {
         return pipelineComponents;
     }
 
+    public static boolean hasPipelineStep(PipelineStep pipelineStep) {
+        return selectedPipelineSteps.contains(pipelineStep);
+    }
+
+    public static Step getStepByPipelineStep(PipelineStep pipelineStep) {
+        for (Step step : steps) {
+            if (step.getStep() == pipelineStep) {
+                return step;
+            }
+        }
+        return null;
+    }
+
 }
