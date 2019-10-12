@@ -1,12 +1,19 @@
 package com.mobilegenomics.f5n;
 
+import android.util.Pair;
 import androidx.annotation.NonNull;
 
 public class Argument {
 
+    private int argID;
+
     private String argName;
 
     private String argValue;
+
+    private String folderPath;
+
+    private String fileName;
 
     private String argDescription;
 
@@ -17,6 +24,28 @@ public class Argument {
     private String flag;
 
     private boolean required;
+
+    private Pair<PipelineStep, Integer> linkedArgument;
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public int getArgID() {
+        return argID;
+    }
+
+    public void setArgID(final int argID) {
+        this.argID = argID;
+    }
+
+    public Pair<PipelineStep, Integer> getLinkedArgument() {
+        return linkedArgument;
+    }
+
+    public void setLinkedArgument(final Pair<PipelineStep, Integer> linkedArgument) {
+        this.linkedArgument = linkedArgument;
+    }
 
     public boolean isFile() {
         return file;
@@ -52,11 +81,20 @@ public class Argument {
         this.file = false;
     }
 
-    public Argument(final boolean required, final String argName, final String argValue, final String argDescription,
+    /*
+     *  Constructor for File type arguments
+     *
+     * */
+    public Argument(final int id, final boolean required, final String argName, final String folderPath,
+            final String fileName,
+            final String argDescription,
             final boolean hasFlag,
-            final String flag, final boolean flagOnly, final boolean isFile) {
+            final String flag, final boolean flagOnly, final boolean isFile,
+            final Pair<PipelineStep, Integer> linkedArgument) {
+        this.argID = id;
         this.argName = argName;
-        this.argValue = argValue;
+        this.folderPath = folderPath;
+        this.fileName = fileName;
         this.argDescription = argDescription;
         this.hasFlag = hasFlag;
         this.flag = flag;
@@ -64,6 +102,7 @@ public class Argument {
         this.required = required;
         this.flagOnly = flagOnly;
         this.file = isFile;
+        this.linkedArgument = linkedArgument;
     }
 
     public String getArgName() {
@@ -78,8 +117,26 @@ public class Argument {
         return argValue;
     }
 
+    public void setFolderPathAndFileName(final String folderPath, final String fileName) {
+        this.folderPath = folderPath;
+        this.fileName = fileName;
+        String path = folderPath.endsWith("/") ? folderPath + fileName : folderPath + "/" + fileName;
+        setArgValue(path);
+        updateLinkedFileArguments(folderPath, fileName);
+    }
+
     public void setArgValue(final String argValue) {
         this.argValue = argValue;
+    }
+
+    private void updateLinkedFileArguments(final String folderPath, final String fileName) {
+        if (getLinkedArgument() != null && GUIConfiguration.hasPipelineStep(getLinkedArgument().first)) {
+            Pair<PipelineStep, Integer> linkedArgument = getLinkedArgument();
+            Step step = GUIConfiguration.getStepByPipelineStep(linkedArgument.first);
+            if (step != null) {
+                step.findArgumentById(linkedArgument.second).setFolderPathAndFileName(folderPath, fileName);
+            }
+        }
     }
 
     public String getArgDescription() {
