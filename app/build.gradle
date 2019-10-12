@@ -2,13 +2,22 @@ apply plugin: 'com.android.application'
 apply from: "$project.rootDir/script-git-version.gradle"
 
 android {
+
+    def isRunningOnTravis = System.getenv("CI") == "true"
+
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.mobilegenomics.f5n"
         minSdkVersion 21
         targetSdkVersion 28
         versionCode gitVersionCode
-        versionName gitVersionName
+        
+        if (isRunningOnTravis) {
+            versionName gitVersionName
+        } else {
+            versionName "${gitBranch}-${gitCommitHash}"
+        }
+
         setProperty("archivesBaseName", "mobilegenomics-f5n-v$versionName")
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
@@ -29,8 +38,6 @@ android {
             signingConfig signingConfigs.release
         }
     }
-
-    def isRunningOnTravis = System.getenv("CI") == "true"
 
     if (isRunningOnTravis) {
         // configure keystore

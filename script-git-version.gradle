@@ -14,10 +14,14 @@ ext {
     gitVersionName = git.tag.list().last().getName()
     gitVersionCode = git.tag.list().size()
     gitVersionCodeTime = git.head().time
+    gitBranch = git.branch.current().name
+    gitCommitHash = git.head().abbreviatedId
 }
 
 task printVersion() {
     println("Version Name: $gitVersionName")
     println("Version Code: $gitVersionCode")
     println("Version Code Time: $gitVersionCodeTime")
+    println("Current Branch: $gitBranch")
+    println("Commit Hash: $gitCommitHash")
 }
