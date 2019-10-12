@@ -87,6 +87,14 @@ public class StepActivity extends AppCompatActivity {
             }
         });
 
+        if (getIntent().getExtras() != null) {
+            String path = getIntent().getExtras().getString("FOLDER_PATH");
+            if (path != null && !TextUtils.isEmpty(path)) {
+                editTextFolderPath.setText(path);
+                getFileNameList(path);
+            }
+        }
+
         btnCopyPath = findViewById(R.id.btn_copy_path);
         btnCopyPath.setOnClickListener(new OnClickListener() {
             @Override
@@ -207,7 +215,9 @@ public class StepActivity extends AppCompatActivity {
                     if (GUIConfiguration.isFinalStep()) {
                         startActivity(new Intent(StepActivity.this, ConfirmationActivity.class));
                     } else {
-                        startActivity(new Intent(StepActivity.this, StepActivity.class));
+                        Intent intent = new Intent(StepActivity.this, StepActivity.class);
+                        intent.putExtra("FOLDER_PATH", folderPath);
+                        startActivity(intent);
                     }
                 }
             }
