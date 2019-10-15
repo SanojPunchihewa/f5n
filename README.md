@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.com/SanojPunchihewa/f5n.svg?branch=master)](https://travis-ci.com/SanojPunchihewa/f5n)
 ## f5n
 
 Motivated from [f5p](https://github.com/hasindu2008/f5p) - we build a network of mobiles to process [ONT](https://nanoporetech.com/) data. The work is under construction! 
@@ -19,6 +20,8 @@ In this way ONT data can be corrected for errors in the field, on the fly!
 ![Diagram](https://github.com/hiruna72/f5n/blob/master/flowchart.png)
 
 ### Network
+The source code for the Server can be found [here](https://github.com/AnjanaSenanayake/f5n_server) 
+
 ![Diagram](https://github.com/hiruna72/f5n/blob/master/server_mobile_connection.png)
 
 
