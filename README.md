@@ -33,6 +33,6 @@ wget "https://github.com/SanojPunchihewa/f5n/releases/download/$VERSION/mobilege
 ### How to contribute
 Please contribute to our work by testing,debugging and developing our product. A guide to how to contribute is available [here](https://github.com/MarcDiethelm/contributing/blob/master/README.md)
  
- #### Submit an issue
- Please submit your issues [here](https://github.com/SanojPunchihewa/f5n/issues). Make sure your issues is not an existing one.
+ ### Submit an issue
+ Please submit your issues [here](https://github.com/SanojPunchihewa/f5n/issues). Make sure your issue is not an existing one.
  If a similar issue already exists comment or vote under the existing issue.
