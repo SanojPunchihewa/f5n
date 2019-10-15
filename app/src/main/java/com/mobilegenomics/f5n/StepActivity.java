@@ -25,16 +25,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import com.developer.filepicker.controller.DialogSelectionListener;
-import com.developer.filepicker.model.DialogConfigs;
-import com.developer.filepicker.model.DialogProperties;
-import com.developer.filepicker.view.FilePickerDialog;
+import com.obsez.android.lib.filechooser.ChooserDialog;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class StepActivity extends AppCompatActivity {
+
+    public static int FOLDERPICKER_CODE = 002;
 
     ArrayList<Argument> arguments;
 
@@ -248,30 +247,17 @@ public class StepActivity extends AppCompatActivity {
 
     private void openFileManager() {
 
-        DialogProperties properties = new DialogProperties();
+        new ChooserDialog(StepActivity.this)
+                .withFilter(true, false)
+                // to handle the result(s)
+                .withChosenListener((path, pathFile) -> {
+                    folderPath = path;
+                    editTextFolderPath.setText(folderPath);
+                    getFileNameList(folderPath);
+                })
+                .build()
+                .show();
 
-        properties.selection_mode = DialogConfigs.SINGLE_MODE;
-        properties.selection_type = DialogConfigs.DIR_SELECT;
-        properties.root = new File(DialogConfigs.DEFAULT_DIR);
-        properties.error_dir = new File(DialogConfigs.DEFAULT_DIR);
-        properties.offset = new File(DialogConfigs.DEFAULT_DIR);
-        properties.extensions = null;
-
-        final FilePickerDialog dialog = new FilePickerDialog(StepActivity.this, properties);
-        dialog.setTitle("Select a Folder");
-
-        dialog.setDialogSelectionListener(new DialogSelectionListener() {
-            @Override
-            public void onSelectedFilePaths(String[] files) {
-                //files is the array of the paths of files selected by the Application User.
-                folderPath = files[0];
-                editTextFolderPath.setText(folderPath);
-                getFileNameList(folderPath);
-                dialog.dismiss();
-            }
-        });
-
-        dialog.show();
     }
 
     private void getFileNameList(String folderPath) {
