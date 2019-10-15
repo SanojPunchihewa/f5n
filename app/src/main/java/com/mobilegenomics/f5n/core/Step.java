@@ -1,4 +1,4 @@
-package com.mobilegenomics.f5n;
+package com.mobilegenomics.f5n.core;
 
 import android.content.Context;
 import android.util.Log;

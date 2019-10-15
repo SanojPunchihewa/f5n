@@ -1,4 +1,4 @@
-package com.mobilegenomics.f5n;
+package com.mobilegenomics.f5n.activity;
 
 import android.app.ProgressDialog;
 import android.graphics.Color;
@@ -17,6 +17,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.mobilegenomics.f5n.GUIConfiguration;
+import com.mobilegenomics.f5n.R;
+import com.mobilegenomics.f5n.core.TimeFormat;
+import com.mobilegenomics.f5n.core.PipelineComponent;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;

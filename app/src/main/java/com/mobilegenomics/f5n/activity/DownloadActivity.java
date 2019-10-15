@@ -1,4 +1,4 @@
-package com.mobilegenomics.f5n;
+package com.mobilegenomics.f5n.activity;
 
 import android.app.DownloadManager;
 import android.content.Context;
@@ -14,6 +14,8 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.mobilegenomics.f5n.R;
 
 public class DownloadActivity extends AppCompatActivity {
 

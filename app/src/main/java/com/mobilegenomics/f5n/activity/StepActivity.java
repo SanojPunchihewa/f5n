@@ -1,4 +1,4 @@
-package com.mobilegenomics.f5n;
+package com.mobilegenomics.f5n.activity;
 
 import android.annotation.SuppressLint;
 import android.content.ClipData;
@@ -29,6 +29,11 @@ import com.developer.filepicker.controller.DialogSelectionListener;
 import com.developer.filepicker.model.DialogConfigs;
 import com.developer.filepicker.model.DialogProperties;
 import com.developer.filepicker.view.FilePickerDialog;
+import com.mobilegenomics.f5n.GUIConfiguration;
+import com.mobilegenomics.f5n.R;
+import com.mobilegenomics.f5n.core.Argument;
+import com.mobilegenomics.f5n.core.Step;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;

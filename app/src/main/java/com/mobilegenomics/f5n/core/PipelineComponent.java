@@ -1,19 +1,17 @@
-package com.mobilegenomics.f5n;
+package com.mobilegenomics.f5n.core;
 
-public class PipelineComponent implements runNative {
+import java.io.Serializable;
 
-    public PipelineStep getPipelineStep() {
-        return pipelineStep;
-    }
+interface runNative {
 
+    int run();
+}
+
+public class PipelineComponent implements runNative, Serializable {
+
+    private static final long serialVersionUID = 0L;
     private PipelineStep pipelineStep;
-
     private String command;
-
-    public String getCommand() {
-        return command;
-    }
-
     private String runtime;
 
     public PipelineComponent(PipelineStep pipelineStep, String command) {
@@ -21,8 +19,20 @@ public class PipelineComponent implements runNative {
         this.command = command;
     }
 
+    public PipelineStep getPipelineStep() {
+        return pipelineStep;
+    }
+
+    public String getCommand() {
+        return command;
+    }
+
     public String getRuntime() {
         return runtime;
+    }
+
+    public void setRuntime(final String runtime) {
+        this.runtime = runtime;
     }
 
     @Override
@@ -40,13 +50,4 @@ public class PipelineComponent implements runNative {
         }
         return status;
     }
-
-    public void setRuntime(final String runtime) {
-        this.runtime = runtime;
-    }
-}
-
-interface runNative {
-
-    int run();
 }
