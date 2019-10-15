@@ -2,7 +2,10 @@ package com.mobilegenomics.f5n;
 
 import android.annotation.SuppressLint;
 import android.app.DownloadManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -28,6 +31,8 @@ public class DownloadActivity extends AppCompatActivity {
 
     private static final String testDataSetURL = "https://zanojmobiapps.com/_tmp/genome/test/test-download.zip";
 
+    private long downloadID;
+
     LinearLayout linearLayout;
 
     EditText urlInputPath;
@@ -45,6 +50,8 @@ public class DownloadActivity extends AppCompatActivity {
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_vertical);
+
+        registerReceiver(onDownloadComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
 
         linearLayout = findViewById(R.id.vertical_linear_layout);
 
@@ -118,9 +125,7 @@ public class DownloadActivity extends AppCompatActivity {
                     public void onChoosePath(String path, File pathFile) {
                         folderPath = path;
                         folderPathInput.setText(folderPath);
-                        btnDownload.setEnabled(true);
-                        btnDownloadEcoli.setEnabled(true);
-                        btnDownloadTest.setEnabled(true);
+                        enableButtons();
                     }
                 })
                 .build()
@@ -129,6 +134,8 @@ public class DownloadActivity extends AppCompatActivity {
 
     private void downloadDataSet(String url) {
         // TODO check wifi connectivity
+
+        disableButtons();
 
         DownloadManager downloadmanager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
         Uri uri = Uri.parse(url);
@@ -145,10 +152,42 @@ public class DownloadActivity extends AppCompatActivity {
             request.setDestinationUri(
                     Uri.parse("file://" + folderPath + "/" + nameOfFile));
 
-            downloadmanager.enqueue(request);
+            downloadID = downloadmanager.enqueue(request);
         } catch (Exception e) {
             Toast.makeText(this, "Invalid URL", Toast.LENGTH_SHORT).show();
             Log.e("DOWNLOAD-ACTIVITY", "Exception: " + e);
+            enableButtons();
         }
+    }
+
+    private BroadcastReceiver onDownloadComplete = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            //Fetching the download id received with the broadcast
+            long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
+            //Checking if the received broadcast is for our enqueued download by matching download id
+            if (downloadID == id) {
+                Toast.makeText(DownloadActivity.this, "Download Completed", Toast.LENGTH_SHORT).show();
+                enableButtons();
+            }
+        }
+    };
+
+    private void enableButtons() {
+        btnDownload.setEnabled(true);
+        btnDownloadEcoli.setEnabled(true);
+        btnDownloadTest.setEnabled(true);
+    }
+
+    private void disableButtons() {
+        btnDownload.setEnabled(false);
+        btnDownloadEcoli.setEnabled(false);
+        btnDownloadTest.setEnabled(false);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(onDownloadComplete);
     }
 }
