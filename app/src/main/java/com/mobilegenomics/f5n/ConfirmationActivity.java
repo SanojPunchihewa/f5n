@@ -178,9 +178,9 @@ public class ConfirmationActivity extends AppCompatActivity {
                     if (matcher.group(1) != null) {
                         filtered = TAG_F5C + matcher.group(1);
                     } else if (matcher.group(2) != null) {
-                        filtered = matcher.group(2);
+                        filtered = TAG_MINIMAP2 + matcher.group(2);
                     } else if (matcher.group(3) != null) {
-                        filtered = matcher.group(3);
+                        filtered = TAG_SAMTOOLS + matcher.group(3);
                     }
                     publishProgress(filtered);
 
