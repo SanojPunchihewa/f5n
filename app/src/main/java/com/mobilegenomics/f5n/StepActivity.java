@@ -116,11 +116,16 @@ public class StepActivity extends AppCompatActivity {
             @Override
             public void onClick(final View v) {
                 ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData.Item item = Objects.requireNonNull(clipboard.getPrimaryClip()).getItemAt(0);
-                folderPath = item.getText().toString();
-                if (folderPath != null && !TextUtils.isEmpty(folderPath)) {
-                    editTextFolderPath.setText(folderPath);
-                    getFileNameList(folderPath);
+                try {
+
+                    ClipData.Item item = Objects.requireNonNull(clipboard.getPrimaryClip()).getItemAt(0);
+                    folderPath = item.getText().toString();
+                    if (!TextUtils.isEmpty(folderPath)) {
+                        editTextFolderPath.setText(folderPath);
+                        getFileNameList(folderPath);
+                    }
+                } catch (NullPointerException e) {
+                    Toast.makeText(StepActivity.this, "No file path was copied", Toast.LENGTH_SHORT).show();
                 }
             }
         });
