@@ -1,0 +1,12 @@
+{
+  "argName":"reference index",
+  "argValue":null,
+  "argDescription":"Path to the reference index file",
+  "flag":null,
+  "argID":"tobedecided",
+  "isDependentOn":"argIDofanotherArg",
+  "hasFlag":false,
+  "flagOnly":false,
+  "required":true,
+  "isFile": true
+}
