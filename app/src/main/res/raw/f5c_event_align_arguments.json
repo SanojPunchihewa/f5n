@@ -1,0 +1,88 @@
+{
+  "args": [
+    {
+      "argName": "fastq/fasta read file",
+      "argValue": null,
+      "argDescription": "fastq/fasta read file",
+      "flag": "-r",
+      "argID": "F5C_ALIGN_FASTA_FILE",
+      "isDependentOn": "F5C_METH_FASTA_FILE",
+      "hasFlag": true,
+      "flagOnly": false,
+      "required": true,
+      "isFile": true
+    },
+    {
+      "argName": "sorted bam",
+      "argValue": null,
+      "argDescription": "path to sorted bam file",
+      "flag": "-b",
+      "argID": "F5C_ALIGN_SORTED_FILE",
+      "isDependentOn": "SAMTOOL_SORT_OUTPUT_FILE",
+      "hasFlag": true,
+      "flagOnly": false,
+      "required": true,
+      "isFile": true
+    },
+    {
+      "argName": "reference genome",
+      "argValue": null,
+      "argDescription": "path to reference genome",
+      "flag": "-g",
+      "argID": "F5C_ALIGN_REF_FILE",
+      "isDependentOn": "F5C_METH_REF_FILE",
+      "hasFlag": true,
+      "flagOnly": false,
+      "required": true,
+      "isFile": true
+    },
+    {
+      "argName": "output file",
+      "argValue": null,
+      "argDescription": "path to output summary",
+      "flag": "-o",
+      "argID": "F5C_ALIGN_OUTPUT_FILE",
+      "isDependentOn": "null",
+      "hasFlag": true,
+      "flagOnly": false,
+      "required": true,
+      "isFile": true
+    },
+    {
+      "argName": "threads",
+      "argValue": "8",
+      "argDescription": "Number of threads[8]",
+      "flag": "-t",
+      "argID": "tobedecided",
+      "isDependentOn": "argIDofanotherArg",
+      "hasFlag": true,
+      "flagOnly": false,
+      "required": false,
+      "isFile": false
+    },
+    {
+      "argName": "batch size",
+      "argValue": "512",
+      "argDescription": "max number of reads loaded at once[512]",
+      "flag": "-K",
+      "argID": "tobedecided",
+      "isDependentOn": "argIDofanotherArg",
+      "hasFlag": true,
+      "flagOnly": false,
+      "required": false,
+      "isFile": false
+    },
+    {
+      "argName": "bases loaded at once[K / M / G]",
+      "argValue": "2.0M",
+      "argDescription": "max number of bases loaded at once [2.0M]",
+      "flag": "-B",
+      "argID": "tobedecided",
+      "isDependentOn": "argIDofanotherArg",
+      "hasFlag": true,
+      "flagOnly": false,
+      "required": false,
+      "isFile": false
+    }
+  ]
+}
