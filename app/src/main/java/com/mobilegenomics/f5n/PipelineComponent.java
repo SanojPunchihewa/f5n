@@ -10,6 +10,10 @@ public class PipelineComponent implements runNative {
 
     private String command;
 
+    public String getCommand() {
+        return command;
+    }
+
     private String runtime;
 
     public PipelineComponent(PipelineStep pipelineStep, String command) {

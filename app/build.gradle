@@ -1,13 +1,24 @@
 apply plugin: 'com.android.application'
+apply from: "$project.rootDir/script-git-version.gradle"
 
 android {
+
+    def isRunningOnTravis = System.getenv("CI") == "true"
+
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.mobilegenomics.f5n"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+        versionCode gitVersionCode
+        
+        if (isRunningOnTravis) {
+            versionName gitVersionName
+        } else {
+            versionName "${gitBranch}-${gitCommitHash}"
+        }
+
+        setProperty("archivesBaseName", "mobilegenomics-f5n-v$versionName")
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
@@ -15,12 +26,27 @@ android {
             }
         }
     }
+
+    signingConfigs {
+        release
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
+
+    if (isRunningOnTravis) {
+        // configure keystore
+        signingConfigs.release.storeFile = file("../keystore.jks")
+        signingConfigs.release.storePassword = System.getenv("keystore_password")
+        signingConfigs.release.keyAlias = System.getenv("keystore_alias")
+        signingConfigs.release.keyPassword = System.getenv("keystore_alias_password")
+    }
+
     externalNativeBuild {
         cmake {
             path "src/main/cpp/CMakeLists.txt"

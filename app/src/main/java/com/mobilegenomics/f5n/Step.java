@@ -91,6 +91,10 @@ public class Step {
         arguments.add(argument);
         argument = new Argument(true, "output file", null, "Path to the output file", true, "-o", false, true);
         arguments.add(argument);
+        argument = new Argument(false, "max memory", "768M", "max memory per thread; suffix K/M/G recognized", true,
+                "-m", false,
+                false);
+        arguments.add(argument);
         argument = new Argument(false, "threads", null, "Number of threads[1]", true, "-@", false);
         arguments.add(argument);
     }
