@@ -23,7 +23,7 @@ In this way ONT data can be corrected for errors in the field, on the fly!
 
 
 ### Getting started
-This is a quick start. To contribute to our work please refer [General info](#how-to-contribute). Chose `ARCHITECTURE` to be `armeabi-v7a` or `arm64-v8a`. To find what is the `ARM_VERSION` of your phone the easiest way is to google it. Once you download the apk copy it to your phone and install. 
+This is a quick start. To contribute to our work please refer [How to contribute](#how-to-contribute). Chose `ARCHITECTURE` to be `armeabi-v7a` or `arm64-v8a`. To find what is the `ARM_VERSION` of your phone the easiest way is to google it. Once you download the apk copy it to your phone and install. 
 ```sh
 VERSION=0.0.2
 ARCHITECTURE=armeabi-v7a
