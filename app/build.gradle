@@ -11,7 +11,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 28
         versionCode gitVersionCode
-        
+
         if (isRunningOnTravis) {
             versionName gitVersionName
         } else {
@@ -83,4 +83,5 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation 'com.github.TutorialsAndroid:FilePicker:v4.0.19'
+    implementation 'com.google.code.gson:gson:2.8.6'
 }

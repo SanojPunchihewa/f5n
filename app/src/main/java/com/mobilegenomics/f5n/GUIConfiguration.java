@@ -1,7 +1,9 @@
 package com.mobilegenomics.f5n;
 
+import android.content.Context;
 import android.util.Log;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class GUIConfiguration {
@@ -13,6 +15,8 @@ public class GUIConfiguration {
     private static int current = 0;
 
     private static ArrayList<PipelineComponent> pipelineComponents;
+
+    private static HashMap<String, String> linkedFileArguments = new HashMap<>();
 
     public static void addPipelineStep(PipelineStep step) {
         selectedPipelineSteps.add(step);
@@ -28,12 +32,12 @@ public class GUIConfiguration {
         }
     }
 
-    public static void configureSteps() {
+    public static void configureSteps(Context context) {
         // clear() vs new check what is better
         steps = new ArrayList<>();
         for (PipelineStep pipelineStep : selectedPipelineSteps) {
             Step step = new Step();
-            step.setStep(pipelineStep);
+            step.setStep(context, pipelineStep);
             steps.add(step);
         }
     }
@@ -94,6 +98,14 @@ public class GUIConfiguration {
 
     public static List<PipelineComponent> getPipeline() {
         return pipelineComponents;
+    }
+
+    public static void configureLikedFileArgument(String fileName, String value) {
+        linkedFileArguments.put(fileName, value);
+    }
+
+    public static String getLinkedFileArgument(String fileName) {
+        return linkedFileArguments.containsKey(fileName) ? linkedFileArguments.get(fileName) : "";
     }
 
 }

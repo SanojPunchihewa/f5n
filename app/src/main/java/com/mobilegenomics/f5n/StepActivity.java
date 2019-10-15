@@ -87,6 +87,14 @@ public class StepActivity extends AppCompatActivity {
             }
         });
 
+        if (getIntent().getExtras() != null) {
+            String path = getIntent().getExtras().getString("FOLDER_PATH");
+            if (path != null && !TextUtils.isEmpty(path)) {
+                editTextFolderPath.setText(path);
+                getFileNameList(path);
+            }
+        }
+
         btnCopyPath = findViewById(R.id.btn_copy_path);
         btnCopyPath.setOnClickListener(new OnClickListener() {
             @Override
@@ -157,7 +165,11 @@ public class StepActivity extends AppCompatActivity {
                     editText = new EditText(this);
                 }
                 editText.setId(argument_id + 1000);
-                editText.setText(argument.getArgValue());
+                if (argument.isFile()) {
+                    editText.setText(GUIConfiguration.getLinkedFileArgument(argument.getIsDependentOn()));
+                } else {
+                    editText.setText(argument.getArgValue());
+                }
                 linearLayout.addView(editText);
                 LinearLayout.LayoutParams editText_LayoutParams =
                         new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
@@ -184,6 +196,8 @@ public class StepActivity extends AppCompatActivity {
                             if (editText.getText() != null && !TextUtils.isEmpty(editText.getText().toString())) {
                                 String argValue = editText.getText().toString();
                                 if (argument.isFile()) {
+                                    GUIConfiguration
+                                            .configureLikedFileArgument(argument.getArgID(), argValue);
                                     if (folderPath != null && !TextUtils.isEmpty(folderPath)) {
                                         argValue = folderPath + "/" + argValue;
                                     }
@@ -207,7 +221,9 @@ public class StepActivity extends AppCompatActivity {
                     if (GUIConfiguration.isFinalStep()) {
                         startActivity(new Intent(StepActivity.this, ConfirmationActivity.class));
                     } else {
-                        startActivity(new Intent(StepActivity.this, StepActivity.class));
+                        Intent intent = new Intent(StepActivity.this, StepActivity.class);
+                        intent.putExtra("FOLDER_PATH", folderPath);
+                        startActivity(intent);
                     }
                 }
             }
