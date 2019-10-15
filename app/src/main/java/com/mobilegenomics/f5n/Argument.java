@@ -18,6 +18,18 @@ public class Argument {
 
     private boolean required;
 
+    private String argumentID;
+
+    private String linkedArgument;
+
+    public String getArgumentID() {
+        return argumentID;
+    }
+
+    public String getLinkedArgument() {
+        return linkedArgument;
+    }
+
     public boolean isFile() {
         return file;
     }
@@ -32,6 +44,10 @@ public class Argument {
 
     public boolean isRequired() {
         return required;
+    }
+
+    public void setLinkedArgument(final String linkedArgument) {
+        this.linkedArgument = linkedArgument;
     }
 
     public void setRequired(final boolean required) {
@@ -52,9 +68,11 @@ public class Argument {
         this.file = false;
     }
 
-    public Argument(final boolean required, final String argName, final String argValue, final String argDescription,
+    public Argument(final String argumentID, final boolean required, final String argName, final String argValue,
+            final String argDescription,
             final boolean hasFlag,
-            final String flag, final boolean flagOnly, final boolean isFile) {
+            final String flag, final boolean flagOnly, final boolean isFile, final String linkedArgument) {
+        this.argumentID = argumentID;
         this.argName = argName;
         this.argValue = argValue;
         this.argDescription = argDescription;
@@ -64,6 +82,7 @@ public class Argument {
         this.required = required;
         this.flagOnly = flagOnly;
         this.file = isFile;
+        this.linkedArgument = linkedArgument;
     }
 
     public String getArgName() {

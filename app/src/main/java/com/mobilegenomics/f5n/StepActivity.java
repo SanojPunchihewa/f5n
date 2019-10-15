@@ -165,7 +165,11 @@ public class StepActivity extends AppCompatActivity {
                     editText = new EditText(this);
                 }
                 editText.setId(argument_id + 1000);
-                editText.setText(argument.getArgValue());
+                if (argument.isFile()) {
+                    editText.setText(GUIConfiguration.getLinkedFileArgument(argument.getArgumentID()));
+                } else {
+                    editText.setText(argument.getArgValue());
+                }
                 linearLayout.addView(editText);
                 LinearLayout.LayoutParams editText_LayoutParams =
                         new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
@@ -192,6 +196,10 @@ public class StepActivity extends AppCompatActivity {
                             if (editText.getText() != null && !TextUtils.isEmpty(editText.getText().toString())) {
                                 String argValue = editText.getText().toString();
                                 if (argument.isFile()) {
+                                    if (argument.getLinkedArgument() != null) {
+                                        GUIConfiguration
+                                                .configureLikedFileArgument(argument.getLinkedArgument(), argValue);
+                                    }
                                     if (folderPath != null && !TextUtils.isEmpty(folderPath)) {
                                         argValue = folderPath + "/" + argValue;
                                     }
