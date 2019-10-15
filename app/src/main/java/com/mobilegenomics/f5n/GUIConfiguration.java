@@ -1,5 +1,6 @@
 package com.mobilegenomics.f5n;
 
+import android.content.Context;
 import android.util.Log;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,12 +32,12 @@ public class GUIConfiguration {
         }
     }
 
-    public static void configureSteps() {
+    public static void configureSteps(Context context) {
         // clear() vs new check what is better
         steps = new ArrayList<>();
         for (PipelineStep pipelineStep : selectedPipelineSteps) {
             Step step = new Step();
-            step.setStep(pipelineStep);
+            step.setStep(context, pipelineStep);
             steps.add(step);
         }
     }

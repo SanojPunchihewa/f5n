@@ -166,7 +166,7 @@ public class StepActivity extends AppCompatActivity {
                 }
                 editText.setId(argument_id + 1000);
                 if (argument.isFile()) {
-                    editText.setText(GUIConfiguration.getLinkedFileArgument(argument.getArgumentID()));
+                    editText.setText(GUIConfiguration.getLinkedFileArgument(argument.getIsDependentOn()));
                 } else {
                     editText.setText(argument.getArgValue());
                 }
@@ -196,10 +196,8 @@ public class StepActivity extends AppCompatActivity {
                             if (editText.getText() != null && !TextUtils.isEmpty(editText.getText().toString())) {
                                 String argValue = editText.getText().toString();
                                 if (argument.isFile()) {
-                                    if (argument.getLinkedArgument() != null) {
-                                        GUIConfiguration
-                                                .configureLikedFileArgument(argument.getLinkedArgument(), argValue);
-                                    }
+                                    GUIConfiguration
+                                            .configureLikedFileArgument(argument.getArgID(), argValue);
                                     if (folderPath != null && !TextUtils.isEmpty(folderPath)) {
                                         argValue = folderPath + "/" + argValue;
                                     }

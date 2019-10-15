@@ -47,7 +47,7 @@ public class PipelineActivity extends AppCompatActivity {
                 }
                 if (!clickedNone) {
                     GUIConfiguration.printList();
-                    GUIConfiguration.configureSteps();
+                    GUIConfiguration.configureSteps(PipelineActivity.this);
                     startActivity(new Intent(PipelineActivity.this, StepActivity.class));
                 }
             }
