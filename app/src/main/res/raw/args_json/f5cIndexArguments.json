@@ -1,0 +1,63 @@
+{
+	"args":[
+	{
+	  "argName":"fast5 files",
+	  "argValue":null,
+	  "argDescription":"path to the directory containing the raw ONT signal files. This option can be given multiple times.",
+	  "flag":"--directory",
+	  "argID":"tobedecided",
+	  "isDependentOn":"argIDofanotherArg",
+	  "hasFlag":true,
+	  "flagOnly":false,
+	  "required":true,
+	  "isFile": true
+	},
+	{
+	  "argName":"fast[a or q] reads",
+	  "argValue":null,
+	  "argDescription":"Path to the reads.fasta or fastq file",
+	  "flag":null,
+	  "argID":"tobedecided",
+	  "isDependentOn":"argIDofanotherArg",
+	  "hasFlag":false,
+	  "flagOnly":false,
+	  "required":true,
+	  "isFile": true
+	},
+	{
+	  "argName":"summary file",
+	  "argValue":null,
+	  "argDescription":"the sequencing summary file from albacore,providing this option will make indexing much faster",
+	  "flag":"--sequencing-summary",
+	  "argID":"tobedecided",
+	  "isDependentOn":"argIDofanotherArg",
+	  "hasFlag":true,
+	  "flagOnly":false,
+	  "required":false,
+	  "isFile": false
+	},
+	{
+	  "argName":"paths to summary files",
+	  "argValue":null,
+	  "argDescription":"file containing the paths to the sequencing summary files [one per line]",
+	  "flag":"--summary-fofn",
+	  "argID":"tobedecided",
+	  "isDependentOn":"argIDofanotherArg",
+	  "hasFlag":true,
+	  "flagOnly":false,
+	  "required":false,
+	  "isFile": false
+	},
+	{
+	  "argName":"verbose",
+	  "argValue":null,
+	  "argDescription":"display verbose output",
+	  "flag":"--verbose",
+	  "argID":"tobedecided",
+	  "isDependentOn":"argIDofanotherArg",
+	  "hasFlag":true,
+	  "flagOnly":true,
+	  "required":false,
+	  "isFile": false
+	}]
+}
