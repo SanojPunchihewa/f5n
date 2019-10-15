@@ -1,6 +1,6 @@
-<mxfile host="www.draw.io" modified="2019-10-15T06:12:27.896Z" agent="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:69.0) Gecko/20100101 Firefox/69.0" etag="qIBLaEcokUOSLo8G-YFi" version="12.1.1" type="github" pages="2">
+<mxfile host="www.draw.io" modified="2019-10-15T06:26:37.721Z" agent="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:69.0) Gecko/20100101 Firefox/69.0" etag="_9e9D-tkkBDTla2fSWDU" version="12.1.1" type="github" pages="2">
   <diagram id="rwsDpPcG-9lv_OZG9mr8" name="Page-1">
-    <mxGraphModel dx="1352" dy="825" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="559" dy="341" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0"/>
         <mxCell id="1" parent="0"/>
@@ -65,7 +65,7 @@
           <mxGeometry x="366" y="400" width="34" height="30" as="geometry"/>
         </mxCell>
         <mxCell id="eR64O44cKoqNmbmQNhdG-16" value="create jobs" style="shape=mxgraph.bpmn.loop;html=1;outlineConnect=0;" vertex="1" parent="1">
-          <mxGeometry x="723" y="125" width="34" height="30" as="geometry"/>
+          <mxGeometry x="734" y="125" width="34" height="30" as="geometry"/>
         </mxCell>
         <mxCell id="eR64O44cKoqNmbmQNhdG-17" value=".....mobiles in the network....." style="text;html=1;resizable=0;points=[];autosize=1;align=left;verticalAlign=top;spacingTop=-4;" vertex="1" parent="1">
           <mxGeometry x="484" y="337" width="170" height="20" as="geometry"/>
@@ -106,7 +106,7 @@
             <mxPoint x="779.9999999999998" y="69.99999999999989" as="targetPoint"/>
           </mxGeometry>
         </mxCell>
-        <mxCell id="eR64O44cKoqNmbmQNhdG-25" value="mobile can run the pipeline in real time or when it is idle ex:charging" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+        <mxCell id="eR64O44cKoqNmbmQNhdG-25" value="mobile can run the pipeline in real time or when it is idle ex:when charging" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
           <mxGeometry x="400" y="430" width="350" height="20" as="geometry"/>
         </mxCell>
         <mxCell id="eR64O44cKoqNmbmQNhdG-26" value="&lt;div&gt;base called&lt;/div&gt;&lt;div&gt;data files&lt;br&gt;&lt;/div&gt;" style="text;html=1;resizable=0;points=[];autosize=1;align=left;verticalAlign=top;spacingTop=-4;" vertex="1" parent="1">
