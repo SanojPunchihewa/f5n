@@ -14,3 +14,9 @@ f5n can run the following on ARM devices [more details](https://hasindu2008.gith
 
 We build a standalone application and a cluster of nodes where a master orchestrates the other nodes. 
 In this way ONT data can be corrected for errors in the field, on the fly!
+
+### Flowchart
+![Diagram](https://github.com/hiruna72/f5n/blob/master/flowchart.png)
+
+### Network
+![Diagram](https://github.com/hiruna72/f5n/blob/master/server_mobile_connection.png)
