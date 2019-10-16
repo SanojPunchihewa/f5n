@@ -7,6 +7,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mobilegenomics.f5n.R;
+import com.mobilegenomics.f5n.support.JSONFileHelper;
 import java.util.ArrayList;
 
 public class Step {
@@ -90,7 +92,7 @@ public class Step {
     }
 
     private void buildArgumentsFromJson(Context context, @RawRes int file) {
-        JsonObject samtoolIndexArgsJson = Helper.rawtoJsonObject(context, file);
+        JsonObject samtoolIndexArgsJson = JSONFileHelper.rawtoJsonObject(context, file);
         JsonArray samtoolIndexArgsJsonArray = samtoolIndexArgsJson.getAsJsonArray("args");
         for (JsonElement element : samtoolIndexArgsJsonArray) {
             Argument argument = new Gson().fromJson(element, Argument.class);

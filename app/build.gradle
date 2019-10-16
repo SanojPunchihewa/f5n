@@ -72,6 +72,10 @@ android {
             universalApk false
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
@@ -82,6 +86,6 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-    implementation 'com.github.TutorialsAndroid:FilePicker:v4.0.19'
+    implementation 'com.github.hedzr:android-file-chooser:v1.2.0-final'
     implementation 'com.google.code.gson:gson:2.8.6'
 }

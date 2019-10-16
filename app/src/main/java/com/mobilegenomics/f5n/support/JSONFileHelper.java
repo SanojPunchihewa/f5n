@@ -1,4 +1,4 @@
-package com.mobilegenomics.f5n;
+package com.mobilegenomics.f5n.support;
 
 import android.content.Context;
 import androidx.annotation.RawRes;
@@ -7,7 +7,7 @@ import com.google.gson.JsonParser;
 import java.io.InputStream;
 import java.util.Scanner;
 
-public class Helper {
+public class JSONFileHelper {
 
     private static String readJsonAsString(Context context, @RawRes int file) {
         //1 Takes your JSON file from the raw folder

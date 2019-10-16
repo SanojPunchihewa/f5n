@@ -1,6 +1,7 @@
 package com.mobilegenomics.f5n.activity;
 
 import android.app.ProgressDialog;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,6 +53,10 @@ public class ConfirmationActivity extends AppCompatActivity {
 
     Button btnWriteLog;
 
+    Button btnProceed;
+
+    ProgressBar mProgressBar;
+
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,17 +73,27 @@ public class ConfirmationActivity extends AppCompatActivity {
             linearLayout.addView(txtCommand);
         }
 
-        Button btnProceed = new Button(this);
+        btnProceed = new Button(this);
         btnProceed.setText("Run the Pipeline");
         btnProceed.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(final View v) {
+                btnProceed.setEnabled(false);
+                mProgressBar.setVisibility(View.VISIBLE);
                 GUIConfiguration.createPipeline();
                 new ShowLogCat().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 new RunPipeline().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
         });
         linearLayout.addView(btnProceed);
+
+        mProgressBar = new ProgressBar(this,
+                null,
+                android.R.attr.progressBarStyleHorizontal);
+        mProgressBar.setIndeterminateTintList(ColorStateList.valueOf(Color.BLACK));
+        mProgressBar.setIndeterminate(true);
+        mProgressBar.setVisibility(View.GONE);
+        linearLayout.addView(mProgressBar);
 
         View separator1 = new View(this);
         separator1.setLayoutParams(new LinearLayout.LayoutParams(
@@ -148,6 +164,8 @@ public class ConfirmationActivity extends AppCompatActivity {
                 linearLayout.addView(txtRuntime);
             }
             btnWriteLog.setVisibility(View.VISIBLE);
+            btnProceed.setEnabled(true);
+            mProgressBar.setVisibility(View.GONE);
         }
     }
 
@@ -184,9 +202,9 @@ public class ConfirmationActivity extends AppCompatActivity {
                     if (matcher.group(1) != null) {
                         filtered = TAG_F5C + matcher.group(1);
                     } else if (matcher.group(2) != null) {
-                        filtered = matcher.group(2);
+                        filtered = TAG_MINIMAP2 + matcher.group(2);
                     } else if (matcher.group(3) != null) {
-                        filtered = matcher.group(3);
+                        filtered = TAG_SAMTOOLS + matcher.group(3);
                     }
                     publishProgress(filtered);
 
