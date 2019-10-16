@@ -28,7 +28,7 @@ The source code for the Server can be found [here](https://github.com/AnjanaSena
 ### Getting started
 This is a quick start. To contribute to our work please refer [How to contribute](#how-to-contribute). Chose `ARCHITECTURE` to be `armeabi-v7a` or `arm64-v8a`. To find what is the `ARCHITECTURE` of your phone the easiest way is to google it. Once you download the apk copy it to your phone and install. 
 ```sh
-VERSION=0.0.2
+VERSION=0.0.4
 ARCHITECTURE=armeabi-v7a
 wget "https://github.com/SanojPunchihewa/f5n/releases/download/$VERSION/mobilegenomics-f5n-v$VERSION-$ARCHITECTURE-release.apk"
 ```
