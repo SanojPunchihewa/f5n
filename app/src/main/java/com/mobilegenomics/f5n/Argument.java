@@ -18,8 +18,20 @@ public class Argument {
 
     private boolean required;
 
+    private String argID;
+
+    private String isDependentOn;
+
+    public String getArgID() {
+        return argID;
+    }
+
+    public String getIsDependentOn() {
+        return isDependentOn;
+    }
+
     public boolean isFile() {
-        return file;
+        return isFile;
     }
 
     public boolean isFlagOnly() {
@@ -28,19 +40,25 @@ public class Argument {
 
     private boolean flagOnly;
 
-    private boolean file;
+    private boolean isFile;
 
     public boolean isRequired() {
         return required;
+    }
+
+    public void setIsDependentOn(final String isDependentOn) {
+        this.isDependentOn = isDependentOn;
     }
 
     public void setRequired(final boolean required) {
         this.required = required;
     }
 
-    public Argument(final boolean required, final String argName, final String argValue, final String argDescription,
-            final boolean hasFlag,
-            final String flag, final boolean flagOnly) {
+    public Argument(final String argName, final String argValue, final String argDescription,
+            final String flag, final String argID, final String isDependentOn, final boolean hasFlag,
+            final boolean flagOnly,
+            final boolean required, final boolean isFile) {
+        this.argID = argID;
         this.argName = argName;
         this.argValue = argValue;
         this.argDescription = argDescription;
@@ -49,21 +67,8 @@ public class Argument {
         this.setByUser = false;
         this.required = required;
         this.flagOnly = flagOnly;
-        this.file = false;
-    }
-
-    public Argument(final boolean required, final String argName, final String argValue, final String argDescription,
-            final boolean hasFlag,
-            final String flag, final boolean flagOnly, final boolean isFile) {
-        this.argName = argName;
-        this.argValue = argValue;
-        this.argDescription = argDescription;
-        this.hasFlag = hasFlag;
-        this.flag = flag;
-        this.setByUser = false;
-        this.required = required;
-        this.flagOnly = flagOnly;
-        this.file = isFile;
+        this.isFile = isFile;
+        this.isDependentOn = isDependentOn;
     }
 
     public String getArgName() {

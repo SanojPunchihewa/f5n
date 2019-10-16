@@ -1,0 +1,88 @@
+{
+  "args": [
+    {
+      "argName": "reference index",
+      "argValue": null,
+      "argDescription": "Path to the reference index file",
+      "flag": null,
+      "argID": "MINIMAP2_REF_FILE",
+      "isDependentOn": "null",
+      "hasFlag": false,
+      "flagOnly": false,
+      "required": true,
+      "isFile": true
+    },
+    {
+      "argName": "query sequence",
+      "argValue": null,
+      "argDescription": "Path to the query sequence file",
+      "flag": null,
+      "argID": "MINIMAP2_QUERY_FILE",
+      "isDependentOn": "null",
+      "hasFlag": false,
+      "flagOnly": false,
+      "required": true,
+      "isFile": true
+    },
+    {
+      "argName": "output file",
+      "argValue": null,
+      "argDescription": "Path to the output sam file",
+      "flag": "-o",
+      "argID": "MINIMAP2_OUTPUT_FILE",
+      "isDependentOn": "null",
+      "hasFlag": true,
+      "flagOnly": false,
+      "required": true,
+      "isFile": true
+    },
+    {
+      "argName": "Output format SAM",
+      "argValue": null,
+      "argDescription": "Generate CIGAR and output alignments in SAM ",
+      "flag": "-a",
+      "argID": "tobedecided",
+      "isDependentOn": "argIDofanotherArg",
+      "hasFlag": true,
+      "flagOnly": true,
+      "required": false,
+      "isFile": false
+    },
+    {
+      "argName": "Output format PAF",
+      "argValue": null,
+      "argDescription": "Generate CIGAR and output alignments in PAF format",
+      "flag": "-c",
+      "argID": "tobedecided",
+      "isDependentOn": "argIDofanotherArg",
+      "hasFlag": true,
+      "flagOnly": true,
+      "required": false,
+      "isFile": false
+    },
+    {
+      "argName": "Threads",
+      "argValue": "3",
+      "argDescription": "Number of threads [3]",
+      "flag": "-t",
+      "argID": "tobedecided",
+      "isDependentOn": "argIDofanotherArg",
+      "hasFlag": true,
+      "flagOnly": false,
+      "required": false,
+      "isFile": false
+    },
+    {
+      "argName": "Bases loaded into memory",
+      "argValue": "500M",
+      "argDescription": "Number of bases loaded into memory[500M]",
+      "flag": "-K",
+      "argID": "tobedecided",
+      "isDependentOn": "argIDofanotherArg",
+      "hasFlag": true,
+      "flagOnly": false,
+      "required": false,
+      "isFile": false
+    }
+  ]
+}

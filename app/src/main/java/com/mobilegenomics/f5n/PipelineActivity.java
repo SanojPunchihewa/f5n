@@ -40,21 +40,6 @@ public class PipelineActivity extends AppCompatActivity {
             @Override
             public void onClick(final View v) {
                 initPipelineSteps(MODE_GUI);
-//                GUIConfiguration.eraseSelectedPipeline();
-//                GUIConfiguration.resetSteps();
-//                boolean clickedNone = true;
-//                for (PipelineStep step : PipelineStep.values()) {
-//                    CheckBox checkBox = findViewById(step.getValue());
-//                    if (checkBox.isChecked()) {
-//                        GUIConfiguration.addPipelineStep(step);
-//                        clickedNone = false;
-//                    }
-//                }
-//                if (!clickedNone) {
-//                    GUIConfiguration.printList();
-//                    GUIConfiguration.configureSteps();
-//                    startActivity(new Intent(PipelineActivity.this, StepActivity.class));
-//                }
             }
         });
         linearLayout.addView(btnGUIMode);
@@ -83,7 +68,7 @@ public class PipelineActivity extends AppCompatActivity {
         }
         if (!clickedNone) {
             GUIConfiguration.printList();
-            GUIConfiguration.configureSteps();
+            GUIConfiguration.configureSteps(PipelineActivity.this);
             if (mode == MODE_GUI) {
                 startActivity(new Intent(PipelineActivity.this, StepActivity.class));
             } else {

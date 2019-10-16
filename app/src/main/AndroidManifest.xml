@@ -5,6 +5,7 @@
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -25,6 +26,7 @@
         <activity android:name=".StepActivity" />
         <activity android:name=".TerminalActivity" />
         <activity android:name=".ConfirmationActivity" />
+        <activity android:name=".DownloadActivity" />
     </application>
 
 </manifest>
