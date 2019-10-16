@@ -24,6 +24,7 @@
         </activity>
         <activity android:name=".PipelineActivity" />
         <activity android:name=".StepActivity" />
+        <activity android:name=".TerminalActivity" />
         <activity android:name=".ConfirmationActivity" />
         <activity android:name=".DownloadActivity" />
     </application>

@@ -100,6 +100,10 @@ public class GUIConfiguration {
         return pipelineComponents;
     }
 
+    public static ArrayList<Step> getSteps() {
+        return steps;
+    }
+
     public static void configureLikedFileArgument(String fileName, String value) {
         linkedFileArguments.put(fileName, value);
     }
