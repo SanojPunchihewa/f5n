@@ -225,7 +225,8 @@ public class StepActivity extends AppCompatActivity {
                 step.buildCommandString();
                 if (haveSetAllRequiredArgs) {
                     if (GUIConfiguration.isFinalStep()) {
-                        startActivity(new Intent(StepActivity.this, ConfirmationActivity.class));
+                        //startActivity(new Intent(StepActivity.this, ConfirmationActivity.class));
+                        startActivity(new Intent(StepActivity.this, TerminalActivity.class));
                     } else {
                         Intent intent = new Intent(StepActivity.this, StepActivity.class);
                         intent.putExtra("FOLDER_PATH", folderPath);

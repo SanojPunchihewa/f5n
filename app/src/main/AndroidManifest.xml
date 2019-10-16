@@ -26,7 +26,8 @@
         <activity android:name=".activity.StepActivity" />
         <activity android:name=".activity.ConfirmationActivity" />
         <activity android:name=".activity.DownloadActivity" />
-        <activity android:name=".activity.MinITActivity"/>
+        <activity android:name=".activity.MinITActivity" />
+        <activity android:name=".activity.TerminalActivity" />
     </application>
 
 </manifest>

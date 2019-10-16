@@ -19,7 +19,9 @@ public class Step {
 
     private PipelineStep stepName;
 
-    private StringBuilder command;
+    private StringBuilder commandBuilder;
+
+    private String command;
 
     public PipelineStep getStep() {
         return stepName;
@@ -65,6 +67,7 @@ public class Step {
                 Log.e("STEP", "cannot come here");
                 break;
         }
+        buildCommandString();
     }
 
     private void minimap2Arguments(Context context) {
@@ -101,14 +104,20 @@ public class Step {
     }
 
     public void buildCommandString() {
-        command = new StringBuilder(stepName.getCommand());
+        commandBuilder = new StringBuilder(stepName.getCommand());
         for (Argument argument : arguments) {
-            command.append(" ");
-            command.append(argument.toString());
+            commandBuilder.append(" ");
+            commandBuilder.append(argument.toString());
         }
+        command = commandBuilder.toString();
     }
 
     public String getCommandString() {
-        return command.toString();
+        return command;
     }
+
+    public void setgetCommandString(final String command) {
+        this.command = command;
+    }
+
 }
