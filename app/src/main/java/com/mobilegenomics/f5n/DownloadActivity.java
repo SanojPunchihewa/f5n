@@ -45,6 +45,8 @@ public class DownloadActivity extends AppCompatActivity {
 
     Button btnDownloadTest;
 
+    Button btnExtract;
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -113,6 +115,17 @@ public class DownloadActivity extends AppCompatActivity {
             }
         });
 
+        btnExtract = new Button(this);
+        btnExtract.setText("Extract");
+        linearLayout.addView(btnExtract);
+
+        btnExtract.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                extractZip(new File(folderPathInput.getText().toString().trim()));
+            }
+        });
+
     }
 
     private void openFileManager() {
@@ -172,6 +185,11 @@ public class DownloadActivity extends AppCompatActivity {
             }
         }
     };
+
+    private void extractZip(File file) {
+        Decompress decompress = new Decompress(file);
+        decompress.unzip();
+    }
 
     private void enableButtons() {
         btnDownload.setEnabled(true);
