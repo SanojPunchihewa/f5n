@@ -1,8 +1,8 @@
-package com.mobilegenomics.f5n;
+package com.mobilegenomics.f5n.support;
 
 import java.util.ArrayList;
 
-interface PermissionResultCallback {
+public interface PermissionResultCallback {
 
     void NeverAskAgain(int request_code);
 

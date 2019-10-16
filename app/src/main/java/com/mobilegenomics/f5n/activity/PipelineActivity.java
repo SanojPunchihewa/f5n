@@ -1,4 +1,4 @@
-package com.mobilegenomics.f5n;
+package com.mobilegenomics.f5n.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,6 +9,11 @@ import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.mobilegenomics.f5n.GUIConfiguration;
+import com.mobilegenomics.f5n.R;
+import com.mobilegenomics.f5n.core.PipelineStep;
+
 import java.util.ArrayList;
 
 public class PipelineActivity extends AppCompatActivity {

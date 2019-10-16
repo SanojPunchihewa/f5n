@@ -1,4 +1,4 @@
-package com.mobilegenomics.f5n;
+package com.mobilegenomics.f5n.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +11,9 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import com.mobilegenomics.f5n.GUIConfiguration;
+import com.mobilegenomics.f5n.R;
+import com.mobilegenomics.f5n.core.Step;
 import java.util.List;
 
 public class TerminalActivity extends AppCompatActivity {

@@ -1,4 +1,4 @@
-package com.mobilegenomics.f5n;
+package com.mobilegenomics.f5n.activity;
 
 import android.annotation.SuppressLint;
 import android.app.DownloadManager;
@@ -22,6 +22,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.obsez.android.lib.filechooser.ChooserDialog;
 import java.io.File;
+
+import com.mobilegenomics.f5n.R;
 
 public class DownloadActivity extends AppCompatActivity {
 
