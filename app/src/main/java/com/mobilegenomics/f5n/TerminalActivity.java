@@ -44,6 +44,7 @@ public class TerminalActivity extends AppCompatActivity {
             editText.setBackgroundColor(0xFFE5E7E9);
             editText.setLayoutParams(params);
             editText.setId(stepId + 125);
+            editText.requestFocus();
             linearLayout.addView(editText);
             stepId++;
         }
