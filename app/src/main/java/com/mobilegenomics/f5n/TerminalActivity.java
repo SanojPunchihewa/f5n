@@ -8,6 +8,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.List;
@@ -31,10 +32,17 @@ public class TerminalActivity extends AppCompatActivity {
 
         stepId = 0;
 
+        LayoutParams params = new LayoutParams(
+                LayoutParams.MATCH_PARENT,
+                LayoutParams.WRAP_CONTENT
+        );
+        params.setMargins(0, 10, 0, 10);
+
         for (Step step : steps) {
             EditText editText = new EditText(this);
             editText.setText(step.getCommandString());
-            editText.setPadding(10, 10, 10, 0);
+            editText.setBackgroundColor(0xFFE5E7E9);
+            editText.setLayoutParams(params);
             editText.setId(stepId + 125);
             linearLayout.addView(editText);
             stepId++;
