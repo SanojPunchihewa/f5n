@@ -1,4 +1,4 @@
-package com.mobilegenomics.f5n;
+package com.mobilegenomics.f5n.core;
 
 import android.content.Context;
 import android.util.Log;
@@ -7,6 +7,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mobilegenomics.f5n.R;
+import com.mobilegenomics.f5n.support.JSONFileHelper;
 import java.util.ArrayList;
 
 public class Step {
@@ -17,7 +19,9 @@ public class Step {
 
     private PipelineStep stepName;
 
-    private StringBuilder command;
+    private StringBuilder commandBuilder;
+
+    private String command;
 
     public PipelineStep getStep() {
         return stepName;
@@ -63,6 +67,7 @@ public class Step {
                 Log.e("STEP", "cannot come here");
                 break;
         }
+        buildCommandString();
     }
 
     private void minimap2Arguments(Context context) {
@@ -90,7 +95,7 @@ public class Step {
     }
 
     private void buildArgumentsFromJson(Context context, @RawRes int file) {
-        JsonObject samtoolIndexArgsJson = Helper.rawtoJsonObject(context, file);
+        JsonObject samtoolIndexArgsJson = JSONFileHelper.rawtoJsonObject(context, file);
         JsonArray samtoolIndexArgsJsonArray = samtoolIndexArgsJson.getAsJsonArray("args");
         for (JsonElement element : samtoolIndexArgsJsonArray) {
             Argument argument = new Gson().fromJson(element, Argument.class);
@@ -99,14 +104,20 @@ public class Step {
     }
 
     public void buildCommandString() {
-        command = new StringBuilder(stepName.getCommand());
+        commandBuilder = new StringBuilder(stepName.getCommand());
         for (Argument argument : arguments) {
-            command.append(" ");
-            command.append(argument.toString());
+            commandBuilder.append(" ");
+            commandBuilder.append(argument.toString());
         }
+        command = commandBuilder.toString();
     }
 
     public String getCommandString() {
-        return command.toString();
+        return command;
     }
+
+    public void setgetCommandString(final String command) {
+        this.command = command;
+    }
+
 }

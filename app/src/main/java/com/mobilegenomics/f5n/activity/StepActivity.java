@@ -1,4 +1,4 @@
-package com.mobilegenomics.f5n;
+package com.mobilegenomics.f5n.activity;
 
 import android.annotation.SuppressLint;
 import android.content.ClipData;
@@ -25,6 +25,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import com.mobilegenomics.f5n.GUIConfiguration;
+import com.mobilegenomics.f5n.R;
+import com.mobilegenomics.f5n.core.Argument;
+import com.mobilegenomics.f5n.core.Step;
 import com.obsez.android.lib.filechooser.ChooserDialog;
 import java.io.File;
 import java.util.ArrayList;
@@ -32,8 +36,6 @@ import java.util.List;
 import java.util.Objects;
 
 public class StepActivity extends AppCompatActivity {
-
-    public static int FOLDERPICKER_CODE = 002;
 
     ArrayList<Argument> arguments;
 
@@ -223,7 +225,8 @@ public class StepActivity extends AppCompatActivity {
                 step.buildCommandString();
                 if (haveSetAllRequiredArgs) {
                     if (GUIConfiguration.isFinalStep()) {
-                        startActivity(new Intent(StepActivity.this, ConfirmationActivity.class));
+                        //startActivity(new Intent(StepActivity.this, ConfirmationActivity.class));
+                        startActivity(new Intent(StepActivity.this, TerminalActivity.class));
                     } else {
                         Intent intent = new Intent(StepActivity.this, StepActivity.class);
                         intent.putExtra("FOLDER_PATH", folderPath);

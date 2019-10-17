@@ -1,4 +1,4 @@
-package com.mobilegenomics.f5n;
+package com.mobilegenomics.f5n.core;
 
 public enum PipelineStep {
     //    MINIMAP2_SEQUENCE_ALIGNMENT(0,

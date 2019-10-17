@@ -1,4 +1,4 @@
-package com.mobilegenomics.f5n;
+package com.mobilegenomics.f5n.support;
 
 import android.app.Activity;
 import android.content.Context;
@@ -28,7 +28,7 @@ public class PermissionUtils {
 
     private int req_code;
 
-    PermissionUtils(Context context) {
+    public PermissionUtils(Context context) {
         this.current_activity = (Activity) context;
         permissionResultCallback = (PermissionResultCallback) context;
     }

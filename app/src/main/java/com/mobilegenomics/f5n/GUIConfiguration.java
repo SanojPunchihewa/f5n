@@ -2,6 +2,12 @@ package com.mobilegenomics.f5n;
 
 import android.content.Context;
 import android.util.Log;
+
+import com.mobilegenomics.f5n.core.PipelineComponent;
+import com.mobilegenomics.f5n.core.PipelineStep;
+import com.mobilegenomics.f5n.core.Step;
+import com.mobilegenomics.f5n.core.TimeFormat;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -98,6 +104,10 @@ public class GUIConfiguration {
 
     public static List<PipelineComponent> getPipeline() {
         return pipelineComponents;
+    }
+
+    public static ArrayList<Step> getSteps() {
+        return steps;
     }
 
     public static void configureLikedFileArgument(String fileName, String value) {
