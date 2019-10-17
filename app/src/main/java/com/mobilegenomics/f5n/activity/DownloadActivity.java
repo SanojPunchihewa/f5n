@@ -20,10 +20,10 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import com.mobilegenomics.f5n.R;
+import com.mobilegenomics.f5n.support.Decompress;
 import com.obsez.android.lib.filechooser.ChooserDialog;
 import java.io.File;
-
-import com.mobilegenomics.f5n.R;
 
 public class DownloadActivity extends AppCompatActivity {
 
@@ -46,6 +46,10 @@ public class DownloadActivity extends AppCompatActivity {
     Button btnDownloadEcoli;
 
     Button btnDownloadTest;
+
+    EditText filePathInput;
+
+    Button btnSelectFilePath;
 
     Button btnExtract;
 
@@ -72,7 +76,7 @@ public class DownloadActivity extends AppCompatActivity {
         btnSetFolderPath.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(final View v) {
-                openFileManager();
+                openFileManager(true);
             }
         });
         linearLayout.addView(btnSetFolderPath);
@@ -117,30 +121,56 @@ public class DownloadActivity extends AppCompatActivity {
             }
         });
 
+        filePathInput = new EditText(this);
+        filePathInput.setHint("Path to compressed file");
+        linearLayout.addView(filePathInput);
+
+        btnSelectFilePath = new Button(this);
+        btnSelectFilePath.setText("Select File");
+        linearLayout.addView(btnSelectFilePath);
+
+        btnSelectFilePath.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                openFileManager(false);
+            }
+        });
+
         btnExtract = new Button(this);
         btnExtract.setText("Extract");
+        btnExtract.setEnabled(false);
         linearLayout.addView(btnExtract);
 
         btnExtract.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(final View v) {
-                extractZip(new File(folderPathInput.getText().toString().trim()));
+                if (!TextUtils.isEmpty(folderPath)) {
+                    extractZip(new File(folderPath));
+                } else {
+                    Toast.makeText(DownloadActivity.this, "Please Select a Zip file", Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 
     }
 
-    private void openFileManager() {
+    private void openFileManager(boolean dirOnly) {
 
         new ChooserDialog(DownloadActivity.this)
-                .withFilter(true, false)
+                .withFilter(dirOnly, false)
                 // to handle the result(s)
                 .withChosenListener(new ChooserDialog.Result() {
                     @Override
                     public void onChoosePath(String path, File pathFile) {
                         folderPath = path;
-                        folderPathInput.setText(folderPath);
-                        enableButtons();
+                        if (dirOnly) {
+                            folderPathInput.setText(folderPath);
+                            enableButtons();
+                        } else {
+                            filePathInput.setText(folderPath);
+                            btnExtract.setEnabled(true);
+                        }
                     }
                 })
                 .build()
@@ -189,7 +219,7 @@ public class DownloadActivity extends AppCompatActivity {
     };
 
     private void extractZip(File file) {
-        Decompress decompress = new Decompress(file);
+        Decompress decompress = new Decompress(DownloadActivity.this, file);
         decompress.unzip();
     }
 
