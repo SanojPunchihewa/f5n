@@ -25,7 +25,7 @@
             android:importantForAutofill="no" />
 
         <Button
-            android:id="@+id/btn_connect_server"
+            android:id="@+id/btn_request_job"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
@@ -37,7 +37,7 @@
         android:layout_height="match_parent"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/tr_send_message"
-        android:layout_above="@id/btn_process"
+        android:layout_above="@id/btn_send_result"
         android:layout_margin="10dp"
         android:id="@+id/scroll_view">
 
@@ -48,7 +48,7 @@
             android:orientation="vertical" />
     </ScrollView>
     <Button
-        android:id="@+id/btn_process"
+        android:id="@+id/btn_send_result"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
