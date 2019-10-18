@@ -4,9 +4,8 @@ import java.io.Serializable;
 
 public enum State implements Serializable {
 
-    NORMAL("Normal"),
-    CONNECT("Connect"),
-    DISCONNECT("Disconnect"),
+    REQUEST("Request"),
+    COMPLETED("Completed"),
     IDLE("Idle"),
     PENDING("Pending"),
     SUCCESS("Success"),
