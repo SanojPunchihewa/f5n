@@ -2,12 +2,10 @@ package com.mobilegenomics.f5n;
 
 import android.content.Context;
 import android.util.Log;
-
 import com.mobilegenomics.f5n.core.PipelineComponent;
 import com.mobilegenomics.f5n.core.PipelineStep;
 import com.mobilegenomics.f5n.core.Step;
-import com.mobilegenomics.f5n.core.TimeFormat;
-
+import com.mobilegenomics.f5n.support.TimeFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
