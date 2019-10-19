@@ -1,8 +1,9 @@
 package com.mobilegenomics.f5n.core;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Step {
+public class Step implements Serializable {
 
     private ArrayList<Argument> arguments;
 
