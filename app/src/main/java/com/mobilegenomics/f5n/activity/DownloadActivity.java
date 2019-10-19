@@ -20,18 +20,18 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import com.mobilegenomics.f5n.R;
+import com.mobilegenomics.f5n.support.Decompress;
 import com.obsez.android.lib.filechooser.ChooserDialog;
 import java.io.File;
 
-import com.mobilegenomics.f5n.R;
-
 public class DownloadActivity extends AppCompatActivity {
+
+    private static final String TAG = DownloadActivity.class.getSimpleName();
 
     private String folderPath;
 
     private static final String ecoliDataSetURL = "https://zanojmobiapps.com/_tmp/genome/ecoli/ecoli_2kb_region.zip";
-
-    private static final String testDataSetURL = "https://zanojmobiapps.com/_tmp/genome/test/test-download.zip";
 
     private long downloadID;
 
@@ -45,7 +45,11 @@ public class DownloadActivity extends AppCompatActivity {
 
     Button btnDownloadEcoli;
 
-    Button btnDownloadTest;
+    EditText filePathInput;
+
+    Button btnSelectFilePath;
+
+    Button btnExtract;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -70,7 +74,7 @@ public class DownloadActivity extends AppCompatActivity {
         btnSetFolderPath.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(final View v) {
-                openFileManager();
+                openFileManager(true);
             }
         });
         linearLayout.addView(btnSetFolderPath);
@@ -103,31 +107,56 @@ public class DownloadActivity extends AppCompatActivity {
             }
         });
 
-        btnDownloadTest = new Button(this);
-        btnDownloadTest.setText("Test Download");
-        btnDownloadTest.setEnabled(false);
-        linearLayout.addView(btnDownloadTest);
+        filePathInput = new EditText(this);
+        filePathInput.setHint("Path to compressed file");
+        linearLayout.addView(filePathInput);
 
-        btnDownloadTest.setOnClickListener(new OnClickListener() {
+        btnSelectFilePath = new Button(this);
+        btnSelectFilePath.setText("Select File");
+        linearLayout.addView(btnSelectFilePath);
+
+        btnSelectFilePath.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(final View v) {
-                downloadDataSet(testDataSetURL);
+                openFileManager(false);
+            }
+        });
+
+        btnExtract = new Button(this);
+        btnExtract.setText("Extract");
+        btnExtract.setEnabled(false);
+        linearLayout.addView(btnExtract);
+
+        btnExtract.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                if (!TextUtils.isEmpty(folderPath)) {
+                    extractZip(new File(folderPath));
+                } else {
+                    Toast.makeText(DownloadActivity.this, "Please Select a Zip file", Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 
     }
 
-    private void openFileManager() {
+    private void openFileManager(boolean dirOnly) {
 
         new ChooserDialog(DownloadActivity.this)
-                .withFilter(true, false)
+                .withFilter(dirOnly, false)
                 // to handle the result(s)
                 .withChosenListener(new ChooserDialog.Result() {
                     @Override
                     public void onChoosePath(String path, File pathFile) {
                         folderPath = path;
-                        folderPathInput.setText(folderPath);
-                        enableButtons();
+                        if (dirOnly) {
+                            folderPathInput.setText(folderPath);
+                            enableButtons();
+                        } else {
+                            filePathInput.setText(folderPath);
+                            btnExtract.setEnabled(true);
+                        }
                     }
                 })
                 .build()
@@ -157,7 +186,7 @@ public class DownloadActivity extends AppCompatActivity {
             downloadID = downloadmanager.enqueue(request);
         } catch (Exception e) {
             Toast.makeText(this, "Invalid URL", Toast.LENGTH_SHORT).show();
-            Log.e("DOWNLOAD-ACTIVITY", "Exception: " + e);
+            Log.e(TAG, "Exception: " + e);
             enableButtons();
         }
     }
@@ -175,16 +204,19 @@ public class DownloadActivity extends AppCompatActivity {
         }
     };
 
+    private void extractZip(File file) {
+        Decompress decompress = new Decompress(DownloadActivity.this, file);
+        decompress.unzip();
+    }
+
     private void enableButtons() {
         btnDownload.setEnabled(true);
         btnDownloadEcoli.setEnabled(true);
-        btnDownloadTest.setEnabled(true);
     }
 
     private void disableButtons() {
         btnDownload.setEnabled(false);
         btnDownloadEcoli.setEnabled(false);
-        btnDownloadTest.setEnabled(false);
     }
 
     @Override
