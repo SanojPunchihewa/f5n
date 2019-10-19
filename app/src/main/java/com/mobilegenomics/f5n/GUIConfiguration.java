@@ -2,15 +2,24 @@ package com.mobilegenomics.f5n;
 
 import android.content.Context;
 import android.util.Log;
+import androidx.annotation.RawRes;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.mobilegenomics.f5n.core.Argument;
 import com.mobilegenomics.f5n.core.PipelineComponent;
 import com.mobilegenomics.f5n.core.PipelineStep;
 import com.mobilegenomics.f5n.core.Step;
+import com.mobilegenomics.f5n.support.JSONFileHelper;
 import com.mobilegenomics.f5n.support.TimeFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class GUIConfiguration {
+
+    private static final String TAG = GUIConfiguration.class.getSimpleName();
 
     private static ArrayList<PipelineStep> selectedPipelineSteps = new ArrayList<>();
 
@@ -32,7 +41,7 @@ public class GUIConfiguration {
 
     public static void printList() {
         for (PipelineStep step : selectedPipelineSteps) {
-            Log.d("STEPS = ", step.toString());
+            Log.d(TAG, step.toString());
         }
     }
 
@@ -40,8 +49,8 @@ public class GUIConfiguration {
         // clear() vs new check what is better
         steps = new ArrayList<>();
         for (PipelineStep pipelineStep : selectedPipelineSteps) {
-            Step step = new Step();
-            step.setStep(context, pipelineStep);
+            ArrayList<Argument> arguments = configureArguments(context, pipelineStep);
+            Step step = new Step(pipelineStep, arguments);
             steps.add(step);
         }
     }
@@ -114,6 +123,45 @@ public class GUIConfiguration {
 
     public static String getLinkedFileArgument(String fileName) {
         return linkedFileArguments.containsKey(fileName) ? linkedFileArguments.get(fileName) : "";
+    }
+
+    private static ArrayList<Argument> configureArguments(Context context, PipelineStep pipelineStep) {
+        int rawFile = 0;
+        switch (pipelineStep) {
+            case MINIMAP2_SEQUENCE_ALIGNMENT:
+                rawFile = R.raw.minimap2;
+                break;
+            case SAMTOOL_SORT:
+                rawFile = R.raw.samtool_sort_arguments;
+                break;
+            case SAMTOOL_INDEX:
+                rawFile = R.raw.samtool_index_arguments;
+                break;
+            case F5C_INDEX:
+                rawFile = R.raw.f5c_index_arguments;
+                break;
+            case F5C_CALL_METHYLATION:
+                rawFile = R.raw.f5c_call_methylation_arguments;
+                break;
+            case F5C_EVENT_ALIGNMENT:
+                rawFile = R.raw.f5c_event_align_arguments;
+                break;
+            default:
+                Log.e(TAG, "Invalid Pipeline Step");
+                break;
+        }
+        return buildArgumentsFromJson(context, rawFile);
+    }
+
+    private static ArrayList<Argument> buildArgumentsFromJson(Context context, @RawRes int file) {
+        ArrayList<Argument> arguments = new ArrayList<>();
+        JsonObject argsJson = JSONFileHelper.rawtoJsonObject(context, file);
+        JsonArray argsJsonArray = argsJson.getAsJsonArray("args");
+        for (JsonElement element : argsJsonArray) {
+            Argument argument = new Gson().fromJson(element, Argument.class);
+            arguments.add(argument);
+        }
+        return arguments;
     }
 
 }
