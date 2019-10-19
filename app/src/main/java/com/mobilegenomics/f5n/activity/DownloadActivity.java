@@ -31,8 +31,6 @@ public class DownloadActivity extends AppCompatActivity {
 
     private static final String ecoliDataSetURL = "https://zanojmobiapps.com/_tmp/genome/ecoli/ecoli_2kb_region.zip";
 
-    private static final String testDataSetURL = "https://zanojmobiapps.com/_tmp/genome/test/test-download.zip";
-
     private long downloadID;
 
     LinearLayout linearLayout;
@@ -44,8 +42,6 @@ public class DownloadActivity extends AppCompatActivity {
     Button btnDownload;
 
     Button btnDownloadEcoli;
-
-    Button btnDownloadTest;
 
     EditText filePathInput;
 
@@ -106,18 +102,6 @@ public class DownloadActivity extends AppCompatActivity {
             @Override
             public void onClick(final View v) {
                 downloadDataSet(ecoliDataSetURL);
-            }
-        });
-
-        btnDownloadTest = new Button(this);
-        btnDownloadTest.setText("Test Download");
-        btnDownloadTest.setEnabled(false);
-        linearLayout.addView(btnDownloadTest);
-
-        btnDownloadTest.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                downloadDataSet(testDataSetURL);
             }
         });
 
@@ -226,13 +210,11 @@ public class DownloadActivity extends AppCompatActivity {
     private void enableButtons() {
         btnDownload.setEnabled(true);
         btnDownloadEcoli.setEnabled(true);
-        btnDownloadTest.setEnabled(true);
     }
 
     private void disableButtons() {
         btnDownload.setEnabled(false);
         btnDownloadEcoli.setEnabled(false);
-        btnDownloadTest.setEnabled(false);
     }
 
     @Override
