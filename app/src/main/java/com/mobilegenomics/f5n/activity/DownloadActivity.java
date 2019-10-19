@@ -27,6 +27,8 @@ import java.io.File;
 
 public class DownloadActivity extends AppCompatActivity {
 
+    private static final String TAG = DownloadActivity.class.getSimpleName();
+
     private String folderPath;
 
     private static final String ecoliDataSetURL = "https://zanojmobiapps.com/_tmp/genome/ecoli/ecoli_2kb_region.zip";
@@ -184,7 +186,7 @@ public class DownloadActivity extends AppCompatActivity {
             downloadID = downloadmanager.enqueue(request);
         } catch (Exception e) {
             Toast.makeText(this, "Invalid URL", Toast.LENGTH_SHORT).show();
-            Log.e("DOWNLOAD-ACTIVITY", "Exception: " + e);
+            Log.e(TAG, "Exception: " + e);
             enableButtons();
         }
     }
