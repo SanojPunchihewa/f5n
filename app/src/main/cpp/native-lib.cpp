@@ -68,7 +68,7 @@ void resetOptInd() {
 }
 
 extern "C" JNIEXPORT jint JNICALL
-Java_com_mobilegenomics_f5n_NativeCommands_init(JNIEnv *env, jobject, jstring command) {
+Java_com_mobilegenomics_f5n_core_NativeCommands_init(JNIEnv *env, jobject, jstring command) {
   // try{TODO:exceptions
   // Convert command to cpp
   //TODO:casting not good
@@ -121,7 +121,7 @@ Java_com_mobilegenomics_f5n_NativeCommands_init(JNIEnv *env, jobject, jstring co
 }
 
 extern "C" JNIEXPORT jint JNICALL
-Java_com_mobilegenomics_f5n_NativeCommands_initminimap2(JNIEnv *env, jobject type, jstring command) {
+Java_com_mobilegenomics_f5n_core_NativeCommands_initminimap2(JNIEnv *env, jobject type, jstring command) {
   // try{TODO:exceptions
   // Convert command to cpp
   //TODO:casting not good
@@ -172,7 +172,7 @@ Java_com_mobilegenomics_f5n_NativeCommands_initminimap2(JNIEnv *env, jobject typ
 }
 
 extern "C" JNIEXPORT jint JNICALL
-Java_com_mobilegenomics_f5n_NativeCommands_initsamtool(JNIEnv *env, jobject clazz, jstring command) {
+Java_com_mobilegenomics_f5n_core_NativeCommands_initsamtool(JNIEnv *env, jobject clazz, jstring command) {
   char *command_c = (char *) env->GetStringUTFChars(command, nullptr);
 
   enum { kMaxArgs = 64 };

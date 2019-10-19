@@ -1,4 +1,4 @@
-package com.mobilegenomics.f5n.core;
+package com.mobilegenomics.f5n.support;
 
 import java.text.DateFormat;
 import java.util.concurrent.TimeUnit;
