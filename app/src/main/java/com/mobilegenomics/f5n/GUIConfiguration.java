@@ -55,6 +55,10 @@ public class GUIConfiguration {
         }
     }
 
+    public static void configureSteps(ArrayList<Step> stepList) {
+        steps = stepList;
+    }
+
     public static Step getNextStep() {
         // TODO Fix boundary conditions
         return steps.get(current++);
