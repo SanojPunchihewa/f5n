@@ -1,17 +1,21 @@
 package com.mobilegenomics.f5n.dto;
 
 import com.mobilegenomics.f5n.core.Step;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 
 public class WrapperObject implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     private String prefix;
+
     private State state;
+
     private String clientIP;
+
     private String pathToDataDir;
+
     private ArrayList<Step> steps = new ArrayList<>();
 
     public WrapperObject() {

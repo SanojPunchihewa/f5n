@@ -2,11 +2,9 @@ package com.mobilegenomics.f5n.support;
 
 import android.os.Handler;
 import android.util.Log;
-
 import com.mobilegenomics.f5n.activity.MinITActivity;
 import com.mobilegenomics.f5n.dto.State;
 import com.mobilegenomics.f5n.dto.WrapperObject;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -15,8 +13,11 @@ import java.net.Socket;
 public class ServerConnectionUtils {
 
     private final static String TAG = "ServerConnectionUtils";
+
     private static String serverAddress;
+
     private static StringBuilder logMessage = new StringBuilder();
+
     private static WrapperObject receivedWrapperObject;
 
     public static void connectToServer(final State state) {
@@ -41,25 +42,32 @@ public class ServerConnectionUtils {
                     if (state == State.REQUEST) {
                         if (receivedObjectMessage.getState().equals(State.ACK)) {
                             //isConnected = true;
-                            Log.d(TAG, connectionLog(ConnectionMessages.NONE, ConnectionMessages.CONN_SUCCESSS.getMessage()));
+                            Log.d(TAG, connectionLog(ConnectionMessages.NONE,
+                                    ConnectionMessages.CONN_SUCCESSS.getMessage()));
                             WrapperObject receivedJobMessage = (WrapperObject) objectInStream.readObject();
                             receivedWrapperObject = receivedJobMessage;
-                            Log.d(TAG, connectionLog(ConnectionMessages.NONE, ConnectionMessages.JOB_RECV_SUCCESS.getMessage()));
-                            Log.d(TAG, connectionLog(ConnectionMessages.FROM_SERVER, receivedJobMessage.toStringPretty()));
+                            Log.d(TAG, connectionLog(ConnectionMessages.NONE,
+                                    ConnectionMessages.JOB_RECV_SUCCESS.getMessage()));
+                            Log.d(TAG, connectionLog(ConnectionMessages.FROM_SERVER,
+                                    receivedJobMessage.toStringPretty()));
                         } else {
                             //isConnected = false;
-                            Log.d(TAG, connectionLog(ConnectionMessages.NONE, ConnectionMessages.CONN_FAILED.getMessage()));
+                            Log.d(TAG, connectionLog(ConnectionMessages.NONE,
+                                    ConnectionMessages.CONN_FAILED.getMessage()));
                         }
                     } else if (state == State.COMPLETED) {
                         if (receivedObjectMessage.getState().equals(State.ACK)) {
                             //isConnected = true;
-                            Log.d(TAG, connectionLog(ConnectionMessages.NONE, ConnectionMessages.RECONN_SUCCESS.getMessage()));
+                            Log.d(TAG, connectionLog(ConnectionMessages.NONE,
+                                    ConnectionMessages.RECONN_SUCCESS.getMessage()));
                             receivedWrapperObject.setState(State.SUCCESS);
                             objectOutStream.writeObject(receivedWrapperObject);
-                            Log.d(TAG, connectionLog(ConnectionMessages.TO_SERVER, receivedWrapperObject.toStringPretty()));
+                            Log.d(TAG, connectionLog(ConnectionMessages.TO_SERVER,
+                                    receivedWrapperObject.toStringPretty()));
                         } else {
                             //isConnected = false;
-                            Log.d(TAG, connectionLog(ConnectionMessages.NONE, ConnectionMessages.RECONN_FAILED.getMessage()));
+                            Log.d(TAG, connectionLog(ConnectionMessages.NONE,
+                                    ConnectionMessages.RECONN_FAILED.getMessage()));
                         }
                     }
                     objectInStream.close();

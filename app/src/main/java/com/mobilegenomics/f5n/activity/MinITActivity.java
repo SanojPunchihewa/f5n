@@ -6,9 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.dto.State;
 import com.mobilegenomics.f5n.support.ServerConnectionUtils;
@@ -22,8 +20,9 @@ public class MinITActivity extends AppCompatActivity {
             @Override
             public void run() {
                 StringBuilder newLogMessage = ServerConnectionUtils.getLogMessage();
-                if (newLogMessage != null && newLogMessage.toString().trim().length() != 0)
+                if (newLogMessage != null && newLogMessage.toString().trim().length() != 0) {
                     connectionLogText.setText(newLogMessage);
+                }
             }
         });
     }
