@@ -20,7 +20,7 @@ public class ServerConnectionUtils {
 
     private static WrapperObject receivedWrapperObject;
 
-    public static void connectToServer(final State state) {
+    public static void connectToServer(final State state, final ServerCallback serverCallback) {
         final Handler handler = new Handler();
         new Thread(new Runnable() {
             @Override
@@ -50,6 +50,7 @@ public class ServerConnectionUtils {
                                     ConnectionMessages.JOB_RECV_SUCCESS.getMessage()));
                             Log.d(TAG, connectionLog(ConnectionMessages.FROM_SERVER,
                                     receivedJobMessage.toStringPretty()));
+                            serverCallback.onJobReceivedSuccessfully(receivedJobMessage);
                         } else {
                             //isConnected = false;
                             Log.d(TAG, connectionLog(ConnectionMessages.NONE,
