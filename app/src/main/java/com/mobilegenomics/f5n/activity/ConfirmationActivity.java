@@ -1,6 +1,7 @@
 package com.mobilegenomics.f5n.activity;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -21,6 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
+import com.mobilegenomics.f5n.core.AppMode;
 import com.mobilegenomics.f5n.core.PipelineComponent;
 import com.mobilegenomics.f5n.support.TimeFormat;
 import java.io.BufferedReader;
@@ -52,6 +54,8 @@ public class ConfirmationActivity extends AppCompatActivity {
     Button btnWriteLog;
 
     Button btnProceed;
+
+    Button btnSendResults;
 
     ProgressBar mProgressBar;
 
@@ -127,6 +131,21 @@ public class ConfirmationActivity extends AppCompatActivity {
         btnWriteLog.setVisibility(View.GONE);
         linearLayout.addView(btnWriteLog);
 
+        if (GUIConfiguration.getAppMode() == AppMode.SLAVE) {
+
+            btnSendResults = new Button(this);
+            btnSendResults.setText("Send Results");
+            btnSendResults.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(final View v) {
+                    Intent intent = new Intent(ConfirmationActivity.this, MinITActivity.class);
+                    intent.putExtra("PIPELINE_STATUS", "TODO-Status");
+                    startActivity(intent);
+                }
+            });
+            btnSendResults.setVisibility(View.GONE);
+            linearLayout.addView(btnSendResults);
+        }
     }
 
     public class RunPipeline extends AsyncTask<String, Integer, String> {
@@ -164,6 +183,9 @@ public class ConfirmationActivity extends AppCompatActivity {
             btnWriteLog.setVisibility(View.VISIBLE);
             btnProceed.setEnabled(true);
             mProgressBar.setVisibility(View.GONE);
+            if (GUIConfiguration.getAppMode() == AppMode.SLAVE) {
+                btnSendResults.setVisibility(View.VISIBLE);
+            }
         }
     }
 

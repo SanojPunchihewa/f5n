@@ -25,6 +25,10 @@ public class MinITActivity extends AppCompatActivity {
 
     private String zipFileName;
 
+    private Button btnSendResult;
+
+    private boolean ranPipeline = false;
+
     public static void logHandler(Handler handler) {
         handler.post(new Runnable() {
             @Override
@@ -45,7 +49,15 @@ public class MinITActivity extends AppCompatActivity {
         final EditText serverAddressInput = findViewById(R.id.input_server_address);
         connectionLogText = findViewById(R.id.text_conn_log);
         final Button btnRquestJob = findViewById(R.id.btn_request_job);
-        final Button btnSendResult = findViewById(R.id.btn_send_result);
+        btnSendResult = findViewById(R.id.btn_send_result);
+
+        if (getIntent().getExtras() != null) {
+            String path = getIntent().getExtras().getString("PIPELINE_STATUS");
+            if (path != null && !TextUtils.isEmpty(path)) {
+                ranPipeline = true;
+                btnRquestJob.setText("Send Results");
+            }
+        }
 
         btnRquestJob.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,19 +68,11 @@ public class MinITActivity extends AppCompatActivity {
                     serverIP = serverAddressInput.getText().toString().trim();
 
                     ServerConnectionUtils.setServerAddress(serverIP);
-                    ServerConnectionUtils.connectToServer(State.REQUEST, new ServerCallback() {
-                        @Override
-                        public void onJobReceivedSuccessfully(final WrapperObject job) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    GUIConfiguration.configureSteps(job.getSteps());
-                                    zipFileName = job.getPrefix();
-                                    btnSendResult.setVisibility(View.VISIBLE);
-                                }
-                            });
-                        }
-                    });
+                    if (ranPipeline) {
+                        sendJobResults();
+                    } else {
+                        requestJob();
+                    }
 
                 } else {
                     Toast.makeText(MinITActivity.this, "Please input a server IP", Toast.LENGTH_SHORT).show();
@@ -84,6 +88,42 @@ public class MinITActivity extends AppCompatActivity {
                 // Protocol, file server IP and Port
                 intent.putExtra("DATA_SET_URL", "http://" + serverIP + ":8000/" + zipFileName);
                 startActivity(intent);
+            }
+        });
+    }
+
+    private void requestJob() {
+        ServerConnectionUtils.connectToServer(State.REQUEST, new ServerCallback() {
+            @Override
+            public void onSuccess(final WrapperObject job) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        GUIConfiguration.configureSteps(job.getSteps());
+                        zipFileName = job.getPrefix();
+                        btnSendResult.setVisibility(View.VISIBLE);
+                    }
+                });
+            }
+
+            @Override
+            public void onError(final WrapperObject job) {
+
+            }
+        });
+    }
+
+    private void sendJobResults() {
+        Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show();
+        ServerConnectionUtils.connectToServer(State.SUCCESS, new ServerCallback() {
+            @Override
+            public void onSuccess(final WrapperObject job) {
+
+            }
+
+            @Override
+            public void onError(final WrapperObject job) {
+
             }
         });
     }
