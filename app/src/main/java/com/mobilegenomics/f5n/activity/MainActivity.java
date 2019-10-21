@@ -11,11 +11,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-
+import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
+import com.mobilegenomics.f5n.core.AppMode;
 import com.mobilegenomics.f5n.support.PermissionResultCallback;
 import com.mobilegenomics.f5n.support.PermissionUtils;
-
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements
@@ -46,14 +46,17 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void downloadDataSet(View view) {
+        GUIConfiguration.setAppMode(AppMode.DOWNLOAD_DATA);
         startActivity(new Intent(MainActivity.this, DownloadActivity.class));
     }
 
     public void startStandaloneMode(View view) {
+        GUIConfiguration.setAppMode(AppMode.STANDALONE);
         startActivity(new Intent(MainActivity.this, PipelineActivity.class));
     }
 
     public void startMinITMode(View view) {
+        GUIConfiguration.setAppMode(AppMode.SLAVE);
         startActivity(new Intent(MainActivity.this, MinITActivity.class));
     }
 

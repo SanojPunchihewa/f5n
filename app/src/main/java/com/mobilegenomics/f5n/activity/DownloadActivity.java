@@ -20,14 +20,14 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
+import com.mobilegenomics.f5n.core.AppMode;
 import com.mobilegenomics.f5n.support.Decompress;
 import com.obsez.android.lib.filechooser.ChooserDialog;
 import java.io.File;
 
 public class DownloadActivity extends AppCompatActivity {
-
-    private static boolean SLAVE_MODE = false;
 
     private static final String TAG = DownloadActivity.class.getSimpleName();
 
@@ -72,7 +72,6 @@ public class DownloadActivity extends AppCompatActivity {
         if (getIntent().getExtras() != null) {
             String path = getIntent().getExtras().getString("DATA_SET_URL");
             if (path != null && !TextUtils.isEmpty(path)) {
-                SLAVE_MODE = true;
                 urlInputPath.setText(path);
             }
         }
@@ -144,7 +143,7 @@ public class DownloadActivity extends AppCompatActivity {
             public void onClick(final View v) {
                 if (!TextUtils.isEmpty(folderPath)) {
                     extractZip(new File(folderPath));
-                    if (SLAVE_MODE) {
+                    if (GUIConfiguration.getAppMode() == AppMode.SLAVE) {
                         btnRunPipeline.setVisibility(View.VISIBLE);
                     }
                 } else {
@@ -154,7 +153,7 @@ public class DownloadActivity extends AppCompatActivity {
             }
         });
 
-        if (SLAVE_MODE) {
+        if (GUIConfiguration.getAppMode() == AppMode.SLAVE) {
             btnRunPipeline = new Button(this);
             btnRunPipeline.setText("Run Pipeline");
             btnRunPipeline.setVisibility(View.GONE);

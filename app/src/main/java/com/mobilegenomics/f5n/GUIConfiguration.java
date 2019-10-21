@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mobilegenomics.f5n.core.AppMode;
 import com.mobilegenomics.f5n.core.Argument;
 import com.mobilegenomics.f5n.core.PipelineComponent;
 import com.mobilegenomics.f5n.core.PipelineStep;
@@ -20,6 +21,8 @@ import java.util.List;
 public class GUIConfiguration {
 
     private static final String TAG = GUIConfiguration.class.getSimpleName();
+
+    private static AppMode appMode;
 
     private static ArrayList<PipelineStep> selectedPipelineSteps = new ArrayList<>();
 
@@ -37,6 +40,14 @@ public class GUIConfiguration {
 
     public static void eraseSelectedPipeline() {
         selectedPipelineSteps.clear();
+    }
+
+    public static AppMode getAppMode() {
+        return appMode;
+    }
+
+    public static void setAppMode(final AppMode appMode) {
+        GUIConfiguration.appMode = appMode;
     }
 
     public static void printList() {
