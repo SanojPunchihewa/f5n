@@ -50,11 +50,12 @@ public class ServerConnectionUtils {
                                     ConnectionMessages.JOB_RECV_SUCCESS.getMessage()));
                             Log.d(TAG, connectionLog(ConnectionMessages.FROM_SERVER,
                                     receivedJobMessage.toStringPretty()));
-                            serverCallback.onJobReceivedSuccessfully(receivedJobMessage);
+                            serverCallback.onSuccess(receivedJobMessage);
                         } else {
                             //isConnected = false;
                             Log.d(TAG, connectionLog(ConnectionMessages.NONE,
                                     ConnectionMessages.CONN_FAILED.getMessage()));
+                            // TODO add serverCallback#onError
                         }
                     } else if (state == State.COMPLETED) {
                         if (receivedObjectMessage.getState().equals(State.ACK)) {
@@ -65,10 +66,12 @@ public class ServerConnectionUtils {
                             objectOutStream.writeObject(receivedWrapperObject);
                             Log.d(TAG, connectionLog(ConnectionMessages.TO_SERVER,
                                     receivedWrapperObject.toStringPretty()));
+                            serverCallback.onSuccess(receivedWrapperObject);
                         } else {
                             //isConnected = false;
                             Log.d(TAG, connectionLog(ConnectionMessages.NONE,
                                     ConnectionMessages.RECONN_FAILED.getMessage()));
+                            // TODO add serverCallback#onError
                         }
                     }
                     objectInStream.close();
