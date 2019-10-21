@@ -63,9 +63,7 @@ public class MinITActivity extends AppCompatActivity {
                                 @Override
                                 public void run() {
                                     GUIConfiguration.configureSteps(job.getSteps());
-                                    // TODO Get the zip name from the WrapperObject
-                                    // job.getZipFileName()
-                                    zipFileName = "ecoli_2kb_region.zip";
+                                    zipFileName = job.getPrefix();
                                     btnSendResult.setVisibility(View.VISIBLE);
                                 }
                             });
