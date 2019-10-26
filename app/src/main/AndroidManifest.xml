@@ -31,6 +31,9 @@
         <activity
             android:name=".activity.HelpActivity"
             android:label="Help" />
+        <activity
+            android:name=".activity.TutorialActivity"
+            android:label="How To" />
     </application>
 
 </manifest>
