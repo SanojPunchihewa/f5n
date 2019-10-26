@@ -28,6 +28,9 @@
         <activity android:name=".activity.DownloadActivity" />
         <activity android:name=".activity.MinITActivity" />
         <activity android:name=".activity.TerminalActivity" />
+        <activity
+            android:name=".activity.HelpActivity"
+            android:label="Help" />
     </application>
 
 </manifest>

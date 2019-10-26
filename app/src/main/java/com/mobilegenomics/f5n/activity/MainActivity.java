@@ -6,16 +6,16 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.support.PermissionResultCallback;
 import com.mobilegenomics.f5n.support.PermissionUtils;
-
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements
@@ -100,5 +100,21 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void PermissionGranted(int request_code) {
         Log.i("PERMISSION", "GRANTED");
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(final Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_help:
+                startActivity(new Intent(MainActivity.this, HelpActivity.class));
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
