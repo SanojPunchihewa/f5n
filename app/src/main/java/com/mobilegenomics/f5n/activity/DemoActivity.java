@@ -20,8 +20,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.PipelineStep;
-import com.mobilegenomics.f5n.support.Decompress;
 import com.mobilegenomics.f5n.support.TimeFormat;
+import com.mobilegenomics.f5n.support.ZipManager;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -166,8 +166,8 @@ public class DemoActivity extends AppCompatActivity {
             if (downloadID == id) {
                 Toast.makeText(DemoActivity.this, "Download Completed", Toast.LENGTH_SHORT).show();
                 writeToLogFile("Downloading data set completed\n");
-                extractZip(new File(Environment.getExternalStorageDirectory() + "/" + folderName + "/"
-                        + fileName));
+                extractZip(Environment.getExternalStorageDirectory() + "/" + folderName + "/"
+                        + fileName);
             }
         }
     };
@@ -186,10 +186,10 @@ public class DemoActivity extends AppCompatActivity {
         }
     }
 
-    private void extractZip(File file) {
+    private void extractZip(String filePath) {
         writeToLogFile("Extracting data set...\n");
-        Decompress decompress = new Decompress(DemoActivity.this, file);
-        decompress.unzip();
+        ZipManager zipManager = new ZipManager(DemoActivity.this);
+        zipManager.unzip(filePath);
         writeToLogFile("Extracting data set completed\n");
         btnRunPipeline.setVisibility(View.VISIBLE);
     }
