@@ -57,6 +57,10 @@ public class MainActivity extends AppCompatActivity implements
         startActivity(new Intent(MainActivity.this, MinITActivity.class));
     }
 
+    public void startDemoMode(View view) {
+        startActivity(new Intent(MainActivity.this, DemoActivity.class));
+    }
+
     /////////////////////////////
     // Permission functions
     /////////////////////////////
