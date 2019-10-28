@@ -56,11 +56,11 @@ public class GUIConfiguration {
         }
     }
 
-    public static void configureSteps(Context context) {
+    public static void configureSteps(Context context, String folderPath) {
         // clear() vs new check what is better
         steps = new ArrayList<>();
         for (PipelineStep pipelineStep : selectedPipelineSteps) {
-            ArrayList<Argument> arguments = configureArguments(context, pipelineStep);
+            ArrayList<Argument> arguments = configureArguments(context, pipelineStep, folderPath);
             Step step = new Step(pipelineStep, arguments);
             steps.add(step);
         }
@@ -140,7 +140,8 @@ public class GUIConfiguration {
         return linkedFileArguments.containsKey(fileName) ? linkedFileArguments.get(fileName) : "";
     }
 
-    private static ArrayList<Argument> configureArguments(Context context, PipelineStep pipelineStep) {
+    private static ArrayList<Argument> configureArguments(Context context, PipelineStep pipelineStep,
+            String folderPath) {
         int rawFile = 0;
         switch (pipelineStep) {
             case MINIMAP2_SEQUENCE_ALIGNMENT:
@@ -165,18 +166,87 @@ public class GUIConfiguration {
                 Log.e(TAG, "Invalid Pipeline Step");
                 break;
         }
-        return buildArgumentsFromJson(context, rawFile);
+        return buildArgumentsFromJson(context, rawFile, folderPath);
     }
 
-    private static ArrayList<Argument> buildArgumentsFromJson(Context context, @RawRes int file) {
+    private static ArrayList<Argument> buildArgumentsFromJson(Context context, @RawRes int file, String folderPath) {
         ArrayList<Argument> arguments = new ArrayList<>();
         JsonObject argsJson = JSONFileHelper.rawtoJsonObject(context, file);
         JsonArray argsJsonArray = argsJson.getAsJsonArray("args");
         for (JsonElement element : argsJsonArray) {
             Argument argument = new Gson().fromJson(element, Argument.class);
+            if (folderPath != null) {
+                configureDemoArgsFilePath(argument, folderPath);
+            }
             arguments.add(argument);
         }
         return arguments;
+    }
+
+    private static void configureDemoArgsFilePath(Argument argument, String folder) {
+
+        if (argument.isFile()) {
+            argument.setSetByUser(true);
+        }
+
+        // minimap2 input/output files
+        if (argument.getArgID().equals("MINIMAP2_REF_FILE")) {
+            argument.setArgValue(folder + "/draft.fa");
+        }
+        if (argument.getArgID().equals("MINIMAP2_QUERY_FILE")) {
+            argument.setArgValue(folder + "/reads.fasta");
+        }
+        if (argument.getArgID().equals("MINIMAP2_OUTPUT_FILE")) {
+            argument.setArgValue(folder + "/minimap2-out.sam");
+        }
+
+        // samtools input/output files
+        if (argument.getArgID().equals("SAMTOOL_SORT_INPUT_FILE")) {
+            argument.setArgValue(folder + "/minimap2-out.sam");
+        }
+        if (argument.getArgID().equals("SAMTOOL_SORT_OUTPUT_FILE")) {
+            argument.setArgValue(folder + "/reads.sorted.bam");
+        }
+
+        if (argument.getArgID().equals("SAMTOOL_INDEX_INPUT_FILE")) {
+            argument.setArgValue(folder + "/reads.sorted.bam");
+        }
+
+        // f5c index input/output files
+        if (argument.getArgID().equals("F5C_INDEX_FAST5_FILE")) {
+            argument.setArgValue(folder + "/fast5_files");
+        }
+        if (argument.getArgID().equals("F5C_INDEX_FASTA_FILE")) {
+            argument.setArgValue(folder + "/reads.fasta");
+        }
+
+        // f5c methylation input/output files
+        if (argument.getArgID().equals("F5C_METH_FASTA_FILE")) {
+            argument.setArgValue(folder + "/reads.fasta");
+        }
+        if (argument.getArgID().equals("F5C_METH_SORTED_FILE")) {
+            argument.setArgValue(folder + "/reads.sorted.bam");
+        }
+        if (argument.getArgID().equals("F5C_METH_REF_FILE")) {
+            argument.setArgValue(folder + "/draft.fa");
+        }
+        if (argument.getArgID().equals("F5C_METH_OUTPUT_FILE")) {
+            argument.setArgValue(folder + "/f5c-methylation.tsv");
+        }
+
+        // f5c event alignment input/output files
+        if (argument.getArgID().equals("F5C_ALIGN_FASTA_FILE")) {
+            argument.setArgValue(folder + "/reads.fasta");
+        }
+        if (argument.getArgID().equals("F5C_ALIGN_SORTED_FILE")) {
+            argument.setArgValue(folder + "/reads.sorted.bam");
+        }
+        if (argument.getArgID().equals("F5C_ALIGN_REF_FILE")) {
+            argument.setArgValue(folder + "/draft.fa");
+        }
+        if (argument.getArgID().equals("F5C_ALIGN_OUTPUT_FILE")) {
+            argument.setArgValue(folder + "/f5c-event-alignment.txt");
+        }
     }
 
 }

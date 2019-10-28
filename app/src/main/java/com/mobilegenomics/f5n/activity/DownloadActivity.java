@@ -23,7 +23,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.AppMode;
-import com.mobilegenomics.f5n.support.Decompress;
+import com.mobilegenomics.f5n.support.ZipManager;
 import com.obsez.android.lib.filechooser.ChooserDialog;
 import java.io.File;
 
@@ -142,10 +142,10 @@ public class DownloadActivity extends AppCompatActivity {
             @Override
             public void onClick(final View v) {
                 if (!TextUtils.isEmpty(folderPath)) {
-                    extractZip(new File(folderPath));
                     if (GUIConfiguration.getAppMode() == AppMode.SLAVE) {
                         btnRunPipeline.setVisibility(View.VISIBLE);
                     }
+                    extractZip(folderPath);
                 } else {
                     Toast.makeText(DownloadActivity.this, "Please Select a Zip file", Toast.LENGTH_SHORT).show();
                 }
@@ -233,9 +233,9 @@ public class DownloadActivity extends AppCompatActivity {
         }
     };
 
-    private void extractZip(File file) {
-        Decompress decompress = new Decompress(DownloadActivity.this, file);
-        decompress.unzip();
+    private void extractZip(String filepath) {
+        ZipManager zipManager = new ZipManager(DownloadActivity.this);
+        zipManager.unzip(filepath);
     }
 
     private void enableButtons() {
