@@ -119,8 +119,7 @@ public class MinITActivity extends AppCompatActivity {
     }
 
     private void sendJobResults() {
-        // TODO Need to send resultsSummary String back to the server
-        // TODO Update WrapperObject and ServerConnectionUtils.connectToServer method
+        ServerConnectionUtils.setResultToWrapperObject(resultsSummary);
         ServerConnectionUtils.connectToServer(State.COMPLETED, new ServerCallback() {
             @Override
             public void onSuccess(final WrapperObject job) {

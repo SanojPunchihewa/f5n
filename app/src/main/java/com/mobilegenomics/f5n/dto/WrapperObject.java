@@ -16,6 +16,8 @@ public class WrapperObject implements Serializable {
 
     private String pathToDataDir;
 
+    private String resultSummery;
+
     private ArrayList<Step> steps = new ArrayList<>();
 
     public WrapperObject() {
@@ -58,6 +60,14 @@ public class WrapperObject implements Serializable {
 
     public void setPathToDataDir(String pathToDataDir) {
         this.pathToDataDir = pathToDataDir;
+    }
+
+    public String getResultSummery() {
+        return resultSummery;
+    }
+
+    public void setResultSummery(String resultSummery) {
+        this.resultSummery = resultSummery;
     }
 
     public ArrayList<Step> getSteps() {

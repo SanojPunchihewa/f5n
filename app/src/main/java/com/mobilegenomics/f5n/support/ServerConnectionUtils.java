@@ -2,9 +2,11 @@ package com.mobilegenomics.f5n.support;
 
 import android.os.Handler;
 import android.util.Log;
+
 import com.mobilegenomics.f5n.activity.MinITActivity;
 import com.mobilegenomics.f5n.dto.State;
 import com.mobilegenomics.f5n.dto.WrapperObject;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -107,6 +109,10 @@ public class ServerConnectionUtils {
 
     public static StringBuilder getLogMessage() {
         return logMessage;
+    }
+
+    public static void setResultToWrapperObject(String resultSummery) {
+        receivedWrapperObject.setResultSummery(resultSummery);
     }
 
     enum ConnectionMessages {
