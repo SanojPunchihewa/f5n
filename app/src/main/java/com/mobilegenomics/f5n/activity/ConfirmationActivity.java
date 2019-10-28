@@ -1,6 +1,5 @@
 package com.mobilegenomics.f5n.activity;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -43,7 +42,7 @@ public class ConfirmationActivity extends AppCompatActivity {
 
     private static final String TAG_SAMTOOLS = "samtools-native";
 
-    private ProgressDialog progressDialog;
+    private String resultsSummary;
 
     TextView txtLogs;
 
@@ -139,7 +138,7 @@ public class ConfirmationActivity extends AppCompatActivity {
                 @Override
                 public void onClick(final View v) {
                     Intent intent = new Intent(ConfirmationActivity.this, MinITActivity.class);
-                    intent.putExtra("PIPELINE_STATUS", "TODO-Status");
+                    intent.putExtra("PIPELINE_STATUS", resultsSummary);
                     startActivity(intent);
                 }
             });
@@ -266,6 +265,12 @@ public class ConfirmationActivity extends AppCompatActivity {
         }
 
         String logcat = txtLogs.getText().toString();
+        stringBuilder.append(logcat);
+
+        String footer = "\n-------------------- End of Log --------------------\n\n";
+        stringBuilder.append(footer);
+
+        resultsSummary = stringBuilder.toString();
 
         try {
             String dirPath = Environment.getExternalStorageDirectory() + "/mobile-genomics";
@@ -281,8 +286,6 @@ public class ConfirmationActivity extends AppCompatActivity {
             FileOutputStream fOut = new FileOutputStream(logFile, true);
             OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
             myOutWriter.append(stringBuilder.toString());
-            myOutWriter.append(logcat);
-            myOutWriter.append("-------------------- End of Log --------------------\n\n");
             myOutWriter.flush();
             myOutWriter.close();
             fOut.close();

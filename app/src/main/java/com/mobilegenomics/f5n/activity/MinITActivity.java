@@ -30,6 +30,8 @@ public class MinITActivity extends AppCompatActivity {
 
     private boolean ranPipeline = false;
 
+    private String resultsSummary;
+
     public static void logHandler(Handler handler) {
         handler.post(new Runnable() {
             @Override
@@ -53,8 +55,8 @@ public class MinITActivity extends AppCompatActivity {
         btnSendResult = findViewById(R.id.btn_send_result);
 
         if (getIntent().getExtras() != null) {
-            String path = getIntent().getExtras().getString("PIPELINE_STATUS");
-            if (path != null && !TextUtils.isEmpty(path)) {
+            resultsSummary = getIntent().getExtras().getString("PIPELINE_STATUS");
+            if (resultsSummary != null && !TextUtils.isEmpty(resultsSummary)) {
                 ranPipeline = true;
                 btnRquestJob.setText("Send Results");
             }
@@ -117,7 +119,8 @@ public class MinITActivity extends AppCompatActivity {
     }
 
     private void sendJobResults() {
-
+        // TODO Need to send resultsSummary String back to the server
+        // TODO Update WrapperObject and ServerConnectionUtils.connectToServer method
         ServerConnectionUtils.connectToServer(State.COMPLETED, new ServerCallback() {
             @Override
             public void onSuccess(final WrapperObject job) {
