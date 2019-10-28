@@ -51,7 +51,5 @@ before_script:
 
 script:
   - if [[ "$TRAVIS_TAG" ]]; then ./gradlew clean :app:assembleRelease --full-stacktrace; else ./gradlew clean test --full-stacktrace; fi
-  - if [[ "$TRAVIS_TAG" ]]; then ./gradlew clean publishReleaseBundle --full-stacktrace; fi
-
-after_success:
   - chmod +x ./publish_release.sh; ./publish_release.sh
+  - if [[ "$TRAVIS_TAG" ]]; then ./gradlew clean publishReleaseBundle --full-stacktrace; fi
