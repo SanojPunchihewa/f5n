@@ -89,6 +89,7 @@ if (isRunningOnTravis) {
     play {
         track = "internal"
         userFraction = 1
+        serviceAccountEmail = System.getenv("SERVICE_ACCOUNT_NAME")
         serviceAccountCredentials = file("../play.p12")
     }
 }
