@@ -10,7 +10,10 @@ env:
     - secure: jPGFNM9lFZHOpAyJD5Ba7szJ4btHew4edjUUeVeqY3geiZdPbJXYa/CaVw3Yaie5P/oapxUGxWqjQIEOnzeH+wcrqo7KqpAjpSnNJ1sZd6ZNA1rHCta3slveSvJaNV3+FrAYKNHkzswJMbiJjlhQHOr9RCbhwovIk9YEtmsc8Vdv551BCGVd4uuKnGFPeoepMnzwV5l4PnlcIP5h+/eJwrYTk6Xst0zcCPlJ3TmTMpOmLZ5KOuJ83xwq3jZGEDgOAeRfZe7hYtUmC6xEbgNqYG6CA5vCWDBydni3KzMXo2JSrJf79ND6wnyh+gxNUlb2LMAPYgAKPuhFKswjMirpvYjB8KE/l7NzArHhC4LlKwJLEL0L7g/sTV4uR5EYsbWcFB5+m2G7boM/Z3eQqHG1GoCIT7Q9977MC7Taabblj0oe6PU7uN+wJfCjf5cFOhNRyOUo5UQBhoY91Lab5CY++ItG86JzbzW9NfFEZU5Lhf5zy4G1K0//sI741hLF7U+mcBNs43SRuIDYbcPhxDepW1o04sdeiq9FKD+H7ubiUTy6EyebK8y33E3+ftMhZ3pZW952YvhiMbwk00gDjwIWe5+b1Y34ZFZVI/S2mBS157mR/AOZGlaSDixI6hCN99i1sY9ca30LjPSq2/gWowTE5Fq/pmbZVhs1zhsl3SB0xf0=
     - secure: HPJUkDZ26zf+QO4tHdDCWbsGQrUClGTFysxoE/n+5udJIdkXnR2vNae54lR9tM7gsjYheMnrZ/MqLqZSwEUncgc2sov9GfHhj0KUbTWm71omG0LOZhrPXYsHlzHQFQT/nRXL9i4wN9OF44BJi7CnLY66zbL5KEA2FgmoKrpE7M1kEaCOVcyeaKTLAxOdTh7zTOSXGOOcYxuNKIkkaCjg9I1PineUVsnl0xOs1sf62AKUyEL1qKMh7OrjNSkpf2tCnOX/znSnPdjYDq8tq3QItpXPaOviSZ9HVdEjdFzcGdbOYrj0b2euM9CgjpcrIkFWukpY6MCqbWoKxDXczIU0IWp3cEakQ7+wgS8K9wAe+R34FL/jTa3CF/sbx6AkzGK3u07CmLf/93lQus8N1L4an7Pr05A6GUtH7FPYJGfRnWshqFh0Ue2gGkiFPt6I9f3eYEWT2QqpBpL9DSLhVycma0s55DINUHIaCyRPRwYTvOu/q9HnsQrn61dHdM7DMbgEJjA+jLXSGgEnZ+yg/0nKUPW5TBxgzBU35+IxAz+r6q3+kH9bhaDSnbJqWduP/rrOOFtym1zkCnHysl4z2yJ10Y6+w2GAkGQ9bdD3moOtnqy0LnG60jQDdOJywbGCPef18Zup+BVFaaxIbkJkfV+oH34lpKcriWknnimiyOMYEno=
 before_install:
-  - if [ $TRAVIS_PULL_REQUEST == "false" ]; then openssl aes-256-cbc -K $encrypted_83a37975ea22_key -iv $encrypted_83a37975ea22_iv -in keystore.jks.enc -out keystore.jks -d; fi
+  - if [ $TRAVIS_PULL_REQUEST == "false" ]; then openssl aes-256-cbc -K $encrypted_83a37975ea22_key
+    -iv $encrypted_83a37975ea22_iv -in keystore.jks.enc -out keystore.jks -d; fi
+  - if [ $TRAVIS_PULL_REQUEST == "false" ]; then openssl aes-256-cbc -K $encrypted_83a37975ea22_key
+  - -iv $encrypted_83a37975ea22_iv -in play.p12.enc -out play.p12 -d; fi
   - touch $HOME/.android/repositories.cfg
   - yes | sdkmanager "platforms;android-28"
   - yes | sdkmanager "build-tools;28.0.3"
