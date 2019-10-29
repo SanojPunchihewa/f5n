@@ -1,6 +1,6 @@
 package com.mobilegenomics.f5n.activity;
 
-import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -14,11 +14,12 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.widget.NestedScrollView;
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.PipelineComponent;
@@ -41,11 +42,13 @@ public class ConfirmationActivity extends AppCompatActivity {
 
     private static final String TAG_SAMTOOLS = "samtools-native";
 
-    private ProgressDialog progressDialog;
+    private int isPipelineRunning = 0;
+
+    private boolean logWrittenToFile = false;
 
     TextView txtLogs;
 
-    ScrollView scrollView;
+    NestedScrollView scrollView;
 
     LinearLayout linearLayout;
 
@@ -101,7 +104,7 @@ public class ConfirmationActivity extends AppCompatActivity {
         separator1.setBackgroundColor(Color.parseColor("#000000"));
         linearLayout.addView(separator1);
 
-        scrollView = new ScrollView(this);
+        scrollView = new NestedScrollView(this);
         linearLayout.addView(scrollView);
 
         txtLogs = new TextView(this);
@@ -134,6 +137,7 @@ public class ConfirmationActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            isPipelineRunning = 1;
         }
 
         @Override
@@ -161,6 +165,7 @@ public class ConfirmationActivity extends AppCompatActivity {
                         pipelineComponent.getPipelineStep().getCommand() + " took " + pipelineComponent.getRuntime());
                 linearLayout.addView(txtRuntime);
             }
+            isPipelineRunning = 2;
             btnWriteLog.setVisibility(View.VISIBLE);
             btnProceed.setEnabled(true);
             mProgressBar.setVisibility(View.GONE);
@@ -265,7 +270,8 @@ public class ConfirmationActivity extends AppCompatActivity {
             myOutWriter.close();
             fOut.close();
             Toast.makeText(getApplicationContext(), "Finished writing to mobile-genomics in home", Toast.LENGTH_LONG)
-                    .show(); //##5
+                    .show();
+            logWrittenToFile = true;
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(), "Write failure", Toast.LENGTH_SHORT).show(); //##6
             Log.e("TAG", e.toString());
@@ -273,4 +279,59 @@ public class ConfirmationActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        if (isPipelineRunning == 0) {
+            super.onBackPressed();
+        } else if (isPipelineRunning == 1) {
+            showStopPipelineDialog();
+        } else if (isPipelineRunning == 2) {
+            if (!logWrittenToFile) {
+                showWriteToFileDialog();
+            } else {
+                super.onBackPressed();
+            }
+        }
+    }
+
+    private void showWriteToFileDialog() {
+
+        new AlertDialog.Builder(ConfirmationActivity.this)
+                .setTitle("Save log")
+                .setMessage("Are you sure you want to save log?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        writeLogToFile();
+                        ConfirmationActivity.super.onBackPressed();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(final DialogInterface dialog, final int which) {
+                        ConfirmationActivity.super.onBackPressed();
+                    }
+                })
+                .show();
+
+    }
+
+    private void showStopPipelineDialog() {
+
+        new AlertDialog.Builder(ConfirmationActivity.this)
+                .setTitle("Stop Running")
+                .setMessage("Are you sure to stop the pipeline?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // TODO Kill the native process
+                        ConfirmationActivity.super.onBackPressed();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(final DialogInterface dialog, final int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
+    }
 }

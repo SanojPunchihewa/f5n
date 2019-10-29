@@ -71,9 +71,6 @@ public class DemoActivity extends AppCompatActivity {
                 Log.e(TAG, "Error : " + e);
             }
         }
-
-        registerReceiver(onDownloadComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
-
         try {
             fOut = new FileOutputStream(logFile, true);
             myOutWriter = new OutputStreamWriter(fOut);
@@ -117,6 +114,7 @@ public class DemoActivity extends AppCompatActivity {
         btnRunPipeline.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(final View v) {
+                GUIConfiguration.eraseSelectedPipeline();
                 for (PipelineStep step : PipelineStep.values()) {
                     GUIConfiguration.addPipelineStep(step);
                 }
@@ -124,7 +122,7 @@ public class DemoActivity extends AppCompatActivity {
                 GUIConfiguration.configureSteps(DemoActivity.this,
                         Environment.getExternalStorageDirectory() + "/" + folderName + "/"
                                 + fileName.substring(0, fileName.lastIndexOf(".")));
-                startActivity(new Intent(DemoActivity.this, ConfirmationActivity.class));
+                startActivity(new Intent(DemoActivity.this, TerminalActivity.class));
             }
         });
         linearLayout.addView(btnRunPipeline);
@@ -173,9 +171,20 @@ public class DemoActivity extends AppCompatActivity {
     };
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        registerReceiver(onDownloadComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(onDownloadComplete);
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
-        unregisterReceiver(onDownloadComplete);
         try {
             myOutWriter.append("-------------------- End of Log --------------------\n\n");
             myOutWriter.flush();
