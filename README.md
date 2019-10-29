@@ -24,14 +24,20 @@ The source code for the Server can be found [here](https://github.com/AnjanaSena
 
 ![Diagram](https://github.com/hiruna72/f5n/blob/master/server_mobile_connection.png)
 
+### Installation
+f5n application can be obtained from:
 
-### Getting started
-This is a quick start. To contribute to our work please refer [How to contribute](#how-to-contribute). Chose `ARCHITECTURE` to be `armeabi-v7a` or `arm64-v8a`. To find what is the `ARCHITECTURE` of your phone the easiest way is to google it. Once you download the apk copy it to your phone and install. 
+[Google Play](https://play.google.com/store/apps/details?id=com.mobilegenomics.f5n)
+
+Additionally you can get development builds from Github releases
+Chose `ARCHITECTURE` to be `armeabi-v7a` or `arm64-v8a`. To find what is the `ARCHITECTURE` of your phone the easiest way is to google it. Once you download the apk copy it to your phone and install.
 ```sh
 VERSION=0.0.4
 ARCHITECTURE=armeabi-v7a
 wget "https://github.com/SanojPunchihewa/f5n/releases/download/$VERSION/mobilegenomics-f5n-v$VERSION-$ARCHITECTURE-release.apk"
 ```
+
+Signature keys of builds are different. Before you switch the installation source, you will have to uninstall the f5n application.
 
 ### How to contribute
 Please contribute to our work by testing,debugging and developing our product. A guide to how to contribute is available [here](https://github.com/MarcDiethelm/contributing/blob/master/README.md)
