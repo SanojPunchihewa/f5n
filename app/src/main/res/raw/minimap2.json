@@ -2,7 +2,7 @@
   "args": [
     {
       "argName": "Temporary Prefix for multi-part index",
-      "argValue": "temp.minimap",
+      "argValue": null,
       "argDescription": "Prefix to create temporary files. Typically used for a multi-part index",
       "flag": "--multi-prefix=",
       "argID": "MINIMAP2_TEMP_FILE",
