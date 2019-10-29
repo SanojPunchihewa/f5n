@@ -10,7 +10,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.dto.State;
@@ -123,7 +125,12 @@ public class MinITActivity extends AppCompatActivity {
         ServerConnectionUtils.connectToServer(State.COMPLETED, new ServerCallback() {
             @Override
             public void onSuccess(final WrapperObject job) {
-                Toast.makeText(MinITActivity.this, "Success", Toast.LENGTH_SHORT).show();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(MinITActivity.this, "Success", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             @Override
