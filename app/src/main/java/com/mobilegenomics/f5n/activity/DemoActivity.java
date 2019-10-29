@@ -122,7 +122,7 @@ public class DemoActivity extends AppCompatActivity {
                 GUIConfiguration.configureSteps(DemoActivity.this,
                         Environment.getExternalStorageDirectory() + "/" + folderName + "/"
                                 + fileName.substring(0, fileName.lastIndexOf(".")));
-                startActivity(new Intent(DemoActivity.this, ConfirmationActivity.class));
+                startActivity(new Intent(DemoActivity.this, TerminalActivity.class));
             }
         });
         linearLayout.addView(btnRunPipeline);
