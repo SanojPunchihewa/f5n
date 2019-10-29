@@ -117,6 +117,7 @@ public class DemoActivity extends AppCompatActivity {
         btnRunPipeline.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(final View v) {
+                GUIConfiguration.eraseSelectedPipeline();
                 for (PipelineStep step : PipelineStep.values()) {
                     GUIConfiguration.addPipelineStep(step);
                 }
