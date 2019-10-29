@@ -1,8 +1,9 @@
 package com.mobilegenomics.f5n.core;
 
 import androidx.annotation.NonNull;
+import java.io.Serializable;
 
-public class Argument {
+public class Argument implements Serializable {
 
     private String argName;
 

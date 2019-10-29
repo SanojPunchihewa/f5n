@@ -1,15 +1,12 @@
 package com.mobilegenomics.f5n.core;
 
-import java.io.Serializable;
-
 interface runNative {
 
     int run();
 }
 
-public class PipelineComponent implements runNative, Serializable {
+public class PipelineComponent implements runNative {
 
-    private static final long serialVersionUID = 0L;
     private PipelineStep pipelineStep;
     private String command;
     private String runtime;

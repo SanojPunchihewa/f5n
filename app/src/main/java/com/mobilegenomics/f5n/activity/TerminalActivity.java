@@ -26,6 +26,8 @@ import java.util.Objects;
 
 public class TerminalActivity extends AppCompatActivity {
 
+    private static final String DATA_SET_PATH = "\\$DATA_SET_PATH";
+
     private LinearLayout linearLayout;
 
     private int stepId = 0;
@@ -64,6 +66,7 @@ public class TerminalActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(final Editable s) {
                 folderPath = s.toString();
+                replaceDirectoryPath(folderPath);
             }
         });
 
@@ -154,6 +157,17 @@ public class TerminalActivity extends AppCompatActivity {
                 })
                 .build()
                 .show();
+    }
+
+    private void replaceDirectoryPath(String path) {
+        for (int stepId = 0; stepId < steps.size(); stepId++) {
+            EditText editText = findViewById(stepId + 125);
+            if (editText.getText() != null && !TextUtils.isEmpty(editText.getText().toString())) {
+                String cmd = editText.getText().toString();
+                String replacedCmd = cmd.replaceAll(DATA_SET_PATH, path);
+                editText.setText(replacedCmd);
+            }
+        }
     }
 
 }

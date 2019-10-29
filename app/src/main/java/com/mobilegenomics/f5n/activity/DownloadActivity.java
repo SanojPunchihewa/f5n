@@ -20,7 +20,9 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
+import com.mobilegenomics.f5n.core.AppMode;
 import com.mobilegenomics.f5n.support.ZipManager;
 import com.obsez.android.lib.filechooser.ChooserDialog;
 import java.io.File;
@@ -51,6 +53,8 @@ public class DownloadActivity extends AppCompatActivity {
 
     Button btnExtract;
 
+    Button btnRunPipeline;
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -64,6 +68,13 @@ public class DownloadActivity extends AppCompatActivity {
         urlInputPath = new EditText(this);
         urlInputPath.setHint("Url of the data set");
         linearLayout.addView(urlInputPath);
+
+        if (getIntent().getExtras() != null) {
+            String path = getIntent().getExtras().getString("DATA_SET_URL");
+            if (path != null && !TextUtils.isEmpty(path)) {
+                urlInputPath.setText(path);
+            }
+        }
 
         folderPathInput = new EditText(this);
         folderPathInput.setHint("Path to download data");
@@ -131,6 +142,9 @@ public class DownloadActivity extends AppCompatActivity {
             @Override
             public void onClick(final View v) {
                 if (!TextUtils.isEmpty(folderPath)) {
+                    if (GUIConfiguration.getAppMode() == AppMode.SLAVE) {
+                        btnRunPipeline.setVisibility(View.VISIBLE);
+                    }
                     extractZip(folderPath);
                 } else {
                     Toast.makeText(DownloadActivity.this, "Please Select a Zip file", Toast.LENGTH_SHORT).show();
@@ -138,6 +152,21 @@ public class DownloadActivity extends AppCompatActivity {
 
             }
         });
+
+        if (GUIConfiguration.getAppMode() == AppMode.SLAVE) {
+            btnRunPipeline = new Button(this);
+            btnRunPipeline.setText("Run Pipeline");
+            btnRunPipeline.setVisibility(View.GONE);
+            linearLayout.addView(btnRunPipeline);
+            btnRunPipeline.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(final View v) {
+                    Intent intent = new Intent(DownloadActivity.this, TerminalActivity.class);
+                    intent.putExtra("FOLDER_PATH", folderPath.substring(0, folderPath.lastIndexOf(".")));
+                    startActivity(intent);
+                }
+            });
+        }
 
     }
 
