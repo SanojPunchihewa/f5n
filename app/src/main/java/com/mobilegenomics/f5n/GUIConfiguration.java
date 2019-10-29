@@ -118,9 +118,13 @@ public class GUIConfiguration {
     public static void runPipeline() {
         for (PipelineComponent pipelineComponent : pipelineComponents) {
             long start = System.currentTimeMillis();
-            pipelineComponent.run();
+            int returnCode = pipelineComponent.run();
             long time = System.currentTimeMillis() - start;
-            pipelineComponent.setRuntime(TimeFormat.millisToShortDHMS(time));
+            String status = returnCode == 0 ? "Success" : "Error";
+            pipelineComponent.setRuntime(TimeFormat.millisToShortDHMS(time) + " status = " + status);
+            if (returnCode != 0) {
+                break;
+            }
         }
     }
 
