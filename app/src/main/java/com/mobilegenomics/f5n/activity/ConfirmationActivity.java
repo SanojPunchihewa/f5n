@@ -14,11 +14,11 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.widget.NestedScrollView;
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.PipelineComponent;
@@ -45,7 +45,7 @@ public class ConfirmationActivity extends AppCompatActivity {
 
     TextView txtLogs;
 
-    ScrollView scrollView;
+    NestedScrollView scrollView;
 
     LinearLayout linearLayout;
 
@@ -101,7 +101,7 @@ public class ConfirmationActivity extends AppCompatActivity {
         separator1.setBackgroundColor(Color.parseColor("#000000"));
         linearLayout.addView(separator1);
 
-        scrollView = new ScrollView(this);
+        scrollView = new NestedScrollView(this);
         linearLayout.addView(scrollView);
 
         txtLogs = new TextView(this);
