@@ -1,28 +1,29 @@
 package com.mobilegenomics.f5n.activity;
 
 import android.annotation.SuppressLint;
-import android.app.DownloadManager;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.Uri;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.webkit.MimeTypeMap;
-import android.webkit.URLUtil;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import com.liulishuo.okdownload.DownloadTask;
+import com.liulishuo.okdownload.core.cause.EndCause;
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.AppMode;
+import com.mobilegenomics.f5n.support.DownloadListener;
+import com.mobilegenomics.f5n.support.DownloadManager;
 import com.mobilegenomics.f5n.support.ZipManager;
 import com.obsez.android.lib.filechooser.ChooserDialog;
 import java.io.File;
@@ -35,13 +36,17 @@ public class DownloadActivity extends AppCompatActivity {
 
     private static final String ecoliDataSetURL = "https://zanojmobiapps.com/_tmp/genome/ecoli/ecoli_2kb_region.zip";
 
-    private long downloadID;
+    private DownloadTask downloadTask;
 
     LinearLayout linearLayout;
 
     EditText urlInputPath;
 
     EditText folderPathInput;
+
+    TextView statusTextView;
+
+    ProgressBar progressBar;
 
     Button btnDownload;
 
@@ -60,8 +65,6 @@ public class DownloadActivity extends AppCompatActivity {
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_vertical);
-
-        registerReceiver(onDownloadComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
 
         linearLayout = findViewById(R.id.vertical_linear_layout);
 
@@ -89,6 +92,17 @@ public class DownloadActivity extends AppCompatActivity {
             }
         });
         linearLayout.addView(btnSetFolderPath);
+
+        statusTextView = new TextView(this);
+        linearLayout.addView(statusTextView);
+
+        progressBar = new ProgressBar(this,
+                null,
+                android.R.attr.progressBarStyleHorizontal);
+        progressBar.setProgress(0);
+        progressBar.setProgressTintList(ColorStateList
+                .valueOf(Color.BLACK));
+        linearLayout.addView(progressBar);
 
         btnDownload = new Button(this);
         btnDownload.setText("Download Data");
@@ -197,41 +211,15 @@ public class DownloadActivity extends AppCompatActivity {
 
         disableButtons();
 
-        DownloadManager downloadmanager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
-        Uri uri = Uri.parse(url);
-
-        String nameOfFile = URLUtil.guessFileName(url, null,
-                MimeTypeMap.getFileExtensionFromUrl(url));
-
-        try {
-            DownloadManager.Request request = new DownloadManager.Request(uri);
-            request.setTitle(nameOfFile);
-            request.setDescription("Downloading");
-            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-            request.setVisibleInDownloadsUi(true);
-            request.setDestinationUri(
-                    Uri.parse("file://" + folderPath + "/" + nameOfFile));
-
-            downloadID = downloadmanager.enqueue(request);
-        } catch (Exception e) {
-            Toast.makeText(this, "Invalid URL", Toast.LENGTH_SHORT).show();
-            Log.e(TAG, "Exception: " + e);
-            enableButtons();
-        }
+        DownloadManager downloadManager = new DownloadManager(url, folderPath, statusTextView, progressBar,
+                new DownloadListener() {
+                    @Override
+                    public void onComplete(@NonNull final EndCause cause, @Nullable final Exception realCause) {
+                        enableButtons();
+                    }
+                });
+        downloadManager.download();
     }
-
-    private BroadcastReceiver onDownloadComplete = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            //Fetching the download id received with the broadcast
-            long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
-            //Checking if the received broadcast is for our enqueued download by matching download id
-            if (downloadID == id) {
-                Toast.makeText(DownloadActivity.this, "Download Completed", Toast.LENGTH_SHORT).show();
-                enableButtons();
-            }
-        }
-    };
 
     private void extractZip(String filepath) {
         ZipManager zipManager = new ZipManager(DownloadActivity.this);
@@ -246,11 +234,5 @@ public class DownloadActivity extends AppCompatActivity {
     private void disableButtons() {
         btnDownload.setEnabled(false);
         btnDownloadEcoli.setEnabled(false);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unregisterReceiver(onDownloadComplete);
     }
 }
