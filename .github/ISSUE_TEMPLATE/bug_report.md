@@ -26,7 +26,7 @@ If applicable, add screenshots to help explain your problem.
 **Smartphone (please complete the following information):**
  - Device: [e.g. Sony Xperia C4]
  - OS: [e.g. Android 8.0]
- - Version [e.g. 22]
+ - App Version [e.g. 1.0.2]
 
 **Additional context**
 Add any other context about the problem here.
