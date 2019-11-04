@@ -1,5 +1,6 @@
 package com.mobilegenomics.f5n.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,11 +9,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
-
+import com.liulishuo.okdownload.core.Util;
 import com.mobilegenomics.f5n.BuildConfig;
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
@@ -21,16 +22,20 @@ import com.mobilegenomics.f5n.dto.WrapperObject;
 import com.mobilegenomics.f5n.support.ServerCallback;
 import com.mobilegenomics.f5n.support.ServerConnectionUtils;
 import com.mobilegenomics.f5n.support.ZipManager;
-
-import net.gotev.uploadservice.BinaryUploadRequest;
-import net.gotev.uploadservice.UploadNotificationConfig;
-import net.gotev.uploadservice.UploadService;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
+import net.gotev.uploadservice.BinaryUploadRequest;
+import net.gotev.uploadservice.ServerResponse;
+import net.gotev.uploadservice.UploadInfo;
+import net.gotev.uploadservice.UploadNotificationConfig;
+import net.gotev.uploadservice.UploadService;
+import net.gotev.uploadservice.UploadServiceSingleBroadcastReceiver;
+import net.gotev.uploadservice.UploadStatusDelegate;
 
-public class MinITActivity extends AppCompatActivity {
+public class MinITActivity extends AppCompatActivity implements UploadStatusDelegate {
+
+    private static final String TAG = MinITActivity.class.getSimpleName();
 
     private static TextView connectionLogText;
 
@@ -45,6 +50,12 @@ public class MinITActivity extends AppCompatActivity {
     private String resultsSummary;
 
     private String folderPath;
+
+    TextView statusTextView;
+
+    ProgressBar progressBar;
+
+    private UploadServiceSingleBroadcastReceiver uploadReceiver;
 
     public static void logHandler(Handler handler) {
         handler.post(new Runnable() {
@@ -63,7 +74,12 @@ public class MinITActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_minit);
 
+        statusTextView = findViewById(R.id.txt_status);
+        progressBar = findViewById(R.id.progress_upload_status);
+
         UploadService.NAMESPACE = BuildConfig.APPLICATION_ID;
+
+        uploadReceiver = new UploadServiceSingleBroadcastReceiver(this);
 
         final EditText serverAddressInput = findViewById(R.id.input_server_address);
         connectionLogText = findViewById(R.id.text_conn_log);
@@ -89,7 +105,7 @@ public class MinITActivity extends AppCompatActivity {
 
                     ServerConnectionUtils.setServerAddress(serverIP);
                     if (ranPipeline) {
-                        sendJobResults();
+                        uploadDataSet();
                     } else {
                         requestJob();
                     }
@@ -136,7 +152,6 @@ public class MinITActivity extends AppCompatActivity {
     }
 
     private void sendJobResults() {
-        uploadDataSet();
         ServerConnectionUtils.setResultToWrapperObject(resultsSummary);
         ServerConnectionUtils.connectToServer(State.COMPLETED, new ServerCallback() {
             @Override
@@ -170,10 +185,52 @@ public class MinITActivity extends AppCompatActivity {
                             .setNotificationConfig(new UploadNotificationConfig())
                             .setMaxRetries(2)
                             .startUpload();
+            // More info about receivers https://github.com/gotev/android-upload-service/wiki/Monitoring-upload-status
+            uploadReceiver.setUploadID(uploadId);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public void onProgress(final Context context, final UploadInfo uploadInfo) {
+        String totalBytes = Util.humanReadableBytes(uploadInfo.getTotalBytes(), true);
+        String uploadedBytes = Util.humanReadableBytes(uploadInfo.getUploadedBytes(), true);
+        String status = "Uploading: " + uploadedBytes + "/" + totalBytes;
+        statusTextView.setText(status);
+        progressBar.setProgress(uploadInfo.getProgressPercent());
+    }
+
+    @Override
+    public void onError(final Context context, final UploadInfo uploadInfo, final ServerResponse serverResponse,
+            final Exception exception) {
+        statusTextView.setText("Result Upload failed: " + serverResponse.getHttpCode());
+        Log.e(TAG, "Upload Failed: " + serverResponse.getBodyAsString());
+    }
+
+    @Override
+    public void onCompleted(final Context context, final UploadInfo uploadInfo, final ServerResponse serverResponse) {
+        statusTextView.setText("Result Upload completed: " + serverResponse.getHttpCode());
+        sendJobResults();
+    }
+
+    @Override
+    public void onCancelled(final Context context, final UploadInfo uploadInfo) {
+        statusTextView.setText("Result Upload cancelled");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        uploadReceiver.register(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        uploadReceiver.unregister(this);
+    }
+
 }
