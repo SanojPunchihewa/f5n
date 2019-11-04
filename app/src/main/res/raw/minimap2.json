@@ -1,6 +1,18 @@
 {
   "args": [
     {
+      "argName": "Temporary Prefix for multi-part index",
+      "argValue": "temp.minimap",
+      "argDescription": "Prefix to create temporary files. Typically used for a multi-part index",
+      "flag": "--multi-prefix=",
+      "argID": "MINIMAP2_TEMP_FILE",
+      "isDependentOn": "null",
+      "hasFlag": true,
+      "flagOnly": false,
+      "required": false,
+      "isFile": true
+    },
+    {
       "argName": "reference index",
       "argValue": null,
       "argDescription": "Path to the reference index file",
