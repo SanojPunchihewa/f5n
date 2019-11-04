@@ -4,9 +4,11 @@ import android.content.Intent;
 import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -50,6 +52,8 @@ public class ConfirmationActivity extends AppCompatActivity {
 
     private boolean logWrittenToFile = false;
 
+    private String folderPath;
+
     TextView txtLogs;
 
     NestedScrollView scrollView;
@@ -63,6 +67,8 @@ public class ConfirmationActivity extends AppCompatActivity {
     Button btnSendResults;
 
     ProgressBar mProgressBar;
+
+    MediaPlayer mp;
 
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -78,6 +84,10 @@ public class ConfirmationActivity extends AppCompatActivity {
             txtCommand.setText(command);
             txtCommand.setPadding(10, 10, 10, 0);
             linearLayout.addView(txtCommand);
+        }
+
+        if (getIntent().getExtras() != null) {
+            folderPath = getIntent().getExtras().getString("FOLDER_PATH");
         }
 
         btnProceed = new Button(this);
@@ -125,6 +135,8 @@ public class ConfirmationActivity extends AppCompatActivity {
         separator2.setBackgroundColor(Color.parseColor("#000000"));
         linearLayout.addView(separator2);
 
+        mp = MediaPlayer.create(this, R.raw.alarm);
+
         btnWriteLog = new Button(this);
         btnWriteLog.setText("Write Log to File");
         btnWriteLog.setOnClickListener(new OnClickListener() {
@@ -143,8 +155,10 @@ public class ConfirmationActivity extends AppCompatActivity {
             btnSendResults.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(final View v) {
+                    mp.stop();
                     Intent intent = new Intent(ConfirmationActivity.this, MinITActivity.class);
                     intent.putExtra("PIPELINE_STATUS", resultsSummary);
+                    intent.putExtra("FOLDER_PATH", folderPath);
                     startActivity(intent);
                 }
             });
@@ -191,6 +205,8 @@ public class ConfirmationActivity extends AppCompatActivity {
             btnProceed.setEnabled(true);
             mProgressBar.setVisibility(View.GONE);
             if (GUIConfiguration.getAppMode() == AppMode.SLAVE) {
+                mp.start();
+                mp.setLooping(true);
                 btnSendResults.setVisibility(View.VISIBLE);
             }
         }
