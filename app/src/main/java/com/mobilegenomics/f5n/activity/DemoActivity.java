@@ -1,11 +1,8 @@
 package com.mobilegenomics.f5n.activity;
 
-import android.app.DownloadManager;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.Uri;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -13,13 +10,17 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import com.liulishuo.okdownload.core.cause.EndCause;
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.PipelineStep;
+import com.mobilegenomics.f5n.support.DownloadListener;
 import com.mobilegenomics.f5n.support.TimeFormat;
 import com.mobilegenomics.f5n.support.ZipManager;
 import java.io.File;
@@ -37,7 +38,9 @@ public class DemoActivity extends AppCompatActivity {
 
     private static final String fileName = "ecoli-data-set.zip";
 
-    private long downloadID;
+    private TextView statusTextView;
+
+    private ProgressBar progressBar;
 
     private LinearLayout linearLayout;
 
@@ -94,6 +97,17 @@ public class DemoActivity extends AppCompatActivity {
         txtSkipDownload.setPadding(0, 10, 0, 0);
         linearLayout.addView(txtSkipDownload);
 
+        statusTextView = new TextView(this);
+        linearLayout.addView(statusTextView);
+
+        progressBar = new ProgressBar(this,
+                null,
+                android.R.attr.progressBarStyleHorizontal);
+        progressBar.setProgress(0);
+        progressBar.setProgressTintList(ColorStateList
+                .valueOf(Color.BLACK));
+        linearLayout.addView(progressBar);
+
         Button btnDownloadAndExtract = new Button(this);
         btnDownloadAndExtract.setText("Download & Extract");
         btnDownloadAndExtract.setOnClickListener(new OnClickListener() {
@@ -134,52 +148,23 @@ public class DemoActivity extends AppCompatActivity {
 
         writeToLogFile("Downloading data set...\n");
 
-        DownloadManager downloadmanager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
-        Uri uri = Uri.parse(url);
-
-        try {
-            DownloadManager.Request request = new DownloadManager.Request(uri);
-            request.setTitle(fileName);
-            request.setDescription("Downloading");
-            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-            request.setVisibleInDownloadsUi(true);
-            request.setDestinationUri(
-                    Uri.parse("file://" + Environment.getExternalStorageDirectory() + "/" + folderName + "/"
-                            + fileName));
-
-            downloadID = downloadmanager.enqueue(request);
-        } catch (Exception e) {
-            Toast.makeText(this, "Invalid URL", Toast.LENGTH_SHORT).show();
-            Log.e(TAG, "Exception: " + e);
-            writeToLogFile("[Error] Downloading data set: " + e + "\n");
-        }
-    }
-
-    private BroadcastReceiver onDownloadComplete = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            //Fetching the download id received with the broadcast
-            long id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1);
-            //Checking if the received broadcast is for our enqueued download by matching download id
-            if (downloadID == id) {
-                Toast.makeText(DemoActivity.this, "Download Completed", Toast.LENGTH_SHORT).show();
-                writeToLogFile("Downloading data set completed\n");
-                extractZip(Environment.getExternalStorageDirectory() + "/" + folderName + "/"
-                        + fileName);
-            }
-        }
-    };
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        registerReceiver(onDownloadComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        unregisterReceiver(onDownloadComplete);
+        com.mobilegenomics.f5n.support.DownloadManager
+                downloadManager = new com.mobilegenomics.f5n.support.DownloadManager(url,
+                Environment.getExternalStorageDirectory() + "/" + folderName, statusTextView,
+                progressBar,
+                new DownloadListener() {
+                    @Override
+                    public void onComplete(@NonNull final EndCause cause, @Nullable final Exception realCause) {
+                        if (cause == EndCause.COMPLETED) {
+                            writeToLogFile("Downloading data set completed\n");
+                            extractZip(Environment.getExternalStorageDirectory() + "/" + folderName + "/"
+                                    + fileName);
+                        } else {
+                            writeToLogFile("Downloading data set error : " + realCause);
+                        }
+                    }
+                });
+        downloadManager.download();
     }
 
     @Override

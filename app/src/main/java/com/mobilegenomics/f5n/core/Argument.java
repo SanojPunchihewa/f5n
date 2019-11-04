@@ -124,7 +124,7 @@ public class Argument implements Serializable {
                     return this.argValue;
                 }
             } else {
-                return this.flag;
+                return this.flagOnly ? this.flag : "";
             }
         }
         return "";
