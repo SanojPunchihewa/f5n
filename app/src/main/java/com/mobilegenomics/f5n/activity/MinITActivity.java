@@ -1,7 +1,7 @@
 package com.mobilegenomics.f5n.activity;
 
-import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -12,7 +12,9 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.liulishuo.okdownload.core.Util;
 import com.mobilegenomics.f5n.BuildConfig;
 import com.mobilegenomics.f5n.GUIConfiguration;
@@ -22,40 +24,97 @@ import com.mobilegenomics.f5n.dto.WrapperObject;
 import com.mobilegenomics.f5n.support.ServerCallback;
 import com.mobilegenomics.f5n.support.ServerConnectionUtils;
 import com.mobilegenomics.f5n.support.ZipManager;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.net.MalformedURLException;
-import net.gotev.uploadservice.BinaryUploadRequest;
-import net.gotev.uploadservice.ServerResponse;
+
 import net.gotev.uploadservice.UploadInfo;
-import net.gotev.uploadservice.UploadNotificationConfig;
 import net.gotev.uploadservice.UploadService;
 import net.gotev.uploadservice.UploadServiceSingleBroadcastReceiver;
-import net.gotev.uploadservice.UploadStatusDelegate;
 
-public class MinITActivity extends AppCompatActivity implements UploadStatusDelegate {
+import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPClient;
+
+import java.io.File;
+import java.io.FileInputStream;
+
+public class MinITActivity extends AppCompatActivity {
+
+    class FTPUploadTask extends AsyncTask<String, Integer, Void> {
+
+        @Override
+        protected Void doInBackground(String... urls) {
+            FTPClient con;
+            try {
+                con = new FTPClient();
+                con.setDefaultPort(8000);
+                con.connect(urls[0]);
+
+                if (con.login("test", "test")) {
+                    con.enterLocalPassiveMode(); // important!
+                    con.setFileType(FTP.BINARY_FILE_TYPE);
+
+                    FileInputStream in = new FileInputStream(new File(urls[1]));
+                    boolean result = con.storeFile(new File(urls[1]).getName(), in);
+                    in.close();
+                    if (result) {
+                        Log.v("upload result", "succeeded");
+                    }
+                    con.logout();
+                    con.disconnect();
+                }
+            } catch (Exception e) {
+                Log.v("upload result", "failed");
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+            statusTextView.setText("Result Upload cancelled");
+        }
+
+        @Override
+        protected void onPostExecute(final Void aVoid) {
+            super.onPostExecute(aVoid);
+            sendJobResults();
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onProgressUpdate(final Integer... values) {
+            super.onProgressUpdate(values);
+            String uploadedBytes = Util.humanReadableBytes(values[0], true);
+            String status = "Uploading: " + uploadedBytes;
+            statusTextView.setText(status);
+            progressBar.setProgress(values[0]);
+        }
+    }
 
     private static final String TAG = MinITActivity.class.getSimpleName();
 
     private static TextView connectionLogText;
 
-    private String serverIP;
+    ProgressBar progressBar;
 
-    private String zipFileName;
+    TextView statusTextView;
 
     private Button btnSendResult;
+
+    private String folderPath;
 
     private boolean ranPipeline = false;
 
     private String resultsSummary;
 
-    private String folderPath;
-
-    TextView statusTextView;
-
-    ProgressBar progressBar;
+    private String serverIP;
 
     private UploadServiceSingleBroadcastReceiver uploadReceiver;
+
+    private String zipFileName;
 
     public static void logHandler(Handler handler) {
         handler.post(new Runnable() {
@@ -78,8 +137,6 @@ public class MinITActivity extends AppCompatActivity implements UploadStatusDele
         progressBar = findViewById(R.id.progress_upload_status);
 
         UploadService.NAMESPACE = BuildConfig.APPLICATION_ID;
-
-        uploadReceiver = new UploadServiceSingleBroadcastReceiver(this);
 
         final EditText serverAddressInput = findViewById(R.id.input_server_address);
         connectionLogText = findViewById(R.id.text_conn_log);
@@ -122,7 +179,8 @@ public class MinITActivity extends AppCompatActivity implements UploadStatusDele
                 Intent intent = new Intent(MinITActivity.this, DownloadActivity.class);
                 // TODO Fix the following
                 // Protocol, file server IP and Port
-                intent.putExtra("DATA_SET_URL", "http://" + serverIP + ":8000/" + zipFileName);
+                intent.putExtra("DATA_SET_URL", serverIP);
+                intent.putExtra("FILE_NAME", zipFileName);
                 startActivity(intent);
             }
         });
@@ -130,6 +188,11 @@ public class MinITActivity extends AppCompatActivity implements UploadStatusDele
 
     private void requestJob() {
         ServerConnectionUtils.connectToServer(State.REQUEST, new ServerCallback() {
+            @Override
+            public void onError(final WrapperObject job) {
+
+            }
+
             @Override
             public void onSuccess(final WrapperObject job) {
                 runOnUiThread(new Runnable() {
@@ -143,17 +206,17 @@ public class MinITActivity extends AppCompatActivity implements UploadStatusDele
                     }
                 });
             }
-
-            @Override
-            public void onError(final WrapperObject job) {
-
-            }
         });
     }
 
     private void sendJobResults() {
         ServerConnectionUtils.setResultToWrapperObject(resultsSummary);
         ServerConnectionUtils.connectToServer(State.COMPLETED, new ServerCallback() {
+            @Override
+            public void onError(final WrapperObject job) {
+
+            }
+
             @Override
             public void onSuccess(final WrapperObject job) {
                 runOnUiThread(new Runnable() {
@@ -163,11 +226,6 @@ public class MinITActivity extends AppCompatActivity implements UploadStatusDele
                     }
                 });
             }
-
-            @Override
-            public void onError(final WrapperObject job) {
-
-            }
         });
     }
 
@@ -176,61 +234,6 @@ public class MinITActivity extends AppCompatActivity implements UploadStatusDele
         ZipManager zipManager = new ZipManager(MinITActivity.this);
         zipManager.zip(folderPath);
         String path = folderPath + ".zip";
-        try {
-            String uploadId =
-                    new BinaryUploadRequest(this, "http://" + serverIP + ":8000/")
-                            .setFileToUpload(path)
-                            .setMethod("POST")
-                            .addHeader("file-name", new File(path).getName())
-                            .setNotificationConfig(new UploadNotificationConfig())
-                            .setMaxRetries(2)
-                            .startUpload();
-            // More info about receivers https://github.com/gotev/android-upload-service/wiki/Monitoring-upload-status
-            uploadReceiver.setUploadID(uploadId);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
+        new FTPUploadTask().execute(serverIP, path);
     }
-
-    @Override
-    public void onProgress(final Context context, final UploadInfo uploadInfo) {
-        String totalBytes = Util.humanReadableBytes(uploadInfo.getTotalBytes(), true);
-        String uploadedBytes = Util.humanReadableBytes(uploadInfo.getUploadedBytes(), true);
-        String status = "Uploading: " + uploadedBytes + "/" + totalBytes;
-        statusTextView.setText(status);
-        progressBar.setProgress(uploadInfo.getProgressPercent());
-    }
-
-    @Override
-    public void onError(final Context context, final UploadInfo uploadInfo, final ServerResponse serverResponse,
-            final Exception exception) {
-        statusTextView.setText("Result Upload failed: " + serverResponse.getHttpCode());
-        Log.e(TAG, "Upload Failed: " + serverResponse.getBodyAsString());
-    }
-
-    @Override
-    public void onCompleted(final Context context, final UploadInfo uploadInfo, final ServerResponse serverResponse) {
-        statusTextView.setText("Result Upload completed: " + serverResponse.getHttpCode());
-        sendJobResults();
-    }
-
-    @Override
-    public void onCancelled(final Context context, final UploadInfo uploadInfo) {
-        statusTextView.setText("Result Upload cancelled");
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        uploadReceiver.register(this);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        uploadReceiver.unregister(this);
-    }
-
 }
