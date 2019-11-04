@@ -140,7 +140,9 @@ public class TerminalActivity extends AppCompatActivity {
                 }
 
                 GUIConfiguration.createPipeline();
-                startActivity(new Intent(TerminalActivity.this, ConfirmationActivity.class));
+                Intent intent = new Intent(TerminalActivity.this, ConfirmationActivity.class);
+                intent.putExtra("FOLDER_PATH", folderPath);
+                startActivity(intent);
             }
         });
 

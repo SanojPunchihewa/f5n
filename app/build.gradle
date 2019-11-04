@@ -88,4 +88,5 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation 'com.github.hedzr:android-file-chooser:v1.2.0-final'
     implementation 'com.google.code.gson:gson:2.8.6'
+    implementation "net.gotev:uploadservice:3.5.2"
 }
