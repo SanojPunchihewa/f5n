@@ -16,11 +16,9 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.liulishuo.okdownload.DownloadTask;
 import com.liulishuo.okdownload.core.Util;
 import com.liulishuo.okdownload.core.cause.EndCause;
@@ -31,63 +29,99 @@ import com.mobilegenomics.f5n.support.DownloadListener;
 import com.mobilegenomics.f5n.support.DownloadManager;
 import com.mobilegenomics.f5n.support.ZipManager;
 import com.obsez.android.lib.filechooser.ChooserDialog;
-
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPFile;
+import org.apache.commons.net.io.CopyStreamAdapter;
 
 public class DownloadActivity extends AppCompatActivity {
 
-    class FTPDownloadTask extends AsyncTask<String, Integer, Void> {
+    class FTPDownloadTask extends AsyncTask<String, Long, Boolean> {
+
+        boolean status;
+
+        long fileSize;
 
         @Override
-        protected Void doInBackground(String... urls) {
+        protected Boolean doInBackground(String... urls) {
             FTPClient con;
             try {
                 con = new FTPClient();
                 con.setDefaultPort(8000);
                 con.connect(urls[0]);
 
+                con.setCopyStreamListener(new CopyStreamAdapter() {
+                    @Override
+                    public void bytesTransferred(long totalBytesTransferred, int bytesTransferred, long streamSize) {
+                        //this method will be called every time some bytes are transferred
+//                        int percent = (int) (totalBytesTransferred * 100 / fileSize);
+//                        int totalMBTransferred = (int) totalBytesTransferred;
+                        publishProgress(totalBytesTransferred);
+                    }
+
+                });
+
                 if (con.login("test", "test")) {
                     con.enterLocalPassiveMode(); // important!
                     con.setFileType(FTP.BINARY_FILE_TYPE);
 
-                    OutputStream out = new FileOutputStream(new File(folderPath + "/" + urls[1]));
-                    boolean result = con.retrieveFile(urls[1], out);
-                    out.close();
-                    if (result) {
-                        Log.v("download result", "succeeded");
-                        Toast.makeText(DownloadActivity.this, "Download Success", Toast.LENGTH_LONG).show();
+                    FTPFile[] ff = con.listFiles(urls[1]);
+
+                    if (ff != null) {
+                        fileSize = (ff[0].getSize());
                     }
+
+//                    FTPFile file = con.mlistFile("/" + urls[1]);
+                    OutputStream out = new FileOutputStream(new File(folderPath + "/" + urls[1]));
+                    status = con.retrieveFile(urls[1], out);
+                    out.close();
+//                    if (result) {
+//                        Log.v("download result", "succeeded");
+////                        Toast.makeText(DownloadActivity.this, "Download Success", Toast.LENGTH_LONG).show();
+//                    }
                     con.logout();
                     con.disconnect();
                 }
             } catch (Exception e) {
-                Log.v("download result", "failed");
-                e.printStackTrace();
+                Log.e(TAG, "Error: " + e);
+                status = false;
             }
-            return null;
+            return status;
         }
 
         @Override
-        protected void onPostExecute(final Void aVoid) {
-            super.onPostExecute(aVoid);
+        protected void onPostExecute(final Boolean downloadSuccess) {
+            super.onPostExecute(downloadSuccess);
+            Log.i(TAG, "Download Finished");
+            if (downloadSuccess) {
+                statusTextView.setText("Download Completed");
+            } else {
+                statusTextView.setText("Download Error");
+            }
             enableButtons();
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            Log.i(TAG, "Download Started");
+            statusTextView.setText("Download Started");
+            progressBar.setMax(100);
             disableButtons();
         }
 
         @Override
-        protected void onProgressUpdate(final Integer... values) {
+        protected void onProgressUpdate(final Long... values) {
             super.onProgressUpdate(values);
-            Log.v("downloading:", Util.humanReadableBytes(values[0], true));
+            String total = Util.humanReadableBytes(fileSize, true);
+            String downloaded = Util.humanReadableBytes(values[0], true);
+            Log.d(TAG, "Downloading: " + downloaded + "/" + total);
+            statusTextView.setText("Downloading: " + downloaded + "/" + total);
+            float percent = (float) values[0] / fileSize;
+            progressBar.setProgress((int) percent * progressBar.getMax());
         }
     }
 
@@ -269,6 +303,7 @@ public class DownloadActivity extends AppCompatActivity {
 
     private void downloadDatasetFTP(String url) {
         String[] urlData = url.split("/");
+        Log.e(TAG, "URL=" + urlData[1]);
         new FTPDownloadTask().execute(urlData[0], urlData[1]);
     }
 

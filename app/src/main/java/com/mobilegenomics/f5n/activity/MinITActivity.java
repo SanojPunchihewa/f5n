@@ -12,9 +12,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.liulishuo.okdownload.core.Util;
 import com.mobilegenomics.f5n.BuildConfig;
 import com.mobilegenomics.f5n.GUIConfiguration;
@@ -24,73 +22,94 @@ import com.mobilegenomics.f5n.dto.WrapperObject;
 import com.mobilegenomics.f5n.support.ServerCallback;
 import com.mobilegenomics.f5n.support.ServerConnectionUtils;
 import com.mobilegenomics.f5n.support.ZipManager;
-
-import net.gotev.uploadservice.UploadInfo;
-import net.gotev.uploadservice.UploadService;
-import net.gotev.uploadservice.UploadServiceSingleBroadcastReceiver;
-
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
-
 import java.io.File;
 import java.io.FileInputStream;
+import net.gotev.uploadservice.UploadService;
+import net.gotev.uploadservice.UploadServiceSingleBroadcastReceiver;
+import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.io.CopyStreamAdapter;
 
 public class MinITActivity extends AppCompatActivity {
 
-    class FTPUploadTask extends AsyncTask<String, Integer, Void> {
+    class FTPUploadTask extends AsyncTask<String, Long, Boolean> {
+
+        boolean status;
+
+        long fileSize;
 
         @Override
-        protected Void doInBackground(String... urls) {
+        protected Boolean doInBackground(String... urls) {
             FTPClient con;
             try {
                 con = new FTPClient();
                 con.setDefaultPort(8000);
                 con.connect(urls[0]);
 
+                con.setCopyStreamListener(new CopyStreamAdapter() {
+                    @Override
+                    public void bytesTransferred(long totalBytesTransferred, int bytesTransferred, long streamSize) {
+                        //this method will be called every time some bytes are transferred
+//                        int percent = (int) (totalBytesTransferred * 100 / fileSize);
+                        publishProgress(totalBytesTransferred);
+                    }
+
+                });
+
                 if (con.login("test", "test")) {
                     con.enterLocalPassiveMode(); // important!
                     con.setFileType(FTP.BINARY_FILE_TYPE);
 
-                    FileInputStream in = new FileInputStream(new File(urls[1]));
+                    File fileIn = new File(urls[1]);
+                    fileSize = fileIn.length();
+
+                    FileInputStream in = new FileInputStream(fileIn);
                     boolean result = con.storeFile(new File(urls[1]).getName(), in);
                     in.close();
-                    if (result) {
-                        Log.v("upload result", "succeeded");
-                    }
+                    status = result;
                     con.logout();
                     con.disconnect();
                 }
             } catch (Exception e) {
-                Log.v("upload result", "failed");
-                e.printStackTrace();
+                Log.e(TAG, "Upload Error: ", e);
+                status = false;
             }
-            return null;
+            return status;
         }
 
         @Override
         protected void onCancelled() {
             super.onCancelled();
-            statusTextView.setText("Result Upload cancelled");
+            statusTextView.setText("Upload cancelled");
         }
 
         @Override
-        protected void onPostExecute(final Void aVoid) {
-            super.onPostExecute(aVoid);
+        protected void onPostExecute(final Boolean uploadSuccess) {
+            super.onPostExecute(uploadSuccess);
+            Log.i(TAG, "Upload Finished");
+            if (uploadSuccess) {
+                statusTextView.setText("Upload Completed");
+            } else {
+                statusTextView.setText("Upload Error");
+            }
             sendJobResults();
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            statusTextView.setText("Upload started");
         }
 
         @Override
-        protected void onProgressUpdate(final Integer... values) {
+        protected void onProgressUpdate(final Long... values) {
             super.onProgressUpdate(values);
-            String uploadedBytes = Util.humanReadableBytes(values[0], true);
-            String status = "Uploading: " + uploadedBytes;
-            statusTextView.setText(status);
-            progressBar.setProgress(values[0]);
+            String total = Util.humanReadableBytes(fileSize, true);
+            String downloaded = Util.humanReadableBytes(values[0], true);
+            Log.d(TAG, "Uploading: " + downloaded + "/" + total);
+            statusTextView.setText("Uploading: " + downloaded + "/" + total);
+            float percent = (float) values[0] / fileSize;
+            progressBar.setProgress((int) percent * progressBar.getMax());
         }
     }
 
