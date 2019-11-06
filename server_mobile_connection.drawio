@@ -1,6 +1,6 @@
-<mxfile host="www.draw.io" modified="2019-11-06T15:59:36.519Z" agent="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:70.0) Gecko/20100101 Firefox/70.0" etag="K0FU8ZHOcA8efCktKZZi" version="12.2.0" type="github" pages="7">
+<mxfile host="www.draw.io" modified="2019-11-06T18:07:17.073Z" agent="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:70.0) Gecko/20100101 Firefox/70.0" etag="jIup4C_-kNmoq9un10b9" version="12.2.2" type="github" pages="7">
   <diagram id="rwsDpPcG-9lv_OZG9mr8" name="f5n_network">
-    <mxGraphModel dx="942" dy="439" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="1154" dy="473" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0"/>
         <mxCell id="1" parent="0"/>
@@ -29,7 +29,7 @@
             <mxPoint y="-1" as="offset"/>
           </mxGeometry>
         </mxCell>
-        <mxCell id="eR64O44cKoqNmbmQNhdG-7" value="server" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+        <mxCell id="eR64O44cKoqNmbmQNhdG-7" value="F5N-server" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="600" y="110" width="120" height="60" as="geometry"/>
         </mxCell>
         <mxCell id="eR64O44cKoqNmbmQNhdG-8" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=0;exitDx=0;exitDy=0;entryX=0.25;entryY=1;entryDx=0;entryDy=0;" parent="1" source="eR64O44cKoqNmbmQNhdG-10" target="eR64O44cKoqNmbmQNhdG-7" edge="1">
@@ -106,11 +106,11 @@
             <mxPoint x="779.9999999999998" y="69.99999999999989" as="targetPoint"/>
           </mxGeometry>
         </mxCell>
-        <mxCell id="eR64O44cKoqNmbmQNhdG-25" value="mobile can run the pipeline in real time or when it is idle ex:when charging" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+        <mxCell id="eR64O44cKoqNmbmQNhdG-25" value="&lt;div&gt;mobile can run the pipeline in real time or when it is idle &lt;br&gt;&lt;/div&gt;&lt;div&gt;ex:when charging&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="400" y="430" width="350" height="20" as="geometry"/>
         </mxCell>
-        <mxCell id="eR64O44cKoqNmbmQNhdG-26" value="&lt;div&gt;base called&lt;/div&gt;&lt;div&gt;data files&lt;br&gt;&lt;/div&gt;" style="text;html=1;resizable=0;points=[];autosize=1;align=left;verticalAlign=top;spacingTop=-4;" parent="1" vertex="1">
-          <mxGeometry x="523" y="123" width="80" height="30" as="geometry"/>
+        <mxCell id="eR64O44cKoqNmbmQNhdG-26" value="a pair at a time&lt;br&gt;&lt;div&gt;(fast5,fastq)&lt;br&gt;&lt;/div&gt;" style="text;html=1;resizable=0;points=[];autosize=1;align=left;verticalAlign=top;spacingTop=-4;" parent="1" vertex="1">
+          <mxGeometry x="512" y="121" width="90" height="28" as="geometry"/>
         </mxCell>
       </root>
     </mxGraphModel>
