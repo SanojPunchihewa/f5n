@@ -1,4 +1,4 @@
-<mxfile host="www.draw.io" modified="2019-11-06T09:40:08.352Z" agent="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:70.0) Gecko/20100101 Firefox/70.0" etag="AlGbNE7qw1mI9FslQnBv" version="12.2.0" type="github" pages="7">
+<mxfile host="www.draw.io" modified="2019-11-06T15:59:36.519Z" agent="Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:70.0) Gecko/20100101 Firefox/70.0" etag="K0FU8ZHOcA8efCktKZZi" version="12.2.0" type="github" pages="7">
   <diagram id="rwsDpPcG-9lv_OZG9mr8" name="f5n_network">
     <mxGraphModel dx="942" dy="439" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -704,9 +704,6 @@
       <root>
         <mxCell id="qZR6AxlTGpKhOwOywyyO-0"/>
         <mxCell id="qZR6AxlTGpKhOwOywyyO-1" parent="qZR6AxlTGpKhOwOywyyO-0"/>
-        <mxCell id="qZR6AxlTGpKhOwOywyyO-16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="qZR6AxlTGpKhOwOywyyO-1" source="qZR6AxlTGpKhOwOywyyO-2" target="qZR6AxlTGpKhOwOywyyO-3">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
         <mxCell id="qZR6AxlTGpKhOwOywyyO-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="qZR6AxlTGpKhOwOywyyO-1" source="qZR6AxlTGpKhOwOywyyO-2" target="qZR6AxlTGpKhOwOywyyO-4">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
@@ -716,6 +713,9 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="qZR6AxlTGpKhOwOywyyO-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="qZR6AxlTGpKhOwOywyyO-1" source="qZR6AxlTGpKhOwOywyyO-2" target="qZR6AxlTGpKhOwOywyyO-5">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="qZR6AxlTGpKhOwOywyyO-67" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="qZR6AxlTGpKhOwOywyyO-1" source="qZR6AxlTGpKhOwOywyyO-2" target="qZR6AxlTGpKhOwOywyyO-3">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
         <mxCell id="qZR6AxlTGpKhOwOywyyO-2" value="Original executable tool [ex:f5c]" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="qZR6AxlTGpKhOwOywyyO-1">
@@ -827,12 +827,6 @@
         <mxCell id="qZR6AxlTGpKhOwOywyyO-37" value="Java" style="text;html=1;resizable=0;points=[];autosize=1;align=left;verticalAlign=top;spacingTop=-4;" vertex="1" parent="qZR6AxlTGpKhOwOywyyO-1">
           <mxGeometry x="41.5" y="450" width="40" height="20" as="geometry"/>
         </mxCell>
-        <mxCell id="qZR6AxlTGpKhOwOywyyO-43" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="qZR6AxlTGpKhOwOywyyO-1" source="qZR6AxlTGpKhOwOywyyO-39" target="qZR6AxlTGpKhOwOywyyO-41">
-          <mxGeometry relative="1" as="geometry"/>
-        </mxCell>
-        <mxCell id="qZR6AxlTGpKhOwOywyyO-39" value="Load Android compatible shared library" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="qZR6AxlTGpKhOwOywyyO-1">
-          <mxGeometry x="147" y="460" width="145" height="60" as="geometry"/>
-        </mxCell>
         <mxCell id="qZR6AxlTGpKhOwOywyyO-50" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="qZR6AxlTGpKhOwOywyyO-1" source="qZR6AxlTGpKhOwOywyyO-40" target="qZR6AxlTGpKhOwOywyyO-41">
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
@@ -849,7 +843,7 @@
           <mxGeometry relative="1" as="geometry"/>
         </mxCell>
         <mxCell id="qZR6AxlTGpKhOwOywyyO-41" value="Java Call" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="qZR6AxlTGpKhOwOywyyO-1">
-          <mxGeometry x="337.5" y="460" width="120" height="60" as="geometry"/>
+          <mxGeometry x="338" y="460" width="120" height="41" as="geometry"/>
         </mxCell>
         <mxCell id="qZR6AxlTGpKhOwOywyyO-47" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="qZR6AxlTGpKhOwOywyyO-1" source="qZR6AxlTGpKhOwOywyyO-42" target="qZR6AxlTGpKhOwOywyyO-40">
           <mxGeometry relative="1" as="geometry"/>
@@ -865,6 +859,9 @@
         </mxCell>
         <mxCell id="qZR6AxlTGpKhOwOywyyO-62" value="no" style="text;html=1;resizable=0;points=[];autosize=1;align=left;verticalAlign=top;spacingTop=-4;" vertex="1" parent="qZR6AxlTGpKhOwOywyyO-1">
           <mxGeometry x="255" y="195" width="23" height="14" as="geometry"/>
+        </mxCell>
+        <mxCell id="qZR6AxlTGpKhOwOywyyO-66" value="depends on" style="text;html=1;resizable=0;points=[];autosize=1;align=left;verticalAlign=top;spacingTop=-4;" vertex="1" parent="qZR6AxlTGpKhOwOywyyO-1">
+          <mxGeometry x="70" y="103" width="71" height="14" as="geometry"/>
         </mxCell>
       </root>
     </mxGraphModel>
