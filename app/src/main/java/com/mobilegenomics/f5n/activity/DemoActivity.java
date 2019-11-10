@@ -22,6 +22,7 @@ import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.PipelineStep;
 import com.mobilegenomics.f5n.support.DownloadListener;
 import com.mobilegenomics.f5n.support.TimeFormat;
+import com.mobilegenomics.f5n.support.ZipListener;
 import com.mobilegenomics.f5n.support.ZipManager;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -181,11 +182,50 @@ public class DemoActivity extends AppCompatActivity {
     }
 
     private void extractZip(String filePath) {
-        writeToLogFile("Extracting data set...\n");
-        ZipManager zipManager = new ZipManager(DemoActivity.this);
+
+        ZipManager zipManager = new ZipManager(new ZipListener() {
+            @Override
+            public void onStarted(@NonNull final long totalBytes) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressBar.setMax(100);
+                        statusTextView.setText("Unzip started");
+                        writeToLogFile("Extracting data set...\n");
+                    }
+                });
+            }
+
+            @Override
+            public void onProgress(@NonNull final long bytesDone, @NonNull final long totalBytes) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        int perc = ZipManager.getZipPercentage(bytesDone, totalBytes);
+                        progressBar.setProgress(perc);
+                        statusTextView.setText("Unzipping: " + perc + "%");
+                    }
+                });
+            }
+
+            @Override
+            public void onComplete(@NonNull final boolean success, @Nullable final Exception exception) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (success) {
+                            statusTextView.setText("Unzip Successful");
+                            writeToLogFile("Extracting data set completed\n");
+                            btnRunPipeline.setVisibility(View.VISIBLE);
+                        } else {
+                            statusTextView.setText("Unzip Error");
+                            writeToLogFile("Extracting data set error\n");
+                        }
+                    }
+                });
+            }
+        });
         zipManager.unzip(filePath);
-        writeToLogFile("Extracting data set completed\n");
-        btnRunPipeline.setVisibility(View.VISIBLE);
     }
 
     private void writeToLogFile(String lines) {

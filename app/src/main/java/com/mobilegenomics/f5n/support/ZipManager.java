@@ -1,166 +1,244 @@
 package com.mobilegenomics.f5n.support;
 
-import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public class ZipManager {
 
-    private Context mContext;
+    private static final String TAG = ZipManager.class.getSimpleName();
+
+    ZipListener zipListener;
 
     private String unzipLocation;
 
-    private static final String TAG = ZipManager.class.getSimpleName();
+    private long compressedBytes = 0;
 
-    public ZipManager(Context context) {
-        mContext = context;
+    private long totalBytesToCompress = 0;
+
+    public ZipManager(ZipListener zipListener) {
+        this.zipListener = zipListener;
     }
 
     public void unzip(String zipFilePath) {
-        try {
 
-            File zipFile = new File(zipFilePath);
+        class UnzipAysnc extends AsyncTask<String, Integer, Boolean> {
 
-            unzipLocation = zipFile.getPath();
-            unzipLocation = unzipLocation.substring(0, unzipLocation.lastIndexOf("."));
+            private int bytesZipped = 0;
 
-            Toast.makeText(mContext, "Extraction Started", Toast.LENGTH_SHORT).show();
-            Log.i(TAG, "Starting to unzip");
-            FileInputStream fin = new FileInputStream(zipFile);
-            ZipInputStream zin = new ZipInputStream(fin);
-            ZipEntry ze = null;
+            private int totalBytes;
 
-            _dirChecker(unzipLocation);
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                ZipFile zip = null;
+                try {
+                    zip = new ZipFile(zipFilePath);
+                    totalBytes = zip.size();
+                    zipListener.onStarted(totalBytes);
+                } catch (IOException e) {
+                    Log.e(TAG, "Error reading Zip File: " + e);
+                }
+                Log.i(TAG, "Starting to unzip");
+            }
 
-            while ((ze = zin.getNextEntry()) != null) {
-                Log.v(TAG, "Unzipping " + ze.getName());
+            @Override
+            protected Boolean doInBackground(final String... strings) {
+                try {
 
-                if (ze.isDirectory()) {
-                    _dirChecker(unzipLocation + "/" + ze.getName());
-                } else {
-                    FileOutputStream fout = new FileOutputStream(new File(unzipLocation, ze.getName()));
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    byte[] buffer = new byte[1024];
-                    int count;
+                    File zipFile = new File(zipFilePath);
 
-                    // reading and writing
-                    while ((count = zin.read(buffer)) != -1) {
-                        baos.write(buffer, 0, count);
-                        byte[] bytes = baos.toByteArray();
-                        fout.write(bytes);
-                        baos.reset();
+                    unzipLocation = zipFile.getPath();
+                    unzipLocation = unzipLocation.substring(0, unzipLocation.lastIndexOf("."));
+
+                    FileInputStream fin = new FileInputStream(zipFile);
+                    ZipInputStream zin = new ZipInputStream(fin);
+                    ZipEntry ze = null;
+
+                    _dirChecker(unzipLocation);
+
+                    while ((ze = zin.getNextEntry()) != null) {
+                        if (ze.isDirectory()) {
+                            _dirChecker(unzipLocation + "/" + ze.getName());
+                        } else {
+
+                            bytesZipped++;
+                            publishProgress(bytesZipped);
+
+                            FileOutputStream fout = new FileOutputStream(new File(unzipLocation, ze.getName()));
+                            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                            byte[] buffer = new byte[1024];
+                            int count;
+
+                            // reading and writing
+                            while ((count = zin.read(buffer)) != -1) {
+                                baos.write(buffer, 0, count);
+                                byte[] bytes = baos.toByteArray();
+                                fout.write(bytes);
+                                baos.reset();
+                            }
+
+                            fout.close();
+                            zin.closeEntry();
+                        }
+
                     }
-
-                    fout.close();
-                    zin.closeEntry();
+                    zin.close();
+                } catch (Exception e) {
+                    Log.e(TAG, "Unzip Error: " + e);
+                    return false;
                 }
-
+                return true;
             }
-            zin.close();
-            Log.i(TAG, "Finished unzip");
-            Toast.makeText(mContext, "Extraction completed", Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
-            Log.e(TAG, "Unzip Error", e);
-            Toast.makeText(mContext, "Extraction Error", Toast.LENGTH_SHORT).show();
-        }
 
+            @Override
+            protected void onProgressUpdate(final Integer... values) {
+                super.onProgressUpdate(values);
+                zipListener.onProgress(bytesZipped, totalBytes);
+            }
+
+            @Override
+            protected void onPostExecute(final Boolean result) {
+                super.onPostExecute(result);
+                Log.i(TAG, "Finished unzip");
+                zipListener.onComplete(result, null);
+            }
+        }
+        new UnzipAysnc().execute();
     }
 
-    public boolean zip(String sourcePath) {
+    public void zip(String sourcePath) {
 
-        final int BUFFER = 2048;
+        class ZipAysnc extends AsyncTask<String, Integer, Boolean> {
 
-        String zipPath;
+            private String zipPath;
 
-        if (sourcePath.lastIndexOf(".") == -1) {
-            // folder
-            zipPath = sourcePath + ".zip";
+            FileOutputStream fos;
+
+            ZipOutputStream zos;
+
+            File sourceFile;
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                sourceFile = new File(sourcePath);
+                totalBytesToCompress = getDirectorySize(sourceFile);
+                zipListener.onStarted(totalBytesToCompress);
+                Log.i(TAG, "Starting to zip");
+                zipPath = sourcePath + ".zip";
+                try {
+                    fos = new FileOutputStream(zipPath);
+                } catch (FileNotFoundException e) {
+                    Log.e(TAG, "File IO Error: " + e);
+                }
+                zos = new ZipOutputStream(fos);
+
+            }
+
+            @Override
+            protected Boolean doInBackground(final String... strings) {
+
+                File sourceFile = new File(sourcePath);
+                try {
+                    addDirToZipArchive(zos, sourceFile, null);
+                } catch (Exception e) {
+                    Log.e(TAG, "Zip Exception: " + e);
+                    return false;
+                }
+                return true;
+            }
+
+            @Override
+            protected void onProgressUpdate(final Integer... values) {
+                super.onProgressUpdate(values);
+            }
+
+            @Override
+            protected void onPostExecute(final Boolean result) {
+                super.onPostExecute(result);
+                Log.i(TAG, "Finished zip");
+                zipListener.onComplete(result, null);
+                try {
+                    zos.flush();
+                    fos.flush();
+                    zos.close();
+                    fos.close();
+                } catch (IOException e) {
+                    Log.e(TAG, "File IO Error: " + e);
+                }
+            }
+        }
+        new ZipAysnc().execute();
+    }
+
+    public void addDirToZipArchive(ZipOutputStream zos, File fileToZip, String parentDirectoryName)
+            throws Exception {
+        if (fileToZip == null || !fileToZip.exists()) {
+            return;
+        }
+
+        String zipEntryName = fileToZip.getName();
+        if (parentDirectoryName != null && !parentDirectoryName.isEmpty()) {
+            zipEntryName = parentDirectoryName + "/" + fileToZip.getName();
+        }
+
+        if (fileToZip.isDirectory()) {
+            for (File file : fileToZip.listFiles()) {
+                addDirToZipArchive(zos, file, zipEntryName);
+            }
         } else {
-            zipPath = sourcePath.substring(0, sourcePath.lastIndexOf(".")) + ".zip";
-        }
-
-        File sourceFile = new File(sourcePath);
-        try {
-            Log.i(TAG, "Starting to zip ");
-            BufferedInputStream bis = null;
-            FileOutputStream fos = new FileOutputStream(zipPath);
-            ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(fos));
-            if (sourceFile.isDirectory()) {
-                zipSubFolder(zos, sourceFile, sourceFile.getParent().length());
-            } else {
-                byte data[] = new byte[BUFFER];
-                FileInputStream fi = new FileInputStream(sourceFile);
-                bis = new BufferedInputStream(fi, BUFFER);
-                ZipEntry entry = new ZipEntry(sourceFile.getName());
-                entry.setTime(sourceFile.lastModified()); // to keep modification time after unzipping
-                zos.putNextEntry(entry);
-                int count;
-                while ((count = bis.read(data, 0, BUFFER)) != -1) {
-                    zos.write(data, 0, count);
-                }
-                zos.closeEntry();
-                bis.close();
+            byte[] buffer = new byte[1024];
+            FileInputStream fis = new FileInputStream(fileToZip);
+            zos.putNextEntry(new ZipEntry(zipEntryName));
+            int length;
+            while ((length = fis.read(buffer)) > 0) {
+                zos.write(buffer, 0, length);
+                compressedBytes += length;
+                zipListener.onProgress(compressedBytes, totalBytesToCompress);
             }
-            zos.close();
-            fos.close();
-        } catch (Exception e) {
-            Log.e(TAG, "Exception: " + e);
-            return false;
+            zos.closeEntry();
+            fis.close();
         }
-        Log.i(TAG, "Finished zip");
-        return true;
-    }
-
-    private void zipSubFolder(ZipOutputStream out, File folder,
-            int basePathLength) throws IOException {
-
-        Log.i(TAG, "Starting to zip folder");
-
-        final int BUFFER = 2048;
-
-        File[] fileList = folder.listFiles();
-        BufferedInputStream origin = null;
-        for (File file : fileList) {
-            if (file.isDirectory()) {
-                zipSubFolder(out, file, basePathLength);
-            } else {
-                byte data[] = new byte[BUFFER];
-                String unmodifiedFilePath = file.getPath();
-                String relativePath = unmodifiedFilePath
-                        .substring(basePathLength);
-                FileInputStream fi = new FileInputStream(unmodifiedFilePath);
-                origin = new BufferedInputStream(fi, BUFFER);
-                ZipEntry entry = new ZipEntry(relativePath);
-                entry.setTime(file.lastModified()); // to keep modification time after unzipping
-                out.putNextEntry(entry);
-                int count;
-                while ((count = origin.read(data, 0, BUFFER)) != -1) {
-                    out.write(data, 0, count);
-                }
-                origin.close();
-            }
-        }
-
-        Log.i(TAG, "Finished zip folder");
-
     }
 
     private void _dirChecker(String dir) {
         File f = new File(dir);
-        Log.i(TAG, "creating dir " + dir);
-
-        if (dir.length() >= 0 && !f.isDirectory()) {
+        if (!f.isDirectory()) {
             f.mkdirs();
         }
     }
+
+    public static int getZipPercentage(long currentBytes, long totalBytes) {
+        return (int) ((100 * currentBytes) / totalBytes);
+    }
+
+    private static long getDirectorySize(File dir) {
+
+        if (dir.exists()) {
+            long result = 0;
+            File[] fileList = dir.listFiles();
+            for (int i = 0; i < fileList.length; i++) {
+                // Recursive call if it's a directory
+                if (fileList[i].isDirectory()) {
+                    result += getDirectorySize(fileList[i]);
+                } else {
+                    // Sum the file size in bytes
+                    result += fileList[i].length();
+                }
+            }
+            return result; // return the file size
+        }
+        return 0;
+    }
+
 }
