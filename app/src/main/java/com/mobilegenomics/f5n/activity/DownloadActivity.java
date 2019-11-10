@@ -24,6 +24,7 @@ import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.AppMode;
 import com.mobilegenomics.f5n.support.DownloadListener;
 import com.mobilegenomics.f5n.support.DownloadManager;
+import com.mobilegenomics.f5n.support.ZipListener;
 import com.mobilegenomics.f5n.support.ZipManager;
 import com.obsez.android.lib.filechooser.ChooserDialog;
 import java.io.File;
@@ -222,7 +223,47 @@ public class DownloadActivity extends AppCompatActivity {
     }
 
     private void extractZip(String filepath) {
-        ZipManager zipManager = new ZipManager(DownloadActivity.this);
+
+        ZipManager zipManager = new ZipManager(new ZipListener() {
+            @Override
+            public void onStarted(@NonNull final long totalBytes) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        btnExtract.setEnabled(false);
+                        progressBar.setMax(100);
+                        statusTextView.setText("Unzip started");
+                    }
+                });
+            }
+
+            @Override
+            public void onProgress(@NonNull final long bytesDone, @NonNull final long totalBytes) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        int perc = ZipManager.getZipPercentage(bytesDone, totalBytes);
+                        progressBar.setProgress(perc);
+                        statusTextView.setText("Unzipping: " + perc + "%");
+                    }
+                });
+            }
+
+            @Override
+            public void onComplete(@NonNull final boolean success, @Nullable final Exception exception) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        btnExtract.setEnabled(true);
+                        if (success) {
+                            statusTextView.setText("Unzip Successful");
+                        } else {
+                            statusTextView.setText("Unzip Error");
+                        }
+                    }
+                });
+            }
+        });
         zipManager.unzip(filepath);
     }
 
