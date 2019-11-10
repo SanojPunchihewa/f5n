@@ -74,14 +74,14 @@
     },
     {
       "argName": "max Bases",
-      "argValue": null,
+      "argValue": "2M",
       "argDescription": "max number of bases loaded at once [2.0M]",
       "flag": "-B",
       "argID": "tobedecided",
       "isDependentOn": "argIDofanotherArg",
       "hasFlag": true,
       "flagOnly": false,
-      "required": false,
+      "required": true,
       "isFile": false
     },
     {
@@ -98,14 +98,14 @@
     },
     {
       "argName": "min map quality",
-      "argValue": null,
+      "argValue": "0",
       "argDescription": "minimum mapping quality [30]",
       "flag": "--min-mapq",
       "argID": "tobedecided",
       "isDependentOn": "argIDofanotherArg",
       "hasFlag": true,
       "flagOnly": false,
-      "required": false,
+      "required": true,
       "isFile": false
     },
     {
