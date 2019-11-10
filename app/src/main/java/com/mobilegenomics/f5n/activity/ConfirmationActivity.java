@@ -1,14 +1,13 @@
 package com.mobilegenomics.f5n.activity;
 
-import android.content.Intent;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -40,6 +39,8 @@ import java.util.regex.Pattern;
 
 public class ConfirmationActivity extends AppCompatActivity {
 
+    private static final String TAG = ConfirmationActivity.class.getSimpleName();
+
     private static final String TAG_F5C = "f5c-android";
 
     private static final String TAG_MINIMAP2 = "minimap2-native";
@@ -47,7 +48,7 @@ public class ConfirmationActivity extends AppCompatActivity {
     private static final String TAG_SAMTOOLS = "samtools-native";
 
     private String resultsSummary;
-  
+
     private int isPipelineRunning = 0;
 
     private boolean logWrittenToFile = false;
@@ -69,6 +70,8 @@ public class ConfirmationActivity extends AppCompatActivity {
     ProgressBar mProgressBar;
 
     MediaPlayer mp;
+
+    ShowLogCat showLogCatTask;
 
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -98,7 +101,8 @@ public class ConfirmationActivity extends AppCompatActivity {
                 btnProceed.setEnabled(false);
                 mProgressBar.setVisibility(View.VISIBLE);
                 GUIConfiguration.createPipeline();
-                new ShowLogCat().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                showLogCatTask = new ShowLogCat();
+                showLogCatTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 new RunPipeline().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
         });
@@ -214,21 +218,27 @@ public class ConfirmationActivity extends AppCompatActivity {
 
     public class ShowLogCat extends AsyncTask<Void, String, Void> {
 
+        BufferedReader bufferedReader;
+
+        InputStreamReader inputStreamReader;
+
+        Process process;
+
         @Override
         protected void onPreExecute() {
             try {
-                Runtime.getRuntime().exec("logcat -c");
+                process = Runtime.getRuntime().exec("logcat -c");
+                process = Runtime.getRuntime().exec("logcat");
+                inputStreamReader = new InputStreamReader(process.getInputStream());
+                bufferedReader = new BufferedReader(inputStreamReader);
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e(TAG, "Error clearing logcat: " + e);
             }
         }
 
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                Process process = Runtime.getRuntime().exec("logcat");
-                BufferedReader bufferedReader = new BufferedReader(
-                        new InputStreamReader(process.getInputStream()));
 
                 String line = "", filtered = "";
 
@@ -237,6 +247,11 @@ public class ConfirmationActivity extends AppCompatActivity {
                 Matcher matcher;
 
                 while ((line = bufferedReader.readLine()) != null) {
+
+                    if (isCancelled()) {
+                        break;
+                    }
+
                     matcher = pattern.matcher(line);
                     if (!matcher.find()) {
                         continue;
@@ -253,6 +268,7 @@ public class ConfirmationActivity extends AppCompatActivity {
 
                 }
             } catch (IOException e) {
+                Log.e(TAG, "Error reading logcat: " + e);
             }
             return null;
         }
@@ -266,6 +282,31 @@ public class ConfirmationActivity extends AppCompatActivity {
                     scrollView.fullScroll(View.FOCUS_DOWN);
                 }
             });
+        }
+
+        @Override
+        protected void onPostExecute(final Void aVoid) {
+            super.onPostExecute(aVoid);
+            txtLogs.setText("");
+            try {
+                bufferedReader.close();
+                inputStreamReader.close();
+            } catch (IOException e) {
+                Log.e(TAG, "Error closing streams: " + e);
+            }
+        }
+
+        @Override
+        protected void onCancelled(final Void aVoid) {
+            super.onCancelled(aVoid);
+            txtLogs.setText("");
+            try {
+                bufferedReader.close();
+                inputStreamReader.close();
+                process.destroy();
+            } catch (IOException e) {
+                Log.e(TAG, "Error closing streams: " + e);
+            }
         }
     }
 
@@ -321,6 +362,14 @@ public class ConfirmationActivity extends AppCompatActivity {
             Log.e("TAG", e.toString());
         }
 
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (showLogCatTask != null) {
+            showLogCatTask.cancel(true);
+        }
     }
 
     @Override
