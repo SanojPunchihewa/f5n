@@ -9,4 +9,9 @@
     <!--Strings used in Demo-->
     <string name="pipeline_description">This will run all the 5 pipeline steps on Ecoli dataset(10MB)\n\nYou can find all the files downloaded, created and the logcat in the <b>mobile-genomics</b> folder in your main storage</string>
 
+    <string name="app_info">F5N is a Mobile application for Reference Guided Sequence Alignment using Oxford Nanopore Technology Data.\n\nPlease read the following terms before you use this application.\n\n
+    - This app needs storage permission inorder to read/write files generated from the pipeline steps\n
+    - This app needs at least 2GB free RAM to smoothly function\n
+    - If you have less memory available, minimizing the app while running some process, may stop the process and generate incomplete results</string>
+
 </resources>
