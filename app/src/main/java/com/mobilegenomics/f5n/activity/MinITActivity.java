@@ -12,6 +12,8 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.liulishuo.okdownload.core.Util;
 import com.mobilegenomics.f5n.BuildConfig;
@@ -21,6 +23,7 @@ import com.mobilegenomics.f5n.dto.State;
 import com.mobilegenomics.f5n.dto.WrapperObject;
 import com.mobilegenomics.f5n.support.ServerCallback;
 import com.mobilegenomics.f5n.support.ServerConnectionUtils;
+import com.mobilegenomics.f5n.support.ZipListener;
 import com.mobilegenomics.f5n.support.ZipManager;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -138,8 +141,6 @@ public class MinITActivity extends AppCompatActivity implements UploadStatusDele
                         GUIConfiguration.configureSteps(job.getSteps());
                         zipFileName = job.getPrefix();
                         btnSendResult.setVisibility(View.VISIBLE);
-                        Log.d("TAG", "Prefix = " + job.getPrefix());
-                        Log.d("TAG", "Dir Path = " + job.getPathToDataDir());
                     }
                 });
             }
@@ -173,25 +174,64 @@ public class MinITActivity extends AppCompatActivity implements UploadStatusDele
 
     private void uploadDataSet() {
         // TODO check wifi connectivity
-        ZipManager zipManager = new ZipManager(MinITActivity.this);
+        ZipManager zipManager = new ZipManager(new ZipListener() {
+            @Override
+            public void onStarted(@NonNull final long totalBytes) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressBar.setMax(100);
+                        statusTextView.setText("Zip started");
+                    }
+                });
+            }
+
+            @Override
+            public void onProgress(@NonNull final long bytesDone, @NonNull final long totalBytes) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        int perc = ZipManager.getZipPercentage(bytesDone, totalBytes);
+                        progressBar.setProgress(perc);
+                        statusTextView.setText("Zipping: " + perc + "%");
+                    }
+                });
+            }
+
+            @Override
+            public void onComplete(@NonNull final boolean success, @Nullable final Exception exception) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (success) {
+                            statusTextView.setText("Zip Successful");
+                            String path = folderPath + ".zip";
+                            try {
+                                String uploadId =
+                                        new BinaryUploadRequest(MinITActivity.this, "http://" + serverIP + ":8000/")
+                                                .setFileToUpload(path)
+                                                .setMethod("POST")
+                                                .addHeader("file-name", new File(path).getName())
+                                                .setNotificationConfig(new UploadNotificationConfig())
+                                                .setMaxRetries(2)
+                                                .startUpload();
+                                // More info about receivers https://github.com/gotev/android-upload-service/wiki/Monitoring-upload-status
+                                uploadReceiver.setUploadID(uploadId);
+                            } catch (FileNotFoundException e) {
+                                statusTextView.setText("File IO Error");
+                                Log.e(TAG, "File IO Error: " + e);
+                            } catch (MalformedURLException e) {
+                                statusTextView.setText("Malformed URL Exception");
+                                Log.e(TAG, "URL Error: " + e);
+                            }
+                        } else {
+                            statusTextView.setText("Zip Error");
+                        }
+                    }
+                });
+            }
+        });
         zipManager.zip(folderPath);
-        String path = folderPath + ".zip";
-        try {
-            String uploadId =
-                    new BinaryUploadRequest(this, "http://" + serverIP + ":8000/")
-                            .setFileToUpload(path)
-                            .setMethod("POST")
-                            .addHeader("file-name", new File(path).getName())
-                            .setNotificationConfig(new UploadNotificationConfig())
-                            .setMaxRetries(2)
-                            .startUpload();
-            // More info about receivers https://github.com/gotev/android-upload-service/wiki/Monitoring-upload-status
-            uploadReceiver.setUploadID(uploadId);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
