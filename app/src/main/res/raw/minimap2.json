@@ -49,11 +49,11 @@
       "isFile": true
     },
     {
-      "argName": "Output format SAM",
+      "argName": "Output SAM format (Default PAF format)",
       "argValue": null,
       "argDescription": "Generate CIGAR and output alignments in SAM ",
       "flag": "-a",
-      "argID": "tobedecided",
+      "argID": "MINIMAP2_OUTPUT_SAM",
       "isDependentOn": "argIDofanotherArg",
       "hasFlag": true,
       "flagOnly": true,
@@ -61,11 +61,11 @@
       "isFile": false
     },
     {
-      "argName": "Output format PAF",
+      "argName": "Generate CIGAR at the cg tag of PAF",
       "argValue": null,
       "argDescription": "Generate CIGAR and output alignments in PAF format",
       "flag": "-c",
-      "argID": "tobedecided",
+      "argID": "MINIMAP2_GENERATE_CIGAR",
       "isDependentOn": "argIDofanotherArg",
       "hasFlag": true,
       "flagOnly": true,
@@ -74,26 +74,26 @@
     },
     {
       "argName": "Threads",
-      "argValue": "3",
+      "argValue": "4",
       "argDescription": "Number of threads [3]",
       "flag": "-t",
       "argID": "tobedecided",
       "isDependentOn": "argIDofanotherArg",
       "hasFlag": true,
       "flagOnly": false,
-      "required": false,
+      "required": true,
       "isFile": false
     },
     {
       "argName": "Bases loaded into memory",
-      "argValue": "500M",
+      "argValue": "20M",
       "argDescription": "Number of bases loaded into memory[500M]",
       "flag": "-K",
       "argID": "tobedecided",
       "isDependentOn": "argIDofanotherArg",
       "hasFlag": true,
       "flagOnly": false,
-      "required": false,
+      "required": true,
       "isFile": false
     }
   ]
