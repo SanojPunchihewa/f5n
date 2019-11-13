@@ -25,7 +25,7 @@ public class HelpActivity extends AppCompatActivity {
 
         TextView txtIntro = new TextView(this);
         txtIntro.setText(
-                "f5n is a Mobile application for Reference Guided Sequence Alignment using Oxford Nanopore Technology Data");
+                getResources().getString(R.string.app_info));
         linearLayout.addView(txtIntro);
 
         Button btnTutorial = new Button(this);
