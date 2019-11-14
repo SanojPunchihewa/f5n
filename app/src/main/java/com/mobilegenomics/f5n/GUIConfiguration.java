@@ -203,6 +203,10 @@ public class GUIConfiguration {
         if (argument.getArgID().equals("MINIMAP2_OUTPUT_FILE")) {
             argument.setArgValue(folder + "/minimap2-out.sam");
         }
+        // For the Demo we need to use SAM output format in minimap2
+        if (argument.getArgID().equals("MINIMAP2_OUTPUT_SAM")) {
+            argument.setSetByUser(true);
+        }
 
         // samtools input/output files
         if (argument.getArgID().equals("SAMTOOL_SORT_INPUT_FILE")) {
