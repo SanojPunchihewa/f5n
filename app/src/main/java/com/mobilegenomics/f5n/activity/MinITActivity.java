@@ -1,5 +1,7 @@
 package com.mobilegenomics.f5n.activity;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -28,6 +30,7 @@ import com.mobilegenomics.f5n.support.ZipManager;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
+import java.util.Objects;
 import net.gotev.uploadservice.BinaryUploadRequest;
 import net.gotev.uploadservice.ServerResponse;
 import net.gotev.uploadservice.UploadInfo;
@@ -53,6 +56,8 @@ public class MinITActivity extends AppCompatActivity implements UploadStatusDele
     private String resultsSummary;
 
     private String folderPath;
+
+    EditText serverAddressInput;
 
     TextView statusTextView;
 
@@ -84,7 +89,7 @@ public class MinITActivity extends AppCompatActivity implements UploadStatusDele
 
         uploadReceiver = new UploadServiceSingleBroadcastReceiver(this);
 
-        final EditText serverAddressInput = findViewById(R.id.input_server_address);
+        serverAddressInput = findViewById(R.id.input_server_address);
         connectionLogText = findViewById(R.id.text_conn_log);
         final Button btnRquestJob = findViewById(R.id.btn_request_job);
         btnSendResult = findViewById(R.id.btn_send_result);
@@ -129,6 +134,29 @@ public class MinITActivity extends AppCompatActivity implements UploadStatusDele
                 startActivity(intent);
             }
         });
+    }
+
+    public void copyIPAddress(View view) {
+        if (serverAddressInput.getText() != null && !TextUtils.isEmpty(serverAddressInput.getText().toString())) {
+            ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("serverIP", serverAddressInput.getText().toString());
+            clipboard.setPrimaryClip(clip);
+        }
+    }
+
+    public void pasteIPAddress(View view) {
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        try {
+            ClipData.Item item = Objects.requireNonNull(clipboard.getPrimaryClip()).getItemAt(0);
+            String IPAddress = item.getText().toString();
+            if (!TextUtils.isEmpty(IPAddress) && validateIPAddress(IPAddress)) {
+                serverAddressInput.setText(IPAddress);
+            } else {
+                Toast.makeText(MinITActivity.this, "Invalid IP Address", Toast.LENGTH_SHORT).show();
+            }
+        } catch (NullPointerException e) {
+            Toast.makeText(MinITActivity.this, "No IP Address was copied", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void requestJob() {
@@ -271,6 +299,12 @@ public class MinITActivity extends AppCompatActivity implements UploadStatusDele
     protected void onPause() {
         super.onPause();
         uploadReceiver.unregister(this);
+    }
+
+    private boolean validateIPAddress(final String ip) {
+        String PATTERN
+                = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";
+        return ip.matches(PATTERN);
     }
 
 }
