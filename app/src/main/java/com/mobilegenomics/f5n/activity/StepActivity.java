@@ -18,6 +18,8 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
@@ -40,6 +42,8 @@ public class StepActivity extends AppCompatActivity {
     ArrayList<Argument> arguments;
 
     private int argument_id = 0;
+
+    private int argumentIdCIGAR;
 
     private String folderPath;
 
@@ -155,6 +159,23 @@ public class StepActivity extends AppCompatActivity {
                 }
             });
             checkBox.setId(argument_id);
+
+            // TODO Fix this Hack in a better way
+            // CIGAR Tag can only be generated for PAF format
+            // Disable CIGAR Tag if SAM format is used
+            if (argument.getArgID().equals("MINIMAP2_GENERATE_CIGAR")) {
+                argumentIdCIGAR = argument_id;
+            }
+
+            if (argument.getArgID().equals("MINIMAP2_OUTPUT_SAM")) {
+                checkBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked) {
+                        findViewById(argumentIdCIGAR).setEnabled(!isChecked);
+                    }
+                });
+            }
+
             LinearLayout.LayoutParams checkBox_LayoutParams =
                     new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                             LinearLayout.LayoutParams.WRAP_CONTENT);

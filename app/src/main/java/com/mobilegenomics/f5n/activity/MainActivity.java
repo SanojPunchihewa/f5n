@@ -1,7 +1,9 @@
 package com.mobilegenomics.f5n.activity;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -11,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import com.mobilegenomics.f5n.GUIConfiguration;
@@ -27,14 +30,23 @@ public class MainActivity extends AppCompatActivity implements
 
     ArrayList<String> permissions = new ArrayList<>();
 
+    boolean firstOpen = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        SharedPreferences preferences = getApplicationContext().getSharedPreferences("F5N", MODE_PRIVATE);
+        firstOpen = preferences.getBoolean("FIRST_OPEN", true);
+
         // Setup the permissions
         permissionUtils = new PermissionUtils(MainActivity.this);
         permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (firstOpen) {
+            showAlert();
+        }
 
         try {
             PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
@@ -45,6 +57,27 @@ public class MainActivity extends AppCompatActivity implements
             e.printStackTrace();
         }
 
+    }
+
+    private void showAlert() {
+        new AlertDialog.Builder(this)
+                .setTitle("F5N")
+                .setMessage(getResources().getString(R.string.app_info))
+                .setPositiveButton("I Understood", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        SharedPreferences Preferences = getApplicationContext()
+                                .getSharedPreferences("F5N", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = Preferences.edit();
+                        editor.putBoolean("FIRST_OPEN", false);
+                        editor.apply();
+                        dialog.dismiss();
+                        permissionUtils.check_permission(permissions,
+                                "The app needs storage permission for reading and writing pipeline data",
+                                1);
+                    }
+                })
+                .setCancelable(false)
+                .show();
     }
 
     public void downloadDataSet(View view) {
@@ -70,14 +103,6 @@ public class MainActivity extends AppCompatActivity implements
     /////////////////////////////
     // Permission functions
     /////////////////////////////
-
-    @Override
-    public void onStart() {
-        permissionUtils.check_permission(permissions,
-                "The app needs storage permission for reading images and camera permission to take photos", 1);
-        super.onStart();
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
             @NonNull int[] grantResults) {
@@ -89,21 +114,21 @@ public class MainActivity extends AppCompatActivity implements
     public void NeverAskAgain(int request_code) {
         Log.i("PERMISSION", "NEVER ASK AGAIN");
         permissionUtils.check_permission(permissions,
-                "The app needs storage permission for reading images and camera permission to take photos", 1);
+                "The app needs storage permission for reading and writing pipeline data", 1);
     }
 
     @Override
     public void PartialPermissionGranted(int request_code, ArrayList<String> granted_permissions) {
         Log.i("PERMISSION PARTIALLY", "GRANTED");
         permissionUtils.check_permission(permissions,
-                "The app needs storage permission for reading images and camera permission to take photos", 1);
+                "The app needs storage permission for reading and writing pipeline data", 1);
     }
 
     @Override
     public void PermissionDenied(int request_code) {
         Log.i("PERMISSION", "DENIED");
         permissionUtils.check_permission(permissions,
-                "The app needs storage permission for reading images and camera permission to take photos", 1);
+                "The app needs storage permission for reading and writing pipeline data", 1);
     }
 
     // Callback functions
