@@ -1,5 +1,5 @@
 plugins {
-    id 'com.github.triplet.play' version '2.3.0' apply false
+    id 'com.github.triplet.play' version '2.6.0' apply false
 }
 apply plugin: 'com.android.application'
 apply from: "$project.rootDir/script-git-version.gradle"
