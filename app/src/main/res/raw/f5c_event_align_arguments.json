@@ -39,13 +39,25 @@
     {
       "argName": "output file",
       "argValue": null,
-      "argDescription": "path to output summary",
+      "argDescription": "path to event align output",
       "flag": "-o",
       "argID": "F5C_ALIGN_OUTPUT_FILE",
       "isDependentOn": "null",
       "hasFlag": true,
       "flagOnly": false,
       "required": true,
+      "isFile": true
+    },
+    {
+      "argName": "event summary file",
+      "argValue": null,
+      "argDescription": "path to event summary file",
+      "flag": "--event-summary=",
+      "argID": "F5C_ALIGN_SUMMARY_OUTPUT_FILE",
+      "isDependentOn": "null",
+      "hasFlag": true,
+      "flagOnly": false,
+      "required": false,
       "isFile": true
     },
     {
