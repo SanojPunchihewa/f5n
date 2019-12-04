@@ -50,7 +50,8 @@ public class DownloadManager {
         String nameOfFile = URLUtil.guessFileName(url, null,
                 MimeTypeMap.getFileExtensionFromUrl(url));
 
-        downloadTask = new DownloadTask.Builder(url, folderPath, nameOfFile).build();
+        downloadTask = new DownloadTask.Builder(url, folderPath, nameOfFile).setConnectionCount(1)
+                .build();
 
         initStatus(statusTextView, progressBar);
 
