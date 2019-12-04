@@ -193,7 +193,11 @@ public class StepActivity extends AppCompatActivity {
                 }
                 editText.setId(argument_id + 1000);
                 if (argument.isFile()) {
-                    editText.setText(GUIConfiguration.getLinkedFileArgument(argument.getIsDependentOn()));
+                    if (argument.getIsDependentOn() != null) {
+                        editText.setText(GUIConfiguration.getLinkedFileArgument(argument.getIsDependentOn()));
+                    } else if (argument.getArgValue() != null) {
+                        editText.setText(argument.getArgValue());
+                    }
                 } else {
                     editText.setText(argument.getArgValue());
                 }
