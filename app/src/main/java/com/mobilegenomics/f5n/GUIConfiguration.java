@@ -255,6 +255,9 @@ public class GUIConfiguration {
         if (argument.getArgID().equals("F5C_ALIGN_OUTPUT_FILE")) {
             argument.setArgValue(folder + "/f5c-event-alignment.txt");
         }
+        if (argument.getArgID().equals("F5C_ALIGN_SUMMARY_OUTPUT_FILE")) {
+            argument.setArgValue(folder + "/event.summary.txt");
+        }
     }
 
 }
