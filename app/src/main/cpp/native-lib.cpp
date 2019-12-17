@@ -6,6 +6,13 @@
 #include <setjmp.h>
 #include <signal.h>
 #include <unistd.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include<android/log.h>
+
+#define FILE_CLOSE_TAG "EOF"
+const char *outfile;
+int fdo;
 
 #include "interface_minimap.h"
 #include "interface_f5c.h"
@@ -73,9 +80,6 @@ Java_com_mobilegenomics_f5n_core_NativeCommands_init(JNIEnv *env, jobject, jstri
   // Convert command to cpp
   //TODO:casting not good
   char *command_c = (char *) env->GetStringUTFChars(command, nullptr);
-  // if(!command_c) {throwJavaError(env, "jvm could not allocate memory");return;};
-  // std::string command_s = command_c;
-
 
   enum { kMaxArgs = 64 };
   int argc = 0;
@@ -217,4 +221,27 @@ Java_com_mobilegenomics_f5n_core_NativeCommands_initsamtool(JNIEnv *env, jobject
 
 
   return result;
+}
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_mobilegenomics_f5n_core_NativeCommands_startPipeline(JNIEnv *env, jobject thiz, jstring pipe_path) {
+  outfile = env->GetStringUTFChars(pipe_path, nullptr);
+
+  int out = mkfifo(outfile, 0664);
+  fdo = open(outfile, O_WRONLY);
+
+  dup2(fdo, STDERR_FILENO);
+  setvbuf(stderr, 0, _IONBF, 0);
+  return 0;
+}
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_mobilegenomics_f5n_core_NativeCommands_finishPipeline(JNIEnv *env, jobject thiz, jstring pipe_path) {
+  fprintf(stderr, FILE_CLOSE_TAG);
+  fflush(stderr);
+  close(fdo);
+  env->ReleaseStringUTFChars(pipe_path, outfile);
+  return 0;
 }

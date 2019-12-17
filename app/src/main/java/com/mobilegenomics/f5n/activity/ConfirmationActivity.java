@@ -8,6 +8,7 @@ import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -25,27 +26,23 @@ import androidx.core.widget.NestedScrollView;
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.AppMode;
+import com.mobilegenomics.f5n.core.NativeCommands;
 import com.mobilegenomics.f5n.core.PipelineComponent;
 import com.mobilegenomics.f5n.support.TimeFormat;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ConfirmationActivity extends AppCompatActivity {
 
     private static final String TAG = ConfirmationActivity.class.getSimpleName();
 
-    private static final String TAG_F5C = "f5c-android";
-
-    private static final String TAG_MINIMAP2 = "minimap2-native";
-
-    private static final String TAG_SAMTOOLS = "samtools-native";
+    private static final String FILE_CLOSE_TAG = "EOF";
 
     private String resultsSummary;
 
@@ -71,12 +68,36 @@ public class ConfirmationActivity extends AppCompatActivity {
 
     MediaPlayer mp;
 
-    ShowLogCat showLogCatTask;
+    Handler mHandler;
+
+    String logPipePath;
+
+    File logPipeFile;
 
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_vertical);
+
+        String dirPath = Environment.getExternalStorageDirectory() + "/" + "mobile-genomics";
+
+        File dir = new File(dirPath);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        logPipeFile = new File(dir.getAbsolutePath() + "/pipe-out");
+        logPipePath = dir.getAbsolutePath() + "/pipe-out";
+        if (!logPipeFile.exists()) {
+            try {
+                logPipeFile.createNewFile();
+            } catch (IOException e) {
+                Toast.makeText(this, "Error creating log file, Please check permissions", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "Error : " + e);
+            }
+        }
+
+        mHandler = new Handler();
 
         linearLayout = findViewById(R.id.vertical_linear_layout);
 
@@ -101,8 +122,43 @@ public class ConfirmationActivity extends AppCompatActivity {
                 btnProceed.setEnabled(false);
                 mProgressBar.setVisibility(View.VISIBLE);
                 GUIConfiguration.createPipeline();
-                showLogCatTask = new ShowLogCat();
-                showLogCatTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        BufferedReader reader = null;
+                        try {
+                            reader = new BufferedReader(new FileReader(logPipePath));
+                            while (true) {
+                                String line = reader.readLine();
+                                if (line == null) {
+                                    //wait until there is more of the file for us to read
+                                    try {
+                                        Thread.sleep(500);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                } else {
+                                    if (line.equals(FILE_CLOSE_TAG)) {
+                                        break;
+                                    }
+                                    mHandler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            txtLogs.append(line + "\n");
+                                        }
+                                    });
+                                }
+                            }
+                            reader.close();
+                        } catch (FileNotFoundException e) {
+                            Log.e(TAG, "Pipe Not found: " + e);
+                        } catch (IOException e) {
+                            Log.e(TAG, "IO Exception: " + e);
+                        } finally {
+                            logPipeFile.delete();
+                        }
+                    }
+                }).start();
                 new RunPipeline().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
         });
@@ -176,6 +232,7 @@ public class ConfirmationActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            NativeCommands.getNativeInstance().startPipeline(logPipePath);
             isPipelineRunning = 1;
         }
 
@@ -197,6 +254,7 @@ public class ConfirmationActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(final String s) {
             super.onPostExecute(s);
+            NativeCommands.getNativeInstance().finishPipeline(logPipePath);
             List<PipelineComponent> pipelineComponents = GUIConfiguration.getPipeline();
             for (PipelineComponent pipelineComponent : pipelineComponents) {
                 TextView txtRuntime = new TextView(ConfirmationActivity.this);
@@ -212,100 +270,6 @@ public class ConfirmationActivity extends AppCompatActivity {
                 mp.start();
                 mp.setLooping(true);
                 btnSendResults.setVisibility(View.VISIBLE);
-            }
-        }
-    }
-
-    public class ShowLogCat extends AsyncTask<Void, String, Void> {
-
-        BufferedReader bufferedReader;
-
-        InputStreamReader inputStreamReader;
-
-        Process process;
-
-        @Override
-        protected void onPreExecute() {
-            try {
-                process = Runtime.getRuntime().exec("logcat -c");
-                process = Runtime.getRuntime().exec("logcat");
-                inputStreamReader = new InputStreamReader(process.getInputStream());
-                bufferedReader = new BufferedReader(inputStreamReader);
-            } catch (IOException e) {
-                Log.e(TAG, "Error clearing logcat: " + e);
-            }
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            try {
-
-                String line = "", filtered = "";
-
-                Pattern pattern = Pattern
-                        .compile(TAG_F5C + "(.*)|" + TAG_MINIMAP2 + "(.*)|" + TAG_SAMTOOLS + "(.*)", 0);
-                Matcher matcher;
-
-                while ((line = bufferedReader.readLine()) != null) {
-
-                    if (isCancelled()) {
-                        break;
-                    }
-
-                    matcher = pattern.matcher(line);
-                    if (!matcher.find()) {
-                        continue;
-                    }
-                    // TODO find a better way to append all the matching groups
-                    if (matcher.group(1) != null) {
-                        filtered = TAG_F5C + matcher.group(1);
-                    } else if (matcher.group(2) != null) {
-                        filtered = TAG_MINIMAP2 + matcher.group(2);
-                    } else if (matcher.group(3) != null) {
-                        filtered = TAG_SAMTOOLS + matcher.group(3);
-                    }
-                    publishProgress(filtered);
-
-                }
-            } catch (IOException e) {
-                Log.e(TAG, "Error reading logcat: " + e);
-            }
-            return null;
-        }
-
-        @Override
-        protected void onProgressUpdate(String... values) {
-            txtLogs.append(values[0] + "\n");
-            scrollView.post(new Runnable() {
-                @Override
-                public void run() {
-                    scrollView.fullScroll(View.FOCUS_DOWN);
-                }
-            });
-        }
-
-        @Override
-        protected void onPostExecute(final Void aVoid) {
-            super.onPostExecute(aVoid);
-            txtLogs.setText("");
-            try {
-                bufferedReader.close();
-                inputStreamReader.close();
-            } catch (IOException e) {
-                Log.e(TAG, "Error closing streams: " + e);
-            }
-        }
-
-        @Override
-        protected void onCancelled(final Void aVoid) {
-            super.onCancelled(aVoid);
-            txtLogs.setText("");
-            try {
-                bufferedReader.close();
-                inputStreamReader.close();
-                process.destroy();
-            } catch (IOException e) {
-                Log.e(TAG, "Error closing streams: " + e);
             }
         }
     }
@@ -367,9 +331,6 @@ public class ConfirmationActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        if (showLogCatTask != null) {
-            showLogCatTask.cancel(true);
-        }
     }
 
     @Override
