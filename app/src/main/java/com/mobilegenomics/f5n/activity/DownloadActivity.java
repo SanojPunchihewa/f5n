@@ -35,7 +35,7 @@ public class DownloadActivity extends AppCompatActivity {
 
     private String folderPath;
 
-    private static final String ecoliDataSetURL = "https://zanojmobiapps.com/_tmp/genome/ecoli/ecoli_2kb_region.zip";
+    private static final String ecoliDataSetURL = "https://zanojmobiapps.com/_tmp/genome/ecoli/ecoli-data-set.zip";
 
     private DownloadTask downloadTask;
 
