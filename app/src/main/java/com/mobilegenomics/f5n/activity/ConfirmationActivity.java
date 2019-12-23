@@ -149,6 +149,12 @@ public class ConfirmationActivity extends AppCompatActivity {
                                         @Override
                                         public void run() {
                                             txtLogs.append(line + "\n");
+                                            scrollView.post(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    scrollView.fullScroll(View.FOCUS_DOWN);
+                                                }
+                                            });
                                         }
                                     });
                                 }
