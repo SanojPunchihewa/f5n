@@ -232,7 +232,7 @@ public class ConfirmationActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            NativeCommands.getNativeInstance().startPipeline(logPipePath);
+//            NativeCommands.getNativeInstance().startPipeline(logPipePath);
             isPipelineRunning = 1;
         }
 
@@ -254,7 +254,7 @@ public class ConfirmationActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(final String s) {
             super.onPostExecute(s);
-            NativeCommands.getNativeInstance().finishPipeline(logPipePath);
+//            NativeCommands.getNativeInstance().finishPipeline(logPipePath);
             List<PipelineComponent> pipelineComponents = GUIConfiguration.getPipeline();
             for (PipelineComponent pipelineComponent : pipelineComponents) {
                 TextView txtRuntime = new TextView(ConfirmationActivity.this);

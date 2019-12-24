@@ -30,6 +30,7 @@ android {
         externalNativeBuild {
             cmake {
                 cppFlags ""
+                arguments "-LOCAL_SANITIZE=address", "-LOCAL_MODULE_RELATIVE_PATH=asan", "-LOCAL_CFLAGS:=-fno-omit-frame-pointer", "-DANDROID_ARM_MODE=arm", "-DANDROID_STL=c++_shared"
             }
         }
     }

@@ -28,8 +28,8 @@ add_library(libminimap SHARED IMPORTED)
 set_target_properties(libminimap PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libminimapshared.so)
 
 add_library(libsamtool SHARED IMPORTED)
-set_target_properties(libsamtool PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libsamtoolshared.so)
-
+#target_compile_options(${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libsamtoolshared.so PUBLIC -fsanitize=address -fno-omit-frame-pointer)
+set_target_properties(libsamtool PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libsamtoolshared.so LINK_FLAGS -fsanitize=address)
 ## add needed libraries
 #add_library( libz1 SHARED IMPORTED )
 #set_target_properties(libz1 PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../jniLibs/armeabi-v7a/libqz.so.1)
