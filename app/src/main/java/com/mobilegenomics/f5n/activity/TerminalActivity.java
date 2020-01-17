@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -145,6 +146,10 @@ public class TerminalActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        TextView txtSdcardPermissionInfo = new TextView(this);
+        txtSdcardPermissionInfo.setText(
+                "change the output file paths to a location in the internal storage if writing to the SD card failed");
+        linearLayout.addView(txtSdcardPermissionInfo);
 
     }
 

@@ -88,13 +88,17 @@ public class ConfirmationActivity extends AppCompatActivity {
 
         logPipeFile = new File(dir.getAbsolutePath() + "/pipe-out");
         logPipePath = dir.getAbsolutePath() + "/pipe-out";
-        if (!logPipeFile.exists()) {
-            try {
-                logPipeFile.createNewFile();
-            } catch (IOException e) {
-                Toast.makeText(this, "Error creating log file, Please check permissions", Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "Error : " + e);
-            }
+
+        // delete the pipe file if exists and create a new file
+        if (logPipeFile.exists()) {
+            logPipeFile.delete();
+        }
+
+        try {
+            logPipeFile.createNewFile();
+        } catch (IOException e) {
+            Toast.makeText(this, "Error creating log file, Please check permissions", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "Error : " + e);
         }
 
         mHandler = new Handler();
@@ -145,6 +149,12 @@ public class ConfirmationActivity extends AppCompatActivity {
                                         @Override
                                         public void run() {
                                             txtLogs.append(line + "\n");
+                                            scrollView.post(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    scrollView.fullScroll(View.FOCUS_DOWN);
+                                                }
+                                            });
                                         }
                                     });
                                 }

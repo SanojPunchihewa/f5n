@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -17,13 +18,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import com.liulishuo.okdownload.DownloadTask;
 import com.liulishuo.okdownload.core.cause.EndCause;
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.AppMode;
 import com.mobilegenomics.f5n.support.DownloadListener;
 import com.mobilegenomics.f5n.support.DownloadManager;
+import com.mobilegenomics.f5n.support.PreferenceUtil;
 import com.mobilegenomics.f5n.support.ZipListener;
 import com.mobilegenomics.f5n.support.ZipManager;
 import com.obsez.android.lib.filechooser.ChooserDialog;
@@ -35,9 +36,7 @@ public class DownloadActivity extends AppCompatActivity {
 
     private String folderPath;
 
-    private static final String ecoliDataSetURL = "https://zanojmobiapps.com/_tmp/genome/ecoli/ecoli_2kb_region.zip";
-
-    private DownloadTask downloadTask;
+    private static final String ecoliDataSetURL = "https://zanojmobiapps.com/_tmp/genome/ecoli/ecoli-data-set.zip";
 
     LinearLayout linearLayout;
 
@@ -168,6 +167,12 @@ public class DownloadActivity extends AppCompatActivity {
             }
         });
 
+        TextView txtSDCardWarning = new TextView(this);
+        txtSDCardWarning.setText(
+                "Cannot download or extract to SD card? Please check Help -> View Tutorial");
+        txtSDCardWarning.setTextColor(getResources().getColor(R.color.colorRead));
+        linearLayout.addView(txtSDCardWarning);
+
         if (GUIConfiguration.getAppMode() == AppMode.SLAVE) {
             btnRunPipeline = new Button(this);
             btnRunPipeline.setText("Run Pipeline");
@@ -219,12 +224,13 @@ public class DownloadActivity extends AppCompatActivity {
                         enableButtons();
                     }
                 });
-        downloadManager.download();
+        Uri treeUri = PreferenceUtil.getSharedPreferenceUri(R.string.sdcard_uri);
+        downloadManager.download(DownloadActivity.this, treeUri);
     }
 
     private void extractZip(String filepath) {
 
-        ZipManager zipManager = new ZipManager(new ZipListener() {
+        ZipManager zipManager = new ZipManager(DownloadActivity.this, new ZipListener() {
             @Override
             public void onStarted(@NonNull final long totalBytes) {
                 runOnUiThread(new Runnable() {
@@ -242,9 +248,13 @@ public class DownloadActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        int perc = ZipManager.getZipPercentage(bytesDone, totalBytes);
-                        progressBar.setProgress(perc);
-                        statusTextView.setText("Unzipping: " + perc + "%");
+                        if (ZipManager.showExtractPercentage) {
+                            int perc = ZipManager.getZipPercentage(bytesDone, totalBytes);
+                            progressBar.setProgress(perc);
+                            statusTextView.setText("Unzipping: " + perc + "%");
+                        } else {
+                            statusTextView.setText("Unzipping...");
+                        }
                     }
                 });
             }
@@ -264,7 +274,8 @@ public class DownloadActivity extends AppCompatActivity {
                 });
             }
         });
-        zipManager.unzip(filepath);
+        Uri treeUri = PreferenceUtil.getSharedPreferenceUri(R.string.sdcard_uri);
+        zipManager.unzip(treeUri, filepath);
     }
 
     private void enableButtons() {

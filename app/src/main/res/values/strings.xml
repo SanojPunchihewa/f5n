@@ -14,4 +14,6 @@
     - This app needs at least 2GB free RAM to smoothly function\n
     - If you have less memory available, minimizing the app while running some process, may stop the process and generate incomplete results</string>
 
+    <string name="sdcard_uri">SD_CARD_TREE_URI</string>
+
 </resources>

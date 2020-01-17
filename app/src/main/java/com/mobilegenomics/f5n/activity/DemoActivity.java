@@ -3,6 +3,7 @@ package com.mobilegenomics.f5n.activity;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -21,6 +22,7 @@ import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.PipelineStep;
 import com.mobilegenomics.f5n.support.DownloadListener;
+import com.mobilegenomics.f5n.support.PreferenceUtil;
 import com.mobilegenomics.f5n.support.TimeFormat;
 import com.mobilegenomics.f5n.support.ZipListener;
 import com.mobilegenomics.f5n.support.ZipManager;
@@ -165,7 +167,8 @@ public class DemoActivity extends AppCompatActivity {
                         }
                     }
                 });
-        downloadManager.download();
+        Uri treeUri = PreferenceUtil.getSharedPreferenceUri(R.string.sdcard_uri);
+        downloadManager.download(DemoActivity.this, treeUri);
     }
 
     @Override
@@ -183,7 +186,7 @@ public class DemoActivity extends AppCompatActivity {
 
     private void extractZip(String filePath) {
 
-        ZipManager zipManager = new ZipManager(new ZipListener() {
+        ZipManager zipManager = new ZipManager(DemoActivity.this, new ZipListener() {
             @Override
             public void onStarted(@NonNull final long totalBytes) {
                 runOnUiThread(new Runnable() {
@@ -225,7 +228,8 @@ public class DemoActivity extends AppCompatActivity {
                 });
             }
         });
-        zipManager.unzip(filePath);
+        Uri treeUri = PreferenceUtil.getSharedPreferenceUri(R.string.sdcard_uri);
+        zipManager.unzip(treeUri, filePath);
     }
 
     private void writeToLogFile(String lines) {
