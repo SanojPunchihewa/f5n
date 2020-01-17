@@ -24,7 +24,7 @@ public class NativeCommands {
 
     public native int finishPipeline(String pipePath);
 
-    public native int init(String command);
+    public native int initf5c(String command);
 
     public native int initminimap2(String command);
 

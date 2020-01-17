@@ -11,8 +11,8 @@ import org.ajoberstar.grgit.Grgit
 
 ext {
     git = Grgit.open(currentDir: projectDir)
-    gitVersionName = git.tag.list().last().getName()
-    gitVersionCode = git.tag.list().size()
+    gitVersionName = "mmm"//git.tag.list().last().getName()
+    gitVersionCode = 1 //git.tag.list().size()
     gitVersionCodeTime = git.head().time
     gitBranch = git.branch.current().name
     gitCommitHash = git.head().abbreviatedId
