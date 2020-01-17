@@ -12,6 +12,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -133,6 +134,11 @@ public class DownloadActivity extends AppCompatActivity {
         });
 
         filePathInput = new EditText(this);
+        LinearLayout.LayoutParams editText_LayoutParams =
+                new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT);
+        editText_LayoutParams.setMargins(0, 150, 0, 0);
+        filePathInput.setLayoutParams(editText_LayoutParams);
         filePathInput.setHint("Path to compressed file");
         linearLayout.addView(filePathInput);
 
