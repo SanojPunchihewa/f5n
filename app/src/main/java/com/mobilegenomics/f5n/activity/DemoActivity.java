@@ -22,6 +22,7 @@ import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.PipelineStep;
 import com.mobilegenomics.f5n.support.DownloadListener;
+import com.mobilegenomics.f5n.support.FileUtil;
 import com.mobilegenomics.f5n.support.PreferenceUtil;
 import com.mobilegenomics.f5n.support.TimeFormat;
 import com.mobilegenomics.f5n.support.ZipListener;
@@ -68,7 +69,7 @@ public class DemoActivity extends AppCompatActivity {
             dir.mkdirs();
         }
 
-        logFile = new File(dir.getAbsolutePath() + "/f5n-log.txt");
+        logFile = new File(dir.getAbsolutePath() + "/" + FileUtil.LOG_FILE_NAME);
         if (!logFile.exists()) {
             try {
                 logFile.createNewFile();
