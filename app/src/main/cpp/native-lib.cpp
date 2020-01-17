@@ -75,7 +75,7 @@ void resetOptInd() {
 }
 
 extern "C" JNIEXPORT jint JNICALL
-Java_com_mobilegenomics_f5n_core_NativeCommands_init(JNIEnv *env, jobject, jstring command) {
+Java_com_mobilegenomics_f5n_core_NativeCommands_initf5c(JNIEnv *env, jobject, jstring command) {
   // try{TODO:exceptions
   // Convert command to cpp
   //TODO:casting not good
@@ -108,7 +108,8 @@ Java_com_mobilegenomics_f5n_core_NativeCommands_init(JNIEnv *env, jobject, jstri
   // as parameter of siglongjmp
   // first call to sigsetjmp returns 0
   if (sigsetjmp(jmpBuf, 1) == 0) {
-    result = init(argc, argv);
+    resetOptInd();
+    result = init_f5c(argc, argv);
   } else {
     resetOptInd();
     char exceptionBuffer[1024];
@@ -159,6 +160,7 @@ Java_com_mobilegenomics_f5n_core_NativeCommands_initminimap2(JNIEnv *env, jobjec
   // as parameter of siglongjmp
   // first call to sigsetjmp returns 0
   if (sigsetjmp(jmpBuf, 1) == 0) {
+    resetOptInd();
     result = init_minimap2(argc, argv);
   } else {
     resetOptInd();
@@ -206,6 +208,7 @@ Java_com_mobilegenomics_f5n_core_NativeCommands_initsamtool(JNIEnv *env, jobject
   // as parameter of siglongjmp
   // first call to sigsetjmp returns 0
   if (sigsetjmp(jmpBuf, 1) == 0) {
+    resetOptInd();
     result = init_samtools(argc, argv);
   } else {
     resetOptInd();

@@ -43,7 +43,7 @@ public class PipelineComponent implements runNative {
             status = NativeCommands.getNativeInstance().initsamtool(command);
         } else {
             // f5c
-            status = NativeCommands.getNativeInstance().init(command);
+            status = NativeCommands.getNativeInstance().initf5c(command);
         }
         return status;
     }
