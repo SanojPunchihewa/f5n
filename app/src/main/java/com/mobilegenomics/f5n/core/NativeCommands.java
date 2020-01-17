@@ -24,10 +24,5 @@ public class NativeCommands {
 
     public native int finishPipeline(String pipePath);
 
-    public native int initf5c(String command);
-
-    public native int initminimap2(String command);
-
-    public native int initsamtool(String command);
-
+    public native int init(String command, int command_id);
 }

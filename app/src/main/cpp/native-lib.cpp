@@ -75,7 +75,7 @@ void resetOptInd() {
 }
 
 extern "C" JNIEXPORT jint JNICALL
-Java_com_mobilegenomics_f5n_core_NativeCommands_initf5c(JNIEnv *env, jobject, jstring command) {
+Java_com_mobilegenomics_f5n_core_NativeCommands_init(JNIEnv *env, jobject, jstring command, jint command_id) {
   // try{TODO:exceptions
   // Convert command to cpp
   //TODO:casting not good
@@ -93,6 +93,7 @@ Java_com_mobilegenomics_f5n_core_NativeCommands_initf5c(JNIEnv *env, jobject, js
   }
   argv[argc] = 0;
   jint result;
+  char exceptionBuffer[1024];
   // http://jnicookbook.owsiak.org/recipe-no-016/
   atexit(stopExit);
 
@@ -109,11 +110,26 @@ Java_com_mobilegenomics_f5n_core_NativeCommands_initf5c(JNIEnv *env, jobject, js
   // first call to sigsetjmp returns 0
   if (sigsetjmp(jmpBuf, 1) == 0) {
     resetOptInd();
-    result = init_f5c(argc, argv);
+
+    ///
+    if (command_id < 1) {
+      // minimap2
+      sprintf(exceptionBuffer,"MINIMAP2_EXCEPTION");
+      result = init_minimap2(argc, argv);
+    } else if (command_id < 3) {
+      // samtools
+      sprintf(exceptionBuffer,"SAMTOOL_EXCEPTION");
+      result = init_samtools(argc, argv);
+    } else {
+      // f5c
+      sprintf(exceptionBuffer,"F5C_EXCEPTION");
+      result = init_f5c(argc, argv);
+    }
+    ///
+
+//    result = init_f5c(argc, argv);
   } else {
     resetOptInd();
-    char exceptionBuffer[1024];
-    sprintf(exceptionBuffer, "F5C_EXCEPTION");
     (env)->ThrowNew((env)->FindClass("java/lang/Exception"), exceptionBuffer);
   }
   // if everything was OK, we can set old handlers
@@ -121,107 +137,6 @@ Java_com_mobilegenomics_f5n_core_NativeCommands_initf5c(JNIEnv *env, jobject, js
   sigaction(11, &actions[11 - 1], NULL);
 
   env->ReleaseStringUTFChars(command, command_c);
-
-  return result;
-}
-
-extern "C" JNIEXPORT jint JNICALL
-Java_com_mobilegenomics_f5n_core_NativeCommands_initminimap2(JNIEnv *env, jobject type, jstring command) {
-  // try{TODO:exceptions
-  // Convert command to cpp
-  //TODO:casting not good
-  char *command_c = (char *) env->GetStringUTFChars(command, nullptr);
-
-  enum { kMaxArgs = 64 };
-  int argc = 0;
-  char *argv[kMaxArgs];
-
-  char *p2 = strtok(command_c, " ");
-
-  while (p2 && argc < kMaxArgs - 1) {
-    argv[argc++] = p2;
-    p2 = strtok(0, " ");
-  }
-  argv[argc] = 0;
-
-  jint result;
-  // http://jnicookbook.owsiak.org/recipe-no-016/
-  atexit(stopExit);
-
-  // setup signal handlers
-  // signals are counted from 1 - 31. Array indexes are
-  // counted from 0 - 30. This is why we do 10-1 and 11-1
-  setup_signal_handler(10, handler, &actions[10 - 1]);
-  setup_signal_handler(11, handler, &actions[11 - 1]);
-
-  // set the long jump for the signal handler
-  // if handler is called it will jump
-  // here with the error code specified
-  // as parameter of siglongjmp
-  // first call to sigsetjmp returns 0
-  if (sigsetjmp(jmpBuf, 1) == 0) {
-    resetOptInd();
-    result = init_minimap2(argc, argv);
-  } else {
-    resetOptInd();
-    char exceptionBuffer[1024];
-    sprintf(exceptionBuffer, "MINIMAP2_EXCEPTION");
-    (env)->ThrowNew((env)->FindClass("java/lang/Exception"), exceptionBuffer);
-  }
-  // if everything was OK, we can set old handlers
-  sigaction(10, &actions[10 - 1], NULL);
-  sigaction(11, &actions[11 - 1], NULL);
-
-  env->ReleaseStringUTFChars(command, command_c);
-
-  return result;
-}
-
-extern "C" JNIEXPORT jint JNICALL
-Java_com_mobilegenomics_f5n_core_NativeCommands_initsamtool(JNIEnv *env, jobject clazz, jstring command) {
-  char *command_c = (char *) env->GetStringUTFChars(command, nullptr);
-
-  enum { kMaxArgs = 64 };
-  int argc = 0;
-  char *argv[kMaxArgs];
-
-  char *p2 = strtok(command_c, " ");
-
-  while (p2 && argc < kMaxArgs - 1) {
-    argv[argc++] = p2;
-    p2 = strtok(0, " ");
-  }
-  argv[argc] = 0;
-  jint result;
-  // http://jnicookbook.owsiak.org/recipe-no-016/
-  atexit(stopExit);
-
-  // setup signal handlers 
-  // signals are counted from 1 - 31. Array indexes are
-  // counted from 0 - 30. This is why we do 10-1 and 11-1
-  setup_signal_handler(10, handler, &actions[10 - 1]);
-  setup_signal_handler(11, handler, &actions[11 - 1]);
-
-  // set the long jump for the signal handler
-  // if handler is called it will jump
-  // here with the error code specified
-  // as parameter of siglongjmp
-  // first call to sigsetjmp returns 0
-  if (sigsetjmp(jmpBuf, 1) == 0) {
-    resetOptInd();
-    result = init_samtools(argc, argv);
-  } else {
-    resetOptInd();
-    char exceptionBuffer[1024];
-    sprintf(exceptionBuffer, "SAMTOOL_EXCEPTION");
-    (env)->ThrowNew((env)->FindClass("java/lang/Exception"), exceptionBuffer);
-  }
-  // if everything was OK, we can set old handlers
-  sigaction(10, &actions[10 - 1], NULL);
-  sigaction(11, &actions[11 - 1], NULL);
-
-  env->ReleaseStringUTFChars(command, command_c);
-
 
   return result;
 }
