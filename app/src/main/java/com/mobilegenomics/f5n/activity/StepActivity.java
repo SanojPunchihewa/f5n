@@ -205,6 +205,8 @@ public class StepActivity extends AppCompatActivity {
                 LinearLayout.LayoutParams editText_LayoutParams =
                         new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
                                 LinearLayout.LayoutParams.WRAP_CONTENT);
+                editText_LayoutParams.setMargins(15, 0, 15, 0);
+                editText.setBackgroundColor(0xFFE5E7E9);
                 editText.setLayoutParams(editText_LayoutParams);
 
             }
