@@ -21,6 +21,16 @@ import java.net.URLConnection;
 public class FileUtil {
 
     /**
+     * The name of the temp file created by the pipe
+     */
+    public static final String TMP_LOG_FILE_NAME = "tmp.log";
+
+    /**
+     * The name of the log file created by f5n
+     */
+    public static final String LOG_FILE_NAME = "f5n.log";
+
+    /**
      * The name of the primary volume (LOLLIPOP).
      */
     private static final String PRIMARY_VOLUME_NAME = "primary";

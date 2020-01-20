@@ -28,6 +28,7 @@ import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.AppMode;
 import com.mobilegenomics.f5n.core.NativeCommands;
 import com.mobilegenomics.f5n.core.PipelineComponent;
+import com.mobilegenomics.f5n.support.FileUtil;
 import com.mobilegenomics.f5n.support.TimeFormat;
 import java.io.BufferedReader;
 import java.io.File;
@@ -86,8 +87,8 @@ public class ConfirmationActivity extends AppCompatActivity {
             dir.mkdirs();
         }
 
-        logPipeFile = new File(dir.getAbsolutePath() + "/pipe-out");
-        logPipePath = dir.getAbsolutePath() + "/pipe-out";
+        logPipeFile = new File(dir.getAbsolutePath() + "/" + FileUtil.TMP_LOG_FILE_NAME);
+        logPipePath = dir.getAbsolutePath() + "/" + FileUtil.TMP_LOG_FILE_NAME;
 
         // delete the pipe file if exists and create a new file
         if (logPipeFile.exists()) {
@@ -318,7 +319,7 @@ public class ConfirmationActivity extends AppCompatActivity {
                 dir.mkdirs();
             }
 
-            File logFile = new File(dir.getAbsolutePath() + "/f5n-log.txt");
+            File logFile = new File(dir.getAbsolutePath() + "/" + FileUtil.LOG_FILE_NAME);
             if (!logFile.exists()) {
                 logFile.createNewFile();
             }
