@@ -202,7 +202,7 @@ public class MinITActivity extends AppCompatActivity implements UploadStatusDele
 
     private void uploadDataSet() {
         // TODO check wifi connectivity
-        ZipManager zipManager = new ZipManager(new ZipListener() {
+        ZipManager zipManager = new ZipManager(MinITActivity.this, new ZipListener() {
             @Override
             public void onStarted(@NonNull final long totalBytes) {
                 runOnUiThread(new Runnable() {

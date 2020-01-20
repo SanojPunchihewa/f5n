@@ -1,13 +1,23 @@
 package com.mobilegenomics.f5n.support;
 
+import static net.gotev.uploadservice.UploadService.BUFFER_SIZE;
+
+import android.content.Context;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+import androidx.documentfile.provider.DocumentFile;
+import com.mobilegenomics.f5n.R;
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URLConnection;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
@@ -17,7 +27,11 @@ public class ZipManager {
 
     private static final String TAG = ZipManager.class.getSimpleName();
 
+    public static boolean showExtractPercentage = true;
+
     ZipListener zipListener;
+
+    private Context context;
 
     private String unzipLocation;
 
@@ -25,11 +39,22 @@ public class ZipManager {
 
     private long totalBytesToCompress = 0;
 
-    public ZipManager(ZipListener zipListener) {
+    public ZipManager(Context context, ZipListener zipListener) {
+        this.context = context;
         this.zipListener = zipListener;
     }
 
-    public void unzip(String zipFilePath) {
+    public void unzip(Uri treeUri, String zipFilePath) {
+
+        if ((PreferenceUtil.getSharedPreferenceUri(R.string.sdcard_uri) != null) && FileUtil
+                .isFileInExternalSdCard(zipFilePath)) {
+            unzipUsingSAF(context, treeUri, zipFilePath);
+        } else {
+            unzip(zipFilePath);
+        }
+    }
+
+    private void unzip(String zipFilePath) {
 
         class UnzipAysnc extends AsyncTask<String, Integer, Boolean> {
 
@@ -44,10 +69,11 @@ public class ZipManager {
                 try {
                     zip = new ZipFile(zipFilePath);
                     totalBytes = zip.size();
-                    zipListener.onStarted(totalBytes);
                 } catch (IOException e) {
+                    showExtractPercentage = false;
                     Log.e(TAG, "Error reading Zip File: " + e);
                 }
+                zipListener.onStarted(totalBytes);
                 Log.i(TAG, "Starting to unzip");
             }
 
@@ -104,6 +130,145 @@ public class ZipManager {
             protected void onProgressUpdate(final Integer... values) {
                 super.onProgressUpdate(values);
                 zipListener.onProgress(bytesZipped, totalBytes);
+            }
+
+            @Override
+            protected void onPostExecute(final Boolean result) {
+                super.onPostExecute(result);
+                Log.i(TAG, "Finished unzip");
+                zipListener.onComplete(result, null);
+            }
+        }
+        new UnzipAysnc().execute();
+    }
+
+    private void unzipUsingSAF(Context context, Uri treeUri, String zipFilePath) {
+
+        class UnzipAysnc extends AsyncTask<String, Integer, Boolean> {
+
+            private int bytesUnZipped = 0;
+
+            private int totalBytes;
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                ZipFile zip = null;
+                try {
+                    zip = new ZipFile(zipFilePath);
+                    totalBytes = zip.size();
+                } catch (IOException e) {
+                    Log.e(TAG, "Error reading Zip File: " + e);
+                    showExtractPercentage = false;
+                }
+                zipListener.onStarted(totalBytes);
+                Log.i(TAG, "Starting to unzip");
+            }
+
+            @Override
+            protected Boolean doInBackground(final String... strings) {
+
+                DocumentFile zipDocumentFile = FileUtil
+                        .getDocumentFile(context, new File(zipFilePath), false, false, treeUri);
+
+                try {
+                    DocumentFile unZippedDirectory = zipDocumentFile.getParentFile()
+                            .createDirectory(
+                                    zipDocumentFile.getName()
+                                            .substring(0, zipDocumentFile.getName().lastIndexOf(".")));
+
+                    InputStream inputStream = context.getContentResolver().openInputStream(zipDocumentFile.getUri());
+                    assert inputStream != null;
+                    ZipInputStream zipInputStream = new ZipInputStream(
+                            new BufferedInputStream(inputStream, BUFFER_SIZE));
+
+                    ZipEntry ze;
+                    while ((ze = zipInputStream.getNextEntry()) != null) {
+                        if (ze.isDirectory()) {
+
+                            String[] paths = ze.getName().split("/");
+
+                            DocumentFile documentFile = null;
+                            for (String path : paths) {
+                                if (documentFile == null) {
+                                    documentFile = unZippedDirectory.findFile(path);
+                                    if (documentFile == null) {
+                                        documentFile = unZippedDirectory.createDirectory(path);
+                                    }
+                                } else {
+                                    DocumentFile newDocumentFile = documentFile.findFile(path);
+                                    if (newDocumentFile == null) {
+                                        documentFile = documentFile.createDirectory(path);
+                                    } else {
+                                        documentFile = newDocumentFile;
+                                    }
+                                }
+                            }
+                            if (documentFile == null || !documentFile.exists()) {
+                                Log.e(TAG, "No document file found");
+                                return false;
+                            }
+
+                        } else {
+
+                            bytesUnZipped++;
+                            publishProgress(bytesUnZipped);
+
+                            String[] paths = ze.getName().split("/");
+
+                            DocumentFile documentFile = null;
+                            for (int i = 0; i < paths.length - 1; i++) {
+                                if (documentFile == null) {
+                                    documentFile = unZippedDirectory.findFile(paths[i]);
+                                    if (documentFile == null) {
+                                        documentFile = unZippedDirectory.createDirectory(paths[i]);
+                                    }
+                                } else {
+                                    DocumentFile newDocumentFile = documentFile.findFile(paths[i]);
+                                    if (newDocumentFile == null) {
+                                        documentFile = documentFile.createDirectory(paths[i]);
+                                    } else {
+                                        documentFile = newDocumentFile;
+                                    }
+                                }
+                            }
+
+                            DocumentFile unzipDocumentFile;
+                            if (documentFile == null) {
+                                unzipDocumentFile = unZippedDirectory
+                                        .createFile(URLConnection.guessContentTypeFromName(ze.getName()),
+                                                paths[paths.length - 1]);
+                            } else {
+                                unzipDocumentFile = documentFile
+                                        .createFile(URLConnection.guessContentTypeFromName(ze.getName()),
+                                                paths[paths.length - 1]);
+                            }
+                            OutputStream outputStream = context.getContentResolver()
+                                    .openOutputStream(unzipDocumentFile.getUri());
+
+                            int read;
+                            byte[] data = new byte[BUFFER_SIZE];
+                            assert outputStream != null;
+                            while ((read = zipInputStream.read(data, 0, BUFFER_SIZE)) != -1) {
+                                outputStream.write(data, 0, read);
+                            }
+                            outputStream.close();
+                            zipInputStream.closeEntry();
+                        }
+                    }
+                    zipInputStream.close();
+
+                } catch (Exception e) {
+                    Log.e(TAG, "Unzip Error: " + e);
+                    return false;
+                }
+                return true;
+            }
+
+            @Override
+            protected void onProgressUpdate(final Integer... values) {
+                super.onProgressUpdate(values);
+                zipListener.onProgress(bytesUnZipped, totalBytes);
             }
 
             @Override
