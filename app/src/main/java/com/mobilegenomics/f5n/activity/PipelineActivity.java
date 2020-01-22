@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.PipelineStep;
+import com.mobilegenomics.f5n.support.PipelineState;
 import java.util.ArrayList;
 
 public class PipelineActivity extends AppCompatActivity {
@@ -70,6 +71,7 @@ public class PipelineActivity extends AppCompatActivity {
             }
         }
         if (!clickedNone) {
+            GUIConfiguration.setPipelineState(PipelineState.TO_BE_CONFIGURED);
             GUIConfiguration.printList();
             GUIConfiguration.configureSteps(PipelineActivity.this, null);
             if (mode == MODE_GUI) {

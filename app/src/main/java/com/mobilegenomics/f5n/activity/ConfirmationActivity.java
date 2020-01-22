@@ -29,6 +29,7 @@ import com.mobilegenomics.f5n.core.AppMode;
 import com.mobilegenomics.f5n.core.NativeCommands;
 import com.mobilegenomics.f5n.core.PipelineComponent;
 import com.mobilegenomics.f5n.support.FileUtil;
+import com.mobilegenomics.f5n.support.PipelineState;
 import com.mobilegenomics.f5n.support.TimeFormat;
 import java.io.BufferedReader;
 import java.io.File;
@@ -244,6 +245,7 @@ public class ConfirmationActivity extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             NativeCommands.getNativeInstance().startPipeline(logPipePath);
+            GUIConfiguration.setPipelineState(PipelineState.RUNNING);
             isPipelineRunning = 1;
         }
 
@@ -265,6 +267,7 @@ public class ConfirmationActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(final String s) {
             super.onPostExecute(s);
+            GUIConfiguration.setPipelineState(PipelineState.COMPLETED);
             NativeCommands.getNativeInstance().finishPipeline(logPipePath);
             List<PipelineComponent> pipelineComponents = GUIConfiguration.getPipeline();
             for (PipelineComponent pipelineComponent : pipelineComponents) {
