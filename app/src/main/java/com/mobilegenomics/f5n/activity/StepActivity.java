@@ -10,6 +10,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -21,6 +22,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
@@ -180,9 +182,29 @@ public class StepActivity extends AppCompatActivity {
             LinearLayout.LayoutParams checkBox_LayoutParams =
                     new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                             LinearLayout.LayoutParams.WRAP_CONTENT);
-            // checkBox_LayoutParams.weight = 1;
-            linearLayout.addView(checkBox);
+
+            LinearLayout horizontalLayout = new LinearLayout(this);
+            horizontalLayout.setOrientation(LinearLayout.HORIZONTAL);
+            horizontalLayout.setVerticalGravity(Gravity.CENTER_VERTICAL);
+
             checkBox.setLayoutParams(checkBox_LayoutParams);
+            horizontalLayout.addView(checkBox);
+
+            ImageView imgInfoBtn = new ImageView(this);
+            imgInfoBtn.setImageDrawable(getResources().getDrawable(R.drawable.ic_info_outline_black_24dp));
+            LinearLayout.LayoutParams imgInfoBtnLayoutParams =
+                    new LinearLayout.LayoutParams(50,
+                            50);
+            imgInfoBtn.setLayoutParams(imgInfoBtnLayoutParams);
+            imgInfoBtn.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(final View v) {
+                    Toast.makeText(StepActivity.this, argument.getArgDescription(), Toast.LENGTH_SHORT).show();
+                }
+            });
+            horizontalLayout.addView(imgInfoBtn);
+
+            linearLayout.addView(horizontalLayout);
 
             if (!argument.isFlagOnly()) {
                 final EditText editText;
