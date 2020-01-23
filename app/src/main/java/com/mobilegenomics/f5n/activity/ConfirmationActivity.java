@@ -1,14 +1,14 @@
 package com.mobilegenomics.f5n.activity;
 
-import android.content.Intent;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.text.TextUtils;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -26,29 +26,27 @@ import androidx.core.widget.NestedScrollView;
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.AppMode;
+import com.mobilegenomics.f5n.core.NativeCommands;
 import com.mobilegenomics.f5n.core.PipelineComponent;
+import com.mobilegenomics.f5n.support.FileUtil;
+import com.mobilegenomics.f5n.support.PipelineState;
 import com.mobilegenomics.f5n.support.TimeFormat;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ConfirmationActivity extends AppCompatActivity {
 
-    private static final String TAG_F5C = "f5c-android";
+    private static final String TAG = ConfirmationActivity.class.getSimpleName();
 
-    private static final String TAG_MINIMAP2 = "minimap2-native";
-
-    private static final String TAG_SAMTOOLS = "samtools-native";
+    private static final String FILE_CLOSE_TAG = "EOF";
 
     private String resultsSummary;
-  
-    private int isPipelineRunning = 0;
 
     private boolean logWrittenToFile = false;
 
@@ -70,10 +68,40 @@ public class ConfirmationActivity extends AppCompatActivity {
 
     MediaPlayer mp;
 
+    Handler mHandler;
+
+    String logPipePath;
+
+    File logPipeFile;
+
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_vertical);
+
+        String dirPath = Environment.getExternalStorageDirectory() + "/" + "mobile-genomics";
+
+        File dir = new File(dirPath);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        logPipeFile = new File(dir.getAbsolutePath() + "/" + FileUtil.TMP_LOG_FILE_NAME);
+        logPipePath = dir.getAbsolutePath() + "/" + FileUtil.TMP_LOG_FILE_NAME;
+
+        // delete the pipe file if exists and create a new file
+        if (logPipeFile.exists()) {
+            logPipeFile.delete();
+        }
+
+        try {
+            logPipeFile.createNewFile();
+        } catch (IOException e) {
+            Toast.makeText(this, "Error creating log file, Please check permissions", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "Error : " + e);
+        }
+
+        mHandler = new Handler();
 
         linearLayout = findViewById(R.id.vertical_linear_layout);
 
@@ -98,7 +126,49 @@ public class ConfirmationActivity extends AppCompatActivity {
                 btnProceed.setEnabled(false);
                 mProgressBar.setVisibility(View.VISIBLE);
                 GUIConfiguration.createPipeline();
-                new ShowLogCat().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        BufferedReader reader = null;
+                        try {
+                            reader = new BufferedReader(new FileReader(logPipePath));
+                            while (true) {
+                                String line = reader.readLine();
+                                if (line == null) {
+                                    //wait until there is more of the file for us to read
+                                    try {
+                                        Thread.sleep(500);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                } else {
+                                    if (line.equals(FILE_CLOSE_TAG)) {
+                                        break;
+                                    }
+                                    mHandler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            txtLogs.append(line + "\n");
+                                            scrollView.post(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    scrollView.fullScroll(View.FOCUS_DOWN);
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+                            }
+                            reader.close();
+                        } catch (FileNotFoundException e) {
+                            Log.e(TAG, "Pipe Not found: " + e);
+                        } catch (IOException e) {
+                            Log.e(TAG, "IO Exception: " + e);
+                        } finally {
+                            logPipeFile.delete();
+                        }
+                    }
+                }).start();
                 new RunPipeline().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
         });
@@ -172,7 +242,8 @@ public class ConfirmationActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            isPipelineRunning = 1;
+            NativeCommands.getNativeInstance().startPipeline(logPipePath);
+            GUIConfiguration.setPipelineState(PipelineState.RUNNING);
         }
 
         @Override
@@ -193,6 +264,8 @@ public class ConfirmationActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(final String s) {
             super.onPostExecute(s);
+            GUIConfiguration.setPipelineState(PipelineState.COMPLETED);
+            NativeCommands.getNativeInstance().finishPipeline(logPipePath);
             List<PipelineComponent> pipelineComponents = GUIConfiguration.getPipeline();
             for (PipelineComponent pipelineComponent : pipelineComponents) {
                 TextView txtRuntime = new TextView(ConfirmationActivity.this);
@@ -200,7 +273,6 @@ public class ConfirmationActivity extends AppCompatActivity {
                         pipelineComponent.getPipelineStep().getCommand() + " took " + pipelineComponent.getRuntime());
                 linearLayout.addView(txtRuntime);
             }
-            isPipelineRunning = 2;
             btnWriteLog.setVisibility(View.VISIBLE);
             btnProceed.setEnabled(true);
             mProgressBar.setVisibility(View.GONE);
@@ -209,63 +281,6 @@ public class ConfirmationActivity extends AppCompatActivity {
                 mp.setLooping(true);
                 btnSendResults.setVisibility(View.VISIBLE);
             }
-        }
-    }
-
-    public class ShowLogCat extends AsyncTask<Void, String, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            try {
-                Runtime.getRuntime().exec("logcat -c");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            try {
-                Process process = Runtime.getRuntime().exec("logcat");
-                BufferedReader bufferedReader = new BufferedReader(
-                        new InputStreamReader(process.getInputStream()));
-
-                String line = "", filtered = "";
-
-                Pattern pattern = Pattern
-                        .compile(TAG_F5C + "(.*)|" + TAG_MINIMAP2 + "(.*)|" + TAG_SAMTOOLS + "(.*)", 0);
-                Matcher matcher;
-
-                while ((line = bufferedReader.readLine()) != null) {
-                    matcher = pattern.matcher(line);
-                    if (!matcher.find()) {
-                        continue;
-                    }
-                    // TODO find a better way to append all the matching groups
-                    if (matcher.group(1) != null) {
-                        filtered = TAG_F5C + matcher.group(1);
-                    } else if (matcher.group(2) != null) {
-                        filtered = TAG_MINIMAP2 + matcher.group(2);
-                    } else if (matcher.group(3) != null) {
-                        filtered = TAG_SAMTOOLS + matcher.group(3);
-                    }
-                    publishProgress(filtered);
-
-                }
-            } catch (IOException e) {
-            }
-            return null;
-        }
-
-        @Override
-        protected void onProgressUpdate(String... values) {
-            txtLogs.append(values[0] + "\n");
-            scrollView.post(new Runnable() {
-                @Override
-                public void run() {
-                    scrollView.fullScroll(View.FOCUS_DOWN);
-                }
-            });
         }
     }
 
@@ -303,7 +318,7 @@ public class ConfirmationActivity extends AppCompatActivity {
                 dir.mkdirs();
             }
 
-            File logFile = new File(dir.getAbsolutePath() + "/f5n-log.txt");
+            File logFile = new File(dir.getAbsolutePath() + "/" + FileUtil.LOG_FILE_NAME);
             if (!logFile.exists()) {
                 logFile.createNewFile();
             }
@@ -324,17 +339,27 @@ public class ConfirmationActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
     public void onBackPressed() {
-        if (isPipelineRunning == 0) {
-            super.onBackPressed();
-        } else if (isPipelineRunning == 1) {
-            showStopPipelineDialog();
-        } else if (isPipelineRunning == 2) {
-            if (!logWrittenToFile) {
-                showWriteToFileDialog();
-            } else {
+        PipelineState state = GUIConfiguration.getPipelineState();
+        switch (state) {
+            case CONFIGURED:
                 super.onBackPressed();
-            }
+                break;
+            case RUNNING:
+                showStopPipelineDialog();
+                break;
+            case COMPLETED:
+                if (!logWrittenToFile) {
+                    showWriteToFileDialog();
+                } else {
+                    super.onBackPressed();
+                }
+                break;
         }
     }
 

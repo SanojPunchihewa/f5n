@@ -3,19 +3,23 @@ package com.mobilegenomics.f5n.activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
@@ -51,101 +55,113 @@ public class TerminalActivity extends AppCompatActivity {
 
         linearLayout = findViewById(R.id.vertical_linear_layout);
 
-        editTextFolderPath = findViewById(R.id.edit_text_folder_path);
-        editTextFolderPath.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(final CharSequence s, final int start, final int count, final int after) {
+        Log.e("TERMINAL", "State = " + GUIConfiguration.getPipelineState());
 
-            }
+        if (GUIConfiguration.getPipelineState() == null) {
+            // TODO Find a better fix
+            // The app has crashed !
+            showCrashError();
+        } else {
+            editTextFolderPath = findViewById(R.id.edit_text_folder_path);
+            editTextFolderPath.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(final CharSequence s, final int start, final int count,
+                        final int after) {
 
-            @Override
-            public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(final Editable s) {
-                folderPath = s.toString();
-                replaceDirectoryPath(folderPath);
-            }
-        });
-
-        btnCopyPath = findViewById(R.id.btn_copy_path);
-        btnCopyPath.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("folderpath", folderPath);
-                clipboard.setPrimaryClip(clip);
-            }
-        });
-        btnOpenFolder = findViewById(R.id.btn_open_folder);
-        btnOpenFolder.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                openFileManager();
-            }
-        });
-        btnPastePath = findViewById(R.id.btn_paste_path);
-        btnPastePath.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                try {
-                    ClipData.Item item = Objects.requireNonNull(clipboard.getPrimaryClip()).getItemAt(0);
-                    folderPath = item.getText().toString();
-                    if (!TextUtils.isEmpty(folderPath)) {
-                        editTextFolderPath.setText(folderPath);
-                    }
-                } catch (NullPointerException e) {
-                    Toast.makeText(TerminalActivity.this, "No file path was copied", Toast.LENGTH_SHORT).show();
                 }
+
+                @Override
+                public void onTextChanged(final CharSequence s, final int start, final int before, final int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(final Editable s) {
+                    folderPath = s.toString();
+                    replaceDirectoryPath(folderPath);
+                }
+            });
+
+            btnCopyPath = findViewById(R.id.btn_copy_path);
+            btnCopyPath.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(final View v) {
+                    ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipData clip = ClipData.newPlainText("folderpath", folderPath);
+                    clipboard.setPrimaryClip(clip);
+                }
+            });
+            btnOpenFolder = findViewById(R.id.btn_open_folder);
+            btnOpenFolder.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(final View v) {
+                    openFileManager();
+                }
+            });
+            btnPastePath = findViewById(R.id.btn_paste_path);
+            btnPastePath.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(final View v) {
+                    ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                    try {
+                        ClipData.Item item = Objects.requireNonNull(clipboard.getPrimaryClip()).getItemAt(0);
+                        folderPath = item.getText().toString();
+                        if (!TextUtils.isEmpty(folderPath)) {
+                            editTextFolderPath.setText(folderPath);
+                        }
+                    } catch (NullPointerException e) {
+                        Toast.makeText(TerminalActivity.this, "No file path was copied", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+            steps = GUIConfiguration.getSteps();
+
+            stepId = 0;
+
+            LayoutParams params = new LayoutParams(
+                    LayoutParams.MATCH_PARENT,
+                    LayoutParams.WRAP_CONTENT
+            );
+            params.setMargins(0, 10, 0, 10);
+
+            for (Step step : steps) {
+                EditText editText = new EditText(this);
+                editText.setText(step.getCommandString());
+                editText.setBackgroundColor(0xFFE5E7E9);
+                editText.setLayoutParams(params);
+                editText.setId(stepId + 125);
+                editText.requestFocus();
+                linearLayout.addView(editText);
+                stepId++;
             }
-        });
 
-        steps = GUIConfiguration.getSteps();
+            Button button = new Button(this);
+            linearLayout.addView(button);
+            button.setText("Next");
+            button.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(final View v) {
+                    stepId = 0;
+                    for (Step step : steps) {
+                        EditText editText = findViewById(stepId + 125);
+                        if (editText.getText() != null && !TextUtils.isEmpty(editText.getText().toString())) {
+                            step.setCommandString(editText.getText().toString());
+                        }
+                        stepId++;
+                    }
 
-        stepId = 0;
-
-        LayoutParams params = new LayoutParams(
-                LayoutParams.MATCH_PARENT,
-                LayoutParams.WRAP_CONTENT
-        );
-        params.setMargins(0, 10, 0, 10);
-
-        for (Step step : steps) {
-            EditText editText = new EditText(this);
-            editText.setText(step.getCommandString());
-            editText.setBackgroundColor(0xFFE5E7E9);
-            editText.setLayoutParams(params);
-            editText.setId(stepId + 125);
-            editText.requestFocus();
-            linearLayout.addView(editText);
-            stepId++;
+                    GUIConfiguration.createPipeline();
+                    Intent intent = new Intent(TerminalActivity.this, ConfirmationActivity.class);
+                    intent.putExtra("FOLDER_PATH", folderPath);
+                    startActivity(intent);
+                }
+            });
+            TextView txtSdcardPermissionInfo = new TextView(this);
+            txtSdcardPermissionInfo.setText(
+                    "change the output file paths to a location in the internal storage if writing to the SD card failed");
+            linearLayout.addView(txtSdcardPermissionInfo);
         }
-
-        Button button = new Button(this);
-        linearLayout.addView(button);
-        button.setText("Next");
-        button.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                stepId = 0;
-                for (Step step : steps) {
-                    EditText editText = findViewById(stepId + 125);
-                    if (editText.getText() != null && !TextUtils.isEmpty(editText.getText().toString())) {
-                        step.setCommandString(editText.getText().toString());
-                    }
-                    stepId++;
-                }
-
-                GUIConfiguration.createPipeline();
-                Intent intent = new Intent(TerminalActivity.this, ConfirmationActivity.class);
-                intent.putExtra("FOLDER_PATH", folderPath);
-                startActivity(intent);
-            }
-        });
-
     }
 
     private void openFileManager() {
@@ -170,6 +186,22 @@ public class TerminalActivity extends AppCompatActivity {
                 editText.setText(replacedCmd);
             }
         }
+    }
+
+    private void showCrashError() {
+        new AlertDialog.Builder(this)
+                .setTitle("F5N Crashed")
+                .setMessage("App Crashed due to Out Of Memory")
+                .setPositiveButton("Go to Start page", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        Intent intent = new Intent(TerminalActivity.this, MainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                    }
+                })
+                .setCancelable(false)
+                .show();
     }
 
 }

@@ -1,5 +1,7 @@
 package com.mobilegenomics.f5n.support;
 
+import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 import android.webkit.URLUtil;
@@ -7,6 +9,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.documentfile.provider.DocumentFile;
 import com.liulishuo.okdownload.DownloadTask;
 import com.liulishuo.okdownload.SpeedCalculator;
 import com.liulishuo.okdownload.StatusUtil;
@@ -16,6 +19,8 @@ import com.liulishuo.okdownload.core.breakpoint.BreakpointInfo;
 import com.liulishuo.okdownload.core.cause.EndCause;
 import com.liulishuo.okdownload.core.listener.DownloadListener4WithSpeed;
 import com.liulishuo.okdownload.core.listener.assist.Listener4SpeedAssistExtend.Listener4SpeedModel;
+import com.mobilegenomics.f5n.R;
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -46,11 +51,19 @@ public class DownloadManager {
         this.downloadListener = downloadListener;
     }
 
-    public void download() {
+    public void download(Context context, Uri treeUri) {
         String nameOfFile = URLUtil.guessFileName(url, null,
                 MimeTypeMap.getFileExtensionFromUrl(url));
 
-        downloadTask = new DownloadTask.Builder(url, folderPath, nameOfFile).build();
+        if ((PreferenceUtil.getSharedPreferenceUri(R.string.sdcard_uri) != null) && FileUtil
+                .isFileInExternalSdCard(folderPath)) {
+            DocumentFile file = FileUtil
+                    .getDocumentFile(context, new File(folderPath + "/" + nameOfFile), false, true, treeUri);
+            downloadTask = new DownloadTask.Builder(url, file.getUri()).build();
+        } else {
+            downloadTask = new DownloadTask.Builder(url, folderPath, nameOfFile).setConnectionCount(1)
+                    .build();
+        }
 
         initStatus(statusTextView, progressBar);
 

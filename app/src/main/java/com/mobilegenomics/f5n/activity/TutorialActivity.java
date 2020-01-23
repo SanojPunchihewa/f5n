@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.PagerTitleStrip;
 import androidx.viewpager.widget.ViewPager;
 import com.mobilegenomics.f5n.R;
+import com.mobilegenomics.f5n.fragments.FragmentHelpAllowSDCard;
 import com.mobilegenomics.f5n.fragments.FragmentHelpDemo;
 import com.mobilegenomics.f5n.fragments.FragmentHelpDownload;
 import com.mobilegenomics.f5n.fragments.FragmentHelpMinIt;
@@ -48,18 +49,21 @@ public class TutorialActivity extends AppCompatActivity {
         @Override
         public Fragment getItem(int position) {
 
-            if (position == 0) {
-                return new FragmentHelpMode();
-            } else if (position == 1) {
-                return new FragmentHelpDownload();
-            } else if (position == 2) {
-                return new FragmentHelpStandalone();
-            } else if (position == 3) {
-                return new FragmentHelpMinIt();
-            } else if (position == 4) {
-                return new FragmentHelpDemo();
-            } else if (position == 5) {
-                return new FragmentHelpRunPipeline();
+            switch (position) {
+                case 0:
+                    return new FragmentHelpAllowSDCard();
+                case 1:
+                    return new FragmentHelpMode();
+                case 2:
+                    return new FragmentHelpDownload();
+                case 3:
+                    return new FragmentHelpStandalone();
+                case 4:
+                    return new FragmentHelpMinIt();
+                case 5:
+                    return new FragmentHelpDemo();
+                case 6:
+                    return new FragmentHelpRunPipeline();
             }
             return null;
         }
@@ -74,16 +78,18 @@ public class TutorialActivity extends AppCompatActivity {
             Locale l = Locale.getDefault();
             switch (position) {
                 case 0:
-                    return "App Modes";
+                    return "SDcard Permission(Only for Android 5)";
                 case 1:
-                    return "Download Dataset";
+                    return "App Modes";
                 case 2:
-                    return "Standalone Mode";
+                    return "Download Dataset";
                 case 3:
-                    return "MinIt Mode";
+                    return "Standalone Mode";
                 case 4:
-                    return "Demo Mode";
+                    return "MinIt Mode";
                 case 5:
+                    return "Demo Mode";
+                case 6:
                     return "Run Pipeline";
             }
             return null;

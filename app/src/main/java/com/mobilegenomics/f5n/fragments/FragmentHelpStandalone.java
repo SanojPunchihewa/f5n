@@ -27,7 +27,10 @@ public class FragmentHelpStandalone extends Fragment {
                 "Use this mode to run any of the following steps in this device.\n"
                         + "Select the steps you need to perform on the Data set\n"
                         + "Then choose either GUI mode or TERMINAL mode to configure the selected steps\n\n"
-                        + "To find out more about each step, checkout the respective Documentations");
+                        + "To find out more about each step, checkout the respective Documentations\n\n"
+                        + "IMPORTANT\n"
+                        + "Depending on the Memory available you may need to limit the memory usage of steps\n"
+                        + "Eg. samtools sort use 768MB of RAM by default, if you have less memory, change it a appropriate value");
         linearLayout.addView(txt1);
 
         ImageView img1 = new ImageView(getContext());

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -13,14 +14,13 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.liulishuo.okdownload.DownloadTask;
 import com.liulishuo.okdownload.core.Util;
 import com.liulishuo.okdownload.core.cause.EndCause;
@@ -29,17 +29,18 @@ import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.AppMode;
 import com.mobilegenomics.f5n.support.DownloadListener;
 import com.mobilegenomics.f5n.support.DownloadManager;
+import com.mobilegenomics.f5n.support.PipelineState;
+import com.mobilegenomics.f5n.support.PreferenceUtil;
+import com.mobilegenomics.f5n.support.ZipListener;
 import com.mobilegenomics.f5n.support.ZipManager;
 import com.obsez.android.lib.filechooser.ChooserDialog;
-
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.io.CopyStreamAdapter;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 
 public class DownloadActivity extends AppCompatActivity {
 
@@ -114,7 +115,6 @@ public class DownloadActivity extends AppCompatActivity {
             super.onProgressUpdate(values);
             String total = Util.humanReadableBytes(fileSize, true);
             String downloaded = Util.humanReadableBytes(values[0], true);
-            Log.d(TAG, "Downloading: " + downloaded + "/" + total);
             statusTextView.setText("Downloading: " + downloaded + "/" + total);
             float percent = (float) values[0] / fileSize;
             progressBar.setProgress((int) percent * progressBar.getMax());
@@ -125,7 +125,7 @@ public class DownloadActivity extends AppCompatActivity {
 
     private static String folderPath;
 
-    private static final String ecoliDataSetURL = "https://zanojmobiapps.com/_tmp/genome/ecoli/ecoli_2kb_region.zip";
+    private static final String ecoliDataSetURL = "https://zanojmobiapps.com/_tmp/genome/ecoli/ecoli-data-set.zip";
 
     Button btnDownload;
 
@@ -226,6 +226,11 @@ public class DownloadActivity extends AppCompatActivity {
         });
 
         filePathInput = new EditText(this);
+        LinearLayout.LayoutParams editText_LayoutParams =
+                new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT);
+        editText_LayoutParams.setMargins(0, 150, 0, 0);
+        filePathInput.setLayoutParams(editText_LayoutParams);
         filePathInput.setHint("Path to compressed file");
         linearLayout.addView(filePathInput);
 
@@ -260,6 +265,12 @@ public class DownloadActivity extends AppCompatActivity {
             }
         });
 
+        TextView txtSDCardWarning = new TextView(this);
+        txtSDCardWarning.setText(
+                "Cannot download or extract to SD card? Please check Help -> View Tutorial");
+        txtSDCardWarning.setTextColor(getResources().getColor(R.color.colorRead));
+        linearLayout.addView(txtSDCardWarning);
+
         if (GUIConfiguration.getAppMode() == AppMode.SLAVE) {
             btnRunPipeline = new Button(this);
             btnRunPipeline.setText("Run Pipeline");
@@ -268,6 +279,7 @@ public class DownloadActivity extends AppCompatActivity {
             btnRunPipeline.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(final View v) {
+                    GUIConfiguration.setPipelineState(PipelineState.TO_BE_CONFIGURED);
                     Intent intent = new Intent(DownloadActivity.this, TerminalActivity.class);
                     intent.putExtra("FOLDER_PATH", folderPath.substring(0, folderPath.lastIndexOf(".")));
                     startActivity(intent);
@@ -275,6 +287,11 @@ public class DownloadActivity extends AppCompatActivity {
             });
         }
 
+    }
+
+    private void enableButtons() {
+        btnDownload.setEnabled(true);
+        btnDownloadEcoli.setEnabled(true);
     }
 
     private void disableButtons() {
@@ -294,7 +311,8 @@ public class DownloadActivity extends AppCompatActivity {
                         enableButtons();
                     }
                 });
-        downloadManager.download();
+        Uri treeUri = PreferenceUtil.getSharedPreferenceUri(R.string.sdcard_uri);
+        downloadManager.download(DownloadActivity.this, treeUri);
     }
 
     private void downloadDatasetFTP(String url) {
@@ -303,14 +321,54 @@ public class DownloadActivity extends AppCompatActivity {
         new FTPDownloadTask().execute(urlData[0], urlData[1]);
     }
 
-    private void enableButtons() {
-        btnDownload.setEnabled(true);
-        btnDownloadEcoli.setEnabled(true);
-    }
-
     private void extractZip(String filepath) {
-        ZipManager zipManager = new ZipManager(DownloadActivity.this);
-        zipManager.unzip(filepath);
+
+        ZipManager zipManager = new ZipManager(DownloadActivity.this, new ZipListener() {
+            @Override
+            public void onStarted(@NonNull final long totalBytes) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        btnExtract.setEnabled(false);
+                        progressBar.setMax(100);
+                        statusTextView.setText("Unzip started");
+                    }
+                });
+            }
+
+            @Override
+            public void onProgress(@NonNull final long bytesDone, @NonNull final long totalBytes) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (ZipManager.showExtractPercentage) {
+                            int perc = ZipManager.getZipPercentage(bytesDone, totalBytes);
+                            progressBar.setProgress(perc);
+                            statusTextView.setText("Unzipping: " + perc + "%");
+                        } else {
+                            statusTextView.setText("Unzipping...");
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onComplete(@NonNull final boolean success, @Nullable final Exception exception) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        btnExtract.setEnabled(true);
+                        if (success) {
+                            statusTextView.setText("Unzip Successful");
+                        } else {
+                            statusTextView.setText("Unzip Error");
+                        }
+                    }
+                });
+            }
+        });
+        Uri treeUri = PreferenceUtil.getSharedPreferenceUri(R.string.sdcard_uri);
+        zipManager.unzip(treeUri, filepath);
     }
 
     private void openFileManager(boolean dirOnly) {
@@ -334,4 +392,5 @@ public class DownloadActivity extends AppCompatActivity {
                 .build()
                 .show();
     }
+
 }

@@ -20,10 +20,9 @@ public class NativeCommands {
         return nativeCommands;
     }
 
-    public native int init(String command);
+    public native int startPipeline(String pipePath);
 
-    public native int initminimap2(String command);
+    public native int finishPipeline(String pipePath);
 
-    public native int initsamtool(String command);
-
+    public native int init(String command, int command_id);
 }

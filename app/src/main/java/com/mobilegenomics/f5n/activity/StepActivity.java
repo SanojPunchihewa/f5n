@@ -10,6 +10,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -18,7 +19,10 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
@@ -29,6 +33,7 @@ import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.Argument;
 import com.mobilegenomics.f5n.core.Step;
+import com.mobilegenomics.f5n.support.PipelineState;
 import com.obsez.android.lib.filechooser.ChooserDialog;
 import java.io.File;
 import java.util.ArrayList;
@@ -40,6 +45,8 @@ public class StepActivity extends AppCompatActivity {
     ArrayList<Argument> arguments;
 
     private int argument_id = 0;
+
+    private int argumentIdCIGAR;
 
     private String folderPath;
 
@@ -155,12 +162,49 @@ public class StepActivity extends AppCompatActivity {
                 }
             });
             checkBox.setId(argument_id);
+
+            // TODO Fix this Hack in a better way
+            // CIGAR Tag can only be generated for PAF format
+            // Disable CIGAR Tag if SAM format is used
+            if (argument.getArgID().equals("MINIMAP2_GENERATE_CIGAR")) {
+                argumentIdCIGAR = argument_id;
+            }
+
+            if (argument.getArgID().equals("MINIMAP2_OUTPUT_SAM")) {
+                checkBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked) {
+                        findViewById(argumentIdCIGAR).setEnabled(!isChecked);
+                    }
+                });
+            }
+
             LinearLayout.LayoutParams checkBox_LayoutParams =
                     new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                             LinearLayout.LayoutParams.WRAP_CONTENT);
-            // checkBox_LayoutParams.weight = 1;
-            linearLayout.addView(checkBox);
+
+            LinearLayout horizontalLayout = new LinearLayout(this);
+            horizontalLayout.setOrientation(LinearLayout.HORIZONTAL);
+            horizontalLayout.setVerticalGravity(Gravity.CENTER_VERTICAL);
+
             checkBox.setLayoutParams(checkBox_LayoutParams);
+            horizontalLayout.addView(checkBox);
+
+            ImageView imgInfoBtn = new ImageView(this);
+            imgInfoBtn.setImageDrawable(getResources().getDrawable(R.drawable.ic_info_outline_black_24dp));
+            LinearLayout.LayoutParams imgInfoBtnLayoutParams =
+                    new LinearLayout.LayoutParams(50,
+                            50);
+            imgInfoBtn.setLayoutParams(imgInfoBtnLayoutParams);
+            imgInfoBtn.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(final View v) {
+                    Toast.makeText(StepActivity.this, argument.getArgDescription(), Toast.LENGTH_SHORT).show();
+                }
+            });
+            horizontalLayout.addView(imgInfoBtn);
+
+            linearLayout.addView(horizontalLayout);
 
             if (!argument.isFlagOnly()) {
                 final EditText editText;
@@ -172,7 +216,11 @@ public class StepActivity extends AppCompatActivity {
                 }
                 editText.setId(argument_id + 1000);
                 if (argument.isFile()) {
-                    editText.setText(GUIConfiguration.getLinkedFileArgument(argument.getIsDependentOn()));
+                    if (argument.getIsDependentOn() != null) {
+                        editText.setText(GUIConfiguration.getLinkedFileArgument(argument.getIsDependentOn()));
+                    } else if (argument.getArgValue() != null) {
+                        editText.setText(argument.getArgValue());
+                    }
                 } else {
                     editText.setText(argument.getArgValue());
                 }
@@ -180,6 +228,9 @@ public class StepActivity extends AppCompatActivity {
                 LinearLayout.LayoutParams editText_LayoutParams =
                         new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
                                 LinearLayout.LayoutParams.WRAP_CONTENT);
+                editText_LayoutParams.setMargins(15, 0, 15, 0);
+                editText.setPadding(30, 20, 20, 20);
+                editText.setBackgroundColor(0xFFE5E7E9);
                 editText.setLayoutParams(editText_LayoutParams);
 
             }
@@ -226,6 +277,7 @@ public class StepActivity extends AppCompatActivity {
                 if (haveSetAllRequiredArgs) {
                     if (GUIConfiguration.isFinalStep()) {
                         //startActivity(new Intent(StepActivity.this, ConfirmationActivity.class));
+                        GUIConfiguration.setPipelineState(PipelineState.CONFIGURED);
                         startActivity(new Intent(StepActivity.this, TerminalActivity.class));
                     } else {
                         Intent intent = new Intent(StepActivity.this, StepActivity.class);

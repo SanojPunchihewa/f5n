@@ -50,7 +50,7 @@
     },
     {
       "argName": "number of threads",
-      "argValue": null,
+      "argValue": "8",
       "argDescription": "number of threads [8]",
       "flag": "-t",
       "argID": "tobedecided",
@@ -62,7 +62,7 @@
     },
     {
       "argName": "batch size",
-      "argValue": null,
+      "argValue": "512",
       "argDescription": "batch size -max number of reads loaded at once [512]",
       "flag": "-K",
       "argID": "tobedecided",
@@ -74,14 +74,14 @@
     },
     {
       "argName": "max Bases",
-      "argValue": null,
+      "argValue": "2.0M",
       "argDescription": "max number of bases loaded at once [2.0M]",
       "flag": "-B",
       "argID": "tobedecided",
       "isDependentOn": "argIDofanotherArg",
       "hasFlag": true,
       "flagOnly": false,
-      "required": false,
+      "required": true,
       "isFile": false
     },
     {
@@ -98,19 +98,19 @@
     },
     {
       "argName": "min map quality",
-      "argValue": null,
+      "argValue": "0",
       "argDescription": "minimum mapping quality [30]",
       "flag": "--min-mapq",
       "argID": "tobedecided",
       "isDependentOn": "argIDofanotherArg",
       "hasFlag": true,
       "flagOnly": false,
-      "required": false,
+      "required": true,
       "isFile": false
     },
     {
       "argName": "consider secondary map",
-      "argValue": null,
+      "argValue": "no",
       "argDescription": "consider secondary mappings or not [no]",
       "flag": "--secondary=",
       "argID": "tobedecided",
@@ -122,7 +122,7 @@
     },
     {
       "argName": "skip unreadable or terminate",
-      "argValue": null,
+      "argValue": "yes",
       "argDescription": "skip any unreadable fast5 or terminate program [yes]",
       "flag": "--skip-unreadable=",
       "argID": "tobedecided",
@@ -134,7 +134,7 @@
     },
     {
       "argName": "verbosity",
-      "argValue": null,
+      "argValue": "0",
       "argDescription": "verbosity level [0]",
       "flag": "--verbose",
       "argID": "tobedecided",

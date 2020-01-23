@@ -35,16 +35,7 @@ public class PipelineComponent implements runNative {
     @Override
     public int run() {
         int status;
-        if (this.pipelineStep.getValue() < 1) {
-            // minimap2
-            status = NativeCommands.getNativeInstance().initminimap2(command);
-        } else if (this.pipelineStep.getValue() < 3) {
-            // samtools
-            status = NativeCommands.getNativeInstance().initsamtool(command);
-        } else {
-            // f5c
-            status = NativeCommands.getNativeInstance().init(command);
-        }
+        status = NativeCommands.getNativeInstance().init(command,this.pipelineStep.getValue());
         return status;
     }
 }

@@ -1,5 +1,8 @@
 package com.mobilegenomics.f5n.activity;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,6 +15,8 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.liulishuo.okdownload.core.Util;
 import com.mobilegenomics.f5n.BuildConfig;
@@ -21,11 +26,12 @@ import com.mobilegenomics.f5n.dto.State;
 import com.mobilegenomics.f5n.dto.WrapperObject;
 import com.mobilegenomics.f5n.support.ServerCallback;
 import com.mobilegenomics.f5n.support.ServerConnectionUtils;
+import com.mobilegenomics.f5n.support.ZipListener;
 import com.mobilegenomics.f5n.support.ZipManager;
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Objects;
 import net.gotev.uploadservice.UploadService;
-import net.gotev.uploadservice.UploadServiceSingleBroadcastReceiver;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.io.CopyStreamAdapter;
@@ -89,10 +95,10 @@ public class MinITActivity extends AppCompatActivity {
             Log.i(TAG, "Upload Finished");
             if (uploadSuccess) {
                 statusTextView.setText("Upload Completed");
+                sendJobResults();
             } else {
                 statusTextView.setText("Upload Error");
             }
-            sendJobResults();
         }
 
         @Override
@@ -106,7 +112,6 @@ public class MinITActivity extends AppCompatActivity {
             super.onProgressUpdate(values);
             String total = Util.humanReadableBytes(fileSize, true);
             String downloaded = Util.humanReadableBytes(values[0], true);
-            Log.d(TAG, "Uploading: " + downloaded + "/" + total);
             statusTextView.setText("Uploading: " + downloaded + "/" + total);
             float percent = (float) values[0] / fileSize;
             progressBar.setProgress((int) percent * progressBar.getMax());
@@ -131,7 +136,7 @@ public class MinITActivity extends AppCompatActivity {
 
     private String serverIP;
 
-    private UploadServiceSingleBroadcastReceiver uploadReceiver;
+    EditText serverAddressInput;
 
     private String zipFileName;
 
@@ -157,7 +162,8 @@ public class MinITActivity extends AppCompatActivity {
 
         UploadService.NAMESPACE = BuildConfig.APPLICATION_ID;
 
-        final EditText serverAddressInput = findViewById(R.id.input_server_address);
+        serverAddressInput = findViewById(R.id.input_server_address);
+
         connectionLogText = findViewById(R.id.text_conn_log);
         final Button btnRquestJob = findViewById(R.id.btn_request_job);
         btnSendResult = findViewById(R.id.btn_send_result);
@@ -205,6 +211,29 @@ public class MinITActivity extends AppCompatActivity {
         });
     }
 
+    public void copyIPAddress(View view) {
+        if (serverAddressInput.getText() != null && !TextUtils.isEmpty(serverAddressInput.getText().toString())) {
+            ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("serverIP", serverAddressInput.getText().toString());
+            clipboard.setPrimaryClip(clip);
+        }
+    }
+
+    public void pasteIPAddress(View view) {
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        try {
+            ClipData.Item item = Objects.requireNonNull(clipboard.getPrimaryClip()).getItemAt(0);
+            String IPAddress = item.getText().toString();
+            if (!TextUtils.isEmpty(IPAddress) && validateIPAddress(IPAddress)) {
+                serverAddressInput.setText(IPAddress);
+            } else {
+                Toast.makeText(MinITActivity.this, "Invalid IP Address", Toast.LENGTH_SHORT).show();
+            }
+        } catch (NullPointerException e) {
+            Toast.makeText(MinITActivity.this, "No IP Address was copied", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private void requestJob() {
         ServerConnectionUtils.connectToServer(State.REQUEST, new ServerCallback() {
             @Override
@@ -220,8 +249,6 @@ public class MinITActivity extends AppCompatActivity {
                         GUIConfiguration.configureSteps(job.getSteps());
                         zipFileName = job.getPrefix();
                         btnSendResult.setVisibility(View.VISIBLE);
-                        Log.d("TAG", "Prefix = " + job.getPrefix());
-                        Log.d("TAG", "Dir Path = " + job.getPathToDataDir());
                     }
                 });
             }
@@ -250,9 +277,53 @@ public class MinITActivity extends AppCompatActivity {
 
     private void uploadDataSet() {
         // TODO check wifi connectivity
-        ZipManager zipManager = new ZipManager(MinITActivity.this);
+        ZipManager zipManager = new ZipManager(MinITActivity.this, new ZipListener() {
+            @Override
+            public void onStarted(@NonNull final long totalBytes) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressBar.setMax(100);
+                        statusTextView.setText("Zip started");
+                    }
+                });
+            }
+
+            @Override
+            public void onProgress(@NonNull final long bytesDone, @NonNull final long totalBytes) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        int perc = ZipManager.getZipPercentage(bytesDone, totalBytes);
+                        progressBar.setProgress(perc);
+                        statusTextView.setText("Zipping: " + perc + "%");
+                    }
+                });
+            }
+
+            @Override
+            public void onComplete(@NonNull final boolean success, @Nullable final Exception exception) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (success) {
+                            statusTextView.setText("Zip Successful");
+                            String path = folderPath + ".out.zip";
+                            new FTPUploadTask().execute(serverIP, path);
+                        } else {
+                            statusTextView.setText("Zip Error");
+                        }
+                    }
+                });
+            }
+        });
         zipManager.zip(folderPath);
-        String path = folderPath + "out.zip";
-        new FTPUploadTask().execute(serverIP, path);
     }
+
+    private boolean validateIPAddress(final String ip) {
+        String PATTERN
+                = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";
+        return ip.matches(PATTERN);
+    }
+
 }

@@ -3,6 +3,7 @@ package com.mobilegenomics.f5n.activity;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -21,7 +22,10 @@ import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.PipelineStep;
 import com.mobilegenomics.f5n.support.DownloadListener;
+import com.mobilegenomics.f5n.support.FileUtil;
+import com.mobilegenomics.f5n.support.PreferenceUtil;
 import com.mobilegenomics.f5n.support.TimeFormat;
+import com.mobilegenomics.f5n.support.ZipListener;
 import com.mobilegenomics.f5n.support.ZipManager;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -65,7 +69,7 @@ public class DemoActivity extends AppCompatActivity {
             dir.mkdirs();
         }
 
-        logFile = new File(dir.getAbsolutePath() + "/f5n-log.txt");
+        logFile = new File(dir.getAbsolutePath() + "/" + FileUtil.LOG_FILE_NAME);
         if (!logFile.exists()) {
             try {
                 logFile.createNewFile();
@@ -164,7 +168,8 @@ public class DemoActivity extends AppCompatActivity {
                         }
                     }
                 });
-        downloadManager.download();
+        Uri treeUri = PreferenceUtil.getSharedPreferenceUri(R.string.sdcard_uri);
+        downloadManager.download(DemoActivity.this, treeUri);
     }
 
     @Override
@@ -181,11 +186,51 @@ public class DemoActivity extends AppCompatActivity {
     }
 
     private void extractZip(String filePath) {
-        writeToLogFile("Extracting data set...\n");
-        ZipManager zipManager = new ZipManager(DemoActivity.this);
-        zipManager.unzip(filePath);
-        writeToLogFile("Extracting data set completed\n");
-        btnRunPipeline.setVisibility(View.VISIBLE);
+
+        ZipManager zipManager = new ZipManager(DemoActivity.this, new ZipListener() {
+            @Override
+            public void onStarted(@NonNull final long totalBytes) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressBar.setMax(100);
+                        statusTextView.setText("Unzip started");
+                        writeToLogFile("Extracting data set...\n");
+                    }
+                });
+            }
+
+            @Override
+            public void onProgress(@NonNull final long bytesDone, @NonNull final long totalBytes) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        int perc = ZipManager.getZipPercentage(bytesDone, totalBytes);
+                        progressBar.setProgress(perc);
+                        statusTextView.setText("Unzipping: " + perc + "%");
+                    }
+                });
+            }
+
+            @Override
+            public void onComplete(@NonNull final boolean success, @Nullable final Exception exception) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (success) {
+                            statusTextView.setText("Unzip Successful");
+                            writeToLogFile("Extracting data set completed\n");
+                            btnRunPipeline.setVisibility(View.VISIBLE);
+                        } else {
+                            statusTextView.setText("Unzip Error");
+                            writeToLogFile("Extracting data set error\n");
+                        }
+                    }
+                });
+            }
+        });
+        Uri treeUri = PreferenceUtil.getSharedPreferenceUri(R.string.sdcard_uri);
+        zipManager.unzip(treeUri, filePath);
     }
 
     private void writeToLogFile(String lines) {

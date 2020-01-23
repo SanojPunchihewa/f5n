@@ -13,6 +13,7 @@ import com.mobilegenomics.f5n.core.PipelineComponent;
 import com.mobilegenomics.f5n.core.PipelineStep;
 import com.mobilegenomics.f5n.core.Step;
 import com.mobilegenomics.f5n.support.JSONFileHelper;
+import com.mobilegenomics.f5n.support.PipelineState;
 import com.mobilegenomics.f5n.support.TimeFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +25,8 @@ public class GUIConfiguration {
 
     private static AppMode appMode;
 
+    private static PipelineState pipelineState;
+
     private static ArrayList<PipelineStep> selectedPipelineSteps = new ArrayList<>();
 
     private static ArrayList<Step> steps = new ArrayList<>();
@@ -33,6 +36,14 @@ public class GUIConfiguration {
     private static ArrayList<PipelineComponent> pipelineComponents;
 
     private static HashMap<String, String> linkedFileArguments = new HashMap<>();
+
+    public static void setPipelineState(PipelineState state) {
+        pipelineState = state;
+    }
+
+    public static PipelineState getPipelineState() {
+        return pipelineState;
+    }
 
     public static void addPipelineStep(PipelineStep step) {
         selectedPipelineSteps.add(step);
@@ -203,6 +214,10 @@ public class GUIConfiguration {
         if (argument.getArgID().equals("MINIMAP2_OUTPUT_FILE")) {
             argument.setArgValue(folder + "/minimap2-out.sam");
         }
+        // For the Demo we need to use SAM output format in minimap2
+        if (argument.getArgID().equals("MINIMAP2_OUTPUT_SAM")) {
+            argument.setSetByUser(true);
+        }
 
         // samtools input/output files
         if (argument.getArgID().equals("SAMTOOL_SORT_INPUT_FILE")) {
@@ -250,6 +265,9 @@ public class GUIConfiguration {
         }
         if (argument.getArgID().equals("F5C_ALIGN_OUTPUT_FILE")) {
             argument.setArgValue(folder + "/f5c-event-alignment.txt");
+        }
+        if (argument.getArgID().equals("F5C_ALIGN_SUMMARY_OUTPUT_FILE")) {
+            argument.setArgValue(folder + "/event.summary.txt");
         }
     }
 
