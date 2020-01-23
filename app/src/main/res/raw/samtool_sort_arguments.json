@@ -38,7 +38,7 @@
     },
     {
       "argName": "threads",
-      "argValue": null,
+      "argValue": "1",
       "argDescription": "Number of threads[1]",
       "flag": "-@",
       "argID": "tobedecided",
