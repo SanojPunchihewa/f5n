@@ -48,8 +48,6 @@ public class ConfirmationActivity extends AppCompatActivity {
 
     private String resultsSummary;
 
-    private int isPipelineRunning = 0;
-
     private boolean logWrittenToFile = false;
 
     private String folderPath;
@@ -246,7 +244,6 @@ public class ConfirmationActivity extends AppCompatActivity {
             super.onPreExecute();
             NativeCommands.getNativeInstance().startPipeline(logPipePath);
             GUIConfiguration.setPipelineState(PipelineState.RUNNING);
-            isPipelineRunning = 1;
         }
 
         @Override
@@ -276,7 +273,6 @@ public class ConfirmationActivity extends AppCompatActivity {
                         pipelineComponent.getPipelineStep().getCommand() + " took " + pipelineComponent.getRuntime());
                 linearLayout.addView(txtRuntime);
             }
-            isPipelineRunning = 2;
             btnWriteLog.setVisibility(View.VISIBLE);
             btnProceed.setEnabled(true);
             mProgressBar.setVisibility(View.GONE);
@@ -349,16 +345,21 @@ public class ConfirmationActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (isPipelineRunning == 0) {
-            super.onBackPressed();
-        } else if (isPipelineRunning == 1) {
-            showStopPipelineDialog();
-        } else if (isPipelineRunning == 2) {
-            if (!logWrittenToFile) {
-                showWriteToFileDialog();
-            } else {
+        PipelineState state = GUIConfiguration.getPipelineState();
+        switch (state) {
+            case CONFIGURED:
                 super.onBackPressed();
-            }
+                break;
+            case RUNNING:
+                showStopPipelineDialog();
+                break;
+            case COMPLETED:
+                if (!logWrittenToFile) {
+                    showWriteToFileDialog();
+                } else {
+                    super.onBackPressed();
+                }
+                break;
         }
     }
 
