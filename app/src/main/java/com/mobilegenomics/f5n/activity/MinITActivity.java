@@ -59,7 +59,7 @@ public class MinITActivity extends AppCompatActivity {
                 if (con.login("test", "test")) {
                     con.enterLocalPassiveMode(); // important!
                     con.setFileType(FTP.BINARY_FILE_TYPE);
-
+                    con.setBufferSize(1024000);
                     File fileIn = new File(urls[1]);
                     fileSize = fileIn.length();
 
@@ -252,7 +252,7 @@ public class MinITActivity extends AppCompatActivity {
         // TODO check wifi connectivity
         ZipManager zipManager = new ZipManager(MinITActivity.this);
         zipManager.zip(folderPath);
-        String path = folderPath + ".zip";
+        String path = folderPath + "out.zip";
         new FTPUploadTask().execute(serverIP, path);
     }
 }

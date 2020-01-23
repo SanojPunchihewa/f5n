@@ -16,9 +16,11 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.liulishuo.okdownload.DownloadTask;
 import com.liulishuo.okdownload.core.Util;
 import com.liulishuo.okdownload.core.cause.EndCause;
@@ -29,21 +31,23 @@ import com.mobilegenomics.f5n.support.DownloadListener;
 import com.mobilegenomics.f5n.support.DownloadManager;
 import com.mobilegenomics.f5n.support.ZipManager;
 import com.obsez.android.lib.filechooser.ChooserDialog;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
+
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.io.CopyStreamAdapter;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+
 public class DownloadActivity extends AppCompatActivity {
 
     class FTPDownloadTask extends AsyncTask<String, Long, Boolean> {
 
-        boolean status;
-
         long fileSize;
+
+        boolean status;
 
         @Override
         protected Boolean doInBackground(String... urls) {
@@ -56,9 +60,6 @@ public class DownloadActivity extends AppCompatActivity {
                 con.setCopyStreamListener(new CopyStreamAdapter() {
                     @Override
                     public void bytesTransferred(long totalBytesTransferred, int bytesTransferred, long streamSize) {
-                        //this method will be called every time some bytes are transferred
-//                        int percent = (int) (totalBytesTransferred * 100 / fileSize);
-//                        int totalMBTransferred = (int) totalBytesTransferred;
                         publishProgress(totalBytesTransferred);
                     }
 
@@ -67,21 +68,16 @@ public class DownloadActivity extends AppCompatActivity {
                 if (con.login("test", "test")) {
                     con.enterLocalPassiveMode(); // important!
                     con.setFileType(FTP.BINARY_FILE_TYPE);
-
+                    con.setBufferSize(1024000);
                     FTPFile[] ff = con.listFiles(urls[1]);
 
                     if (ff != null) {
                         fileSize = (ff[0].getSize());
                     }
 
-//                    FTPFile file = con.mlistFile("/" + urls[1]);
                     OutputStream out = new FileOutputStream(new File(folderPath + "/" + urls[1]));
                     status = con.retrieveFile(urls[1], out);
                     out.close();
-//                    if (result) {
-//                        Log.v("download result", "succeeded");
-////                        Toast.makeText(DownloadActivity.this, "Download Success", Toast.LENGTH_LONG).show();
-//                    }
                     con.logout();
                     con.disconnect();
                 }
@@ -171,7 +167,7 @@ public class DownloadActivity extends AppCompatActivity {
             String path = getIntent().getExtras().getString("DATA_SET_URL");
             String fileName = getIntent().getExtras().getString("FILE_NAME");
             if (path != null && !TextUtils.isEmpty(path)) {
-                urlInputPath.setText(path + "/" + fileName);
+                urlInputPath.setText(path + "/" + fileName + ".zip");
             }
         }
 
