@@ -13,6 +13,7 @@ import com.mobilegenomics.f5n.core.PipelineComponent;
 import com.mobilegenomics.f5n.core.PipelineStep;
 import com.mobilegenomics.f5n.core.Step;
 import com.mobilegenomics.f5n.support.JSONFileHelper;
+import com.mobilegenomics.f5n.support.PipelineState;
 import com.mobilegenomics.f5n.support.TimeFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +25,8 @@ public class GUIConfiguration {
 
     private static AppMode appMode;
 
+    private static PipelineState pipelineState;
+
     private static ArrayList<PipelineStep> selectedPipelineSteps = new ArrayList<>();
 
     private static ArrayList<Step> steps = new ArrayList<>();
@@ -33,6 +36,14 @@ public class GUIConfiguration {
     private static ArrayList<PipelineComponent> pipelineComponents;
 
     private static HashMap<String, String> linkedFileArguments = new HashMap<>();
+
+    public static void setPipelineState(PipelineState state) {
+        pipelineState = state;
+    }
+
+    public static PipelineState getPipelineState() {
+        return pipelineState;
+    }
 
     public static void addPipelineStep(PipelineStep step) {
         selectedPipelineSteps.add(step);

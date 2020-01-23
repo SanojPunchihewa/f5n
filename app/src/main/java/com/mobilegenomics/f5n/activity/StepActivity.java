@@ -31,6 +31,7 @@ import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.Argument;
 import com.mobilegenomics.f5n.core.Step;
+import com.mobilegenomics.f5n.support.PipelineState;
 import com.obsez.android.lib.filechooser.ChooserDialog;
 import java.io.File;
 import java.util.ArrayList;
@@ -254,6 +255,7 @@ public class StepActivity extends AppCompatActivity {
                 if (haveSetAllRequiredArgs) {
                     if (GUIConfiguration.isFinalStep()) {
                         //startActivity(new Intent(StepActivity.this, ConfirmationActivity.class));
+                        GUIConfiguration.setPipelineState(PipelineState.CONFIGURED);
                         startActivity(new Intent(StepActivity.this, TerminalActivity.class));
                     } else {
                         Intent intent = new Intent(StepActivity.this, StepActivity.class);

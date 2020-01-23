@@ -29,6 +29,7 @@ import com.mobilegenomics.f5n.core.AppMode;
 import com.mobilegenomics.f5n.core.NativeCommands;
 import com.mobilegenomics.f5n.core.PipelineComponent;
 import com.mobilegenomics.f5n.support.FileUtil;
+import com.mobilegenomics.f5n.support.PipelineState;
 import com.mobilegenomics.f5n.support.TimeFormat;
 import java.io.BufferedReader;
 import java.io.File;
@@ -46,8 +47,6 @@ public class ConfirmationActivity extends AppCompatActivity {
     private static final String FILE_CLOSE_TAG = "EOF";
 
     private String resultsSummary;
-
-    private int isPipelineRunning = 0;
 
     private boolean logWrittenToFile = false;
 
@@ -244,7 +243,7 @@ public class ConfirmationActivity extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             NativeCommands.getNativeInstance().startPipeline(logPipePath);
-            isPipelineRunning = 1;
+            GUIConfiguration.setPipelineState(PipelineState.RUNNING);
         }
 
         @Override
@@ -265,6 +264,7 @@ public class ConfirmationActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(final String s) {
             super.onPostExecute(s);
+            GUIConfiguration.setPipelineState(PipelineState.COMPLETED);
             NativeCommands.getNativeInstance().finishPipeline(logPipePath);
             List<PipelineComponent> pipelineComponents = GUIConfiguration.getPipeline();
             for (PipelineComponent pipelineComponent : pipelineComponents) {
@@ -273,7 +273,6 @@ public class ConfirmationActivity extends AppCompatActivity {
                         pipelineComponent.getPipelineStep().getCommand() + " took " + pipelineComponent.getRuntime());
                 linearLayout.addView(txtRuntime);
             }
-            isPipelineRunning = 2;
             btnWriteLog.setVisibility(View.VISIBLE);
             btnProceed.setEnabled(true);
             mProgressBar.setVisibility(View.GONE);
@@ -346,16 +345,21 @@ public class ConfirmationActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (isPipelineRunning == 0) {
-            super.onBackPressed();
-        } else if (isPipelineRunning == 1) {
-            showStopPipelineDialog();
-        } else if (isPipelineRunning == 2) {
-            if (!logWrittenToFile) {
-                showWriteToFileDialog();
-            } else {
+        PipelineState state = GUIConfiguration.getPipelineState();
+        switch (state) {
+            case CONFIGURED:
                 super.onBackPressed();
-            }
+                break;
+            case RUNNING:
+                showStopPipelineDialog();
+                break;
+            case COMPLETED:
+                if (!logWrittenToFile) {
+                    showWriteToFileDialog();
+                } else {
+                    super.onBackPressed();
+                }
+                break;
         }
     }
 
