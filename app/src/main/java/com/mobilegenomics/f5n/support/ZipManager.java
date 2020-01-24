@@ -300,7 +300,7 @@ public class ZipManager {
                 totalBytesToCompress = getDirectorySize(sourceFile);
                 zipListener.onStarted(totalBytesToCompress);
                 Log.i(TAG, "Starting to zip");
-                zipPath = sourcePath + ".zip";
+                zipPath = sourcePath + ".out.zip";
                 try {
                     fos = new FileOutputStream(zipPath);
                 } catch (FileNotFoundException e) {
