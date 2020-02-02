@@ -16,4 +16,6 @@
 
     <string name="sdcard_uri">SD_CARD_TREE_URI</string>
 
+    <string name="title_choose_any_file">Choose files</string>
+
 </resources>
