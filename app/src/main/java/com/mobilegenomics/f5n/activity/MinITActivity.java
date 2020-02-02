@@ -3,6 +3,8 @@ package com.mobilegenomics.f5n.activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,9 +12,11 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -28,8 +32,10 @@ import com.mobilegenomics.f5n.support.ServerCallback;
 import com.mobilegenomics.f5n.support.ServerConnectionUtils;
 import com.mobilegenomics.f5n.support.ZipListener;
 import com.mobilegenomics.f5n.support.ZipManager;
+import com.obsez.android.lib.filechooser.ChooserDialog;
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.ArrayList;
 import java.util.Objects;
 import net.gotev.uploadservice.UploadService;
 import org.apache.commons.net.ftp.FTP;
@@ -127,11 +133,17 @@ public class MinITActivity extends AppCompatActivity {
 
     TextView statusTextView;
 
-    private Button btnSendResult;
+    private TableRow trSendResults;
+
+    private Button btnProcessJob;
+
+    private Button btnRequestJob;
+
+    private Button btnSelectFiles;
+
+    private Button btnSendResults;
 
     private String folderPath;
-
-    private boolean ranPipeline = false;
 
     private String resultsSummary;
 
@@ -140,6 +152,8 @@ public class MinITActivity extends AppCompatActivity {
     EditText serverAddressInput;
 
     private String zipFileName;
+
+    private ArrayList<String> fileList;
 
     public static void logHandler(Handler handler) {
         handler.post(new Runnable() {
@@ -166,19 +180,24 @@ public class MinITActivity extends AppCompatActivity {
         serverAddressInput = findViewById(R.id.input_server_address);
 
         connectionLogText = findViewById(R.id.text_conn_log);
-        final Button btnRquestJob = findViewById(R.id.btn_request_job);
-        btnSendResult = findViewById(R.id.btn_send_result);
+
+        trSendResults = findViewById(R.id.tr_select_files_send);
+
+        btnRequestJob = findViewById(R.id.btn_request_job);
+        btnProcessJob = findViewById(R.id.btn_process_job);
+        btnSelectFiles = findViewById(R.id.btn_select_files);
+        btnSendResults = findViewById(R.id.btn_send_result);
 
         if (getIntent().getExtras() != null) {
             resultsSummary = getIntent().getExtras().getString("PIPELINE_STATUS");
             folderPath = getIntent().getExtras().getString("FOLDER_PATH");
             if (resultsSummary != null && !TextUtils.isEmpty(resultsSummary)) {
-                ranPipeline = true;
-                btnRquestJob.setText("Send Results");
+                btnRequestJob.setVisibility(View.GONE);
+                trSendResults.setVisibility(View.VISIBLE);
             }
         }
 
-        btnRquestJob.setOnClickListener(new View.OnClickListener() {
+        btnRequestJob.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -187,19 +206,32 @@ public class MinITActivity extends AppCompatActivity {
                     serverIP = serverAddressInput.getText().toString().trim();
 
                     ServerConnectionUtils.setServerAddress(serverIP);
-                    if (ranPipeline) {
-                        uploadDataSet();
-                    } else {
-                        requestJob();
-                    }
-
+                    requestJob();
                 } else {
                     Toast.makeText(MinITActivity.this, "Please input a server IP", Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
-        btnSendResult.setOnClickListener(new View.OnClickListener() {
+        btnSelectFiles.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                openFileManager(false);
+            }
+        });
+
+        btnSendResults.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                if (fileList != null && !fileList.isEmpty()) {
+                    uploadDataSet();
+                } else {
+                    Toast.makeText(MinITActivity.this, "Please select files first", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        btnProcessJob.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MinITActivity.this, DownloadActivity.class);
@@ -249,7 +281,7 @@ public class MinITActivity extends AppCompatActivity {
                     public void run() {
                         GUIConfiguration.configureSteps(job.getSteps());
                         zipFileName = job.getPrefix();
-                        btnSendResult.setVisibility(View.VISIBLE);
+                        btnProcessJob.setVisibility(View.VISIBLE);
                     }
                 });
             }
@@ -318,8 +350,44 @@ public class MinITActivity extends AppCompatActivity {
                 });
             }
         });
-        zipManager.zip(folderPath);
+
+        fileList.remove(fileList.size() - 1);
+        String zipFileName = folderPath + "/" + folderPath.substring(folderPath.lastIndexOf("/") + 1)
+                + ".out.zip";
+        zipManager.zip(fileList, zipFileName);
     }
+
+    private void openFileManager(boolean dirOnly) {
+        fileList = new ArrayList<>();
+        new ChooserDialog(MinITActivity.this)
+                .withFilter(dirOnly, false)
+                .enableMultiple(true)
+                .withChosenListener(new ChooserDialog.Result() {
+                    @Override
+                    public void onChoosePath(String path, File pathFile) {
+                        if (fileList.contains(path)) {
+                            fileList.remove(path);
+                        } else {
+                            fileList.add(path);
+                        }
+                    }
+                })
+                // to handle the back key pressed or clicked outside the dialog:
+                .withOnCancelListener(new DialogInterface.OnCancelListener() {
+                    public void onCancel(DialogInterface dialog) {
+                        dialog.cancel();
+                    }
+                })
+                .withOnDismissListener(new OnDismissListener() {
+                    @Override
+                    public void onDismiss(final DialogInterface dialog) {
+                    }
+                })
+                .withResources(R.string.title_choose_any_file, R.string.title_choose, R.string.dialog_cancel)
+                .build()
+                .show();
+    }
+
 
     private boolean validateIPAddress(final String ip) {
         String PATTERN
