@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -54,8 +53,6 @@ public class TerminalActivity extends AppCompatActivity {
         setContentView(R.layout.layout_step);
 
         linearLayout = findViewById(R.id.vertical_linear_layout);
-
-        Log.e("TERMINAL", "State = " + GUIConfiguration.getPipelineState());
 
         if (GUIConfiguration.getPipelineState() == null) {
             // TODO Find a better fix

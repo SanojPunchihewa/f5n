@@ -317,7 +317,7 @@ public class DownloadActivity extends AppCompatActivity {
 
     private void downloadDatasetFTP(String url) {
         String[] urlData = url.split("/");
-        Log.e(TAG, "URL=" + urlData[1]);
+        Log.d(TAG, "URL=" + urlData[1]);
         new FTPDownloadTask().execute(urlData[0], urlData[1]);
     }
 
