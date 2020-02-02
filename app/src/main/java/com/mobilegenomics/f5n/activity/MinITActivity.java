@@ -70,7 +70,8 @@ public class MinITActivity extends AppCompatActivity {
                     fileSize = fileIn.length();
 
                     FileInputStream in = new FileInputStream(fileIn);
-                    boolean result = con.storeFile(new File(urls[1]).getName(), in);
+                    String filePath = "outputs/" + new File(urls[1]).getName();
+                    boolean result = con.storeFile(filePath, in);
                     in.close();
                     status = result;
                     con.logout();
