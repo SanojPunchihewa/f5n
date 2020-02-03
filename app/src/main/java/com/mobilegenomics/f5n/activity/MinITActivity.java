@@ -54,6 +54,10 @@ public class MinITActivity extends AppCompatActivity {
         protected Boolean doInBackground(String... urls) {
             FTPClient con;
             try {
+
+                Log.e(TAG, "Address = " + urls[0]);
+                Log.e(TAG, "File path = " + urls[1]);
+
                 con = new FTPClient();
                 con.setDefaultPort(8000);
                 con.connect(urls[0]);
@@ -224,7 +228,13 @@ public class MinITActivity extends AppCompatActivity {
             @Override
             public void onClick(final View v) {
                 if (fileList != null && !fileList.isEmpty()) {
-                    uploadDataSet();
+                    if (serverAddressInput.getText() != null && !TextUtils
+                            .isEmpty(serverAddressInput.getText().toString().trim())) {
+                        serverIP = serverAddressInput.getText().toString().trim();
+                        uploadDataSet();
+                    } else {
+                        Toast.makeText(MinITActivity.this, "Please input a server IP", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     Toast.makeText(MinITActivity.this, "Please select files first", Toast.LENGTH_SHORT).show();
                 }
@@ -310,6 +320,10 @@ public class MinITActivity extends AppCompatActivity {
 
     private void uploadDataSet() {
         // TODO check wifi connectivity
+
+        String zipFileName = folderPath + "/" + folderPath.substring(folderPath.lastIndexOf("/") + 1)
+                + ".out.zip";
+
         ZipManager zipManager = new ZipManager(MinITActivity.this, new ZipListener() {
             @Override
             public void onStarted(@NonNull final long totalBytes) {
@@ -341,8 +355,7 @@ public class MinITActivity extends AppCompatActivity {
                     public void run() {
                         if (success) {
                             statusTextView.setText("Zip Successful");
-                            String path = folderPath + ".out.zip";
-                            new FTPUploadTask().execute(serverIP, path);
+                            new FTPUploadTask().execute(serverIP, zipFileName);
                         } else {
                             statusTextView.setText("Zip Error");
                         }
@@ -352,8 +365,6 @@ public class MinITActivity extends AppCompatActivity {
         });
 
         fileList.remove(fileList.size() - 1);
-        String zipFileName = folderPath + "/" + folderPath.substring(folderPath.lastIndexOf("/") + 1)
-                + ".out.zip";
         zipManager.zip(fileList, zipFileName);
     }
 
