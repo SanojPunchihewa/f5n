@@ -23,6 +23,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.Step;
+import com.mobilegenomics.f5n.support.PipelineState;
+import com.mobilegenomics.f5n.support.PreferenceUtil;
 import com.obsez.android.lib.filechooser.ChooserDialog;
 import java.util.List;
 import java.util.Objects;
@@ -59,6 +61,7 @@ public class TerminalActivity extends AppCompatActivity {
             // The app has crashed !
             showCrashError();
         } else {
+
             editTextFolderPath = findViewById(R.id.edit_text_folder_path);
             editTextFolderPath.addTextChangedListener(new TextWatcher() {
                 @Override
@@ -112,6 +115,12 @@ public class TerminalActivity extends AppCompatActivity {
                 }
             });
 
+            // If resumed, set the folder path
+            if (PreferenceUtil.getSharedPreferenceInt(R.string.id_app_mode) == PipelineState.MINIT_RUNNING
+                    .ordinal()) {
+                folderPath = PreferenceUtil.getSharedPreferenceString(R.string.id_folder_path);
+            }
+
             steps = GUIConfiguration.getSteps();
 
             stepId = 0;
@@ -149,6 +158,12 @@ public class TerminalActivity extends AppCompatActivity {
                     }
 
                     GUIConfiguration.createPipeline();
+
+                    PreferenceUtil
+                            .setSharedPreferenceInt(R.string.id_app_mode, PipelineState.MINIT_RUNNING.ordinal());
+                    PreferenceUtil.setSharedPreferenceStepList(R.string.id_step_list, steps);
+                    PreferenceUtil.setSharedPreferenceString(R.string.id_folder_path, folderPath);
+
                     Intent intent = new Intent(TerminalActivity.this, ConfirmationActivity.class);
                     intent.putExtra("FOLDER_PATH", folderPath);
                     startActivity(intent);
