@@ -74,7 +74,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Select Files"
+            android:text="Compress Files"
             android:onClick="copyIPAddress" />
 
         <Button
@@ -82,7 +82,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Send Results"
+            android:text="Upload Files"
             android:onClick="pasteIPAddress" />
     </TableRow>
 
