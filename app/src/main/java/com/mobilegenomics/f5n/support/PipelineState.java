@@ -4,5 +4,7 @@ public enum PipelineState {
     TO_BE_CONFIGURED,
     CONFIGURED,
     RUNNING,
-    COMPLETED
+    MINIT_RUNNING,
+    COMPLETED,
+    TO_BE_UPLOAD
 }

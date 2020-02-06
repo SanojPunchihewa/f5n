@@ -3,6 +3,8 @@ package com.mobilegenomics.f5n.activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,13 +12,16 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import com.liulishuo.okdownload.core.Util;
 import com.mobilegenomics.f5n.BuildConfig;
@@ -24,12 +29,16 @@ import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.dto.State;
 import com.mobilegenomics.f5n.dto.WrapperObject;
+import com.mobilegenomics.f5n.support.PipelineState;
+import com.mobilegenomics.f5n.support.PreferenceUtil;
 import com.mobilegenomics.f5n.support.ServerCallback;
 import com.mobilegenomics.f5n.support.ServerConnectionUtils;
 import com.mobilegenomics.f5n.support.ZipListener;
 import com.mobilegenomics.f5n.support.ZipManager;
+import com.obsez.android.lib.filechooser.ChooserDialog;
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.ArrayList;
 import java.util.Objects;
 import net.gotev.uploadservice.UploadService;
 import org.apache.commons.net.ftp.FTP;
@@ -48,6 +57,10 @@ public class MinITActivity extends AppCompatActivity {
         protected Boolean doInBackground(String... urls) {
             FTPClient con;
             try {
+
+                Log.e(TAG, "Address = " + urls[0]);
+                Log.e(TAG, "File path = " + urls[1]);
+
                 con = new FTPClient();
                 con.setDefaultPort(8000);
                 con.connect(urls[0]);
@@ -70,7 +83,8 @@ public class MinITActivity extends AppCompatActivity {
                     fileSize = fileIn.length();
 
                     FileInputStream in = new FileInputStream(fileIn);
-                    boolean result = con.storeFile(new File(urls[1]).getName(), in);
+                    String filePath = "outputs/" + new File(urls[1]).getName();
+                    boolean result = con.storeFile(filePath, in);
                     in.close();
                     status = result;
                     con.logout();
@@ -94,6 +108,9 @@ public class MinITActivity extends AppCompatActivity {
             super.onPostExecute(uploadSuccess);
             Log.i(TAG, "Upload Finished");
             if (uploadSuccess) {
+                GUIConfiguration.setPipelineState(PipelineState.COMPLETED);
+                PreferenceUtil
+                        .setSharedPreferenceInt(R.string.id_app_mode, GUIConfiguration.getPipelineState().ordinal());
                 statusTextView.setText("Upload Completed");
                 sendJobResults();
             } else {
@@ -126,11 +143,17 @@ public class MinITActivity extends AppCompatActivity {
 
     TextView statusTextView;
 
-    private Button btnSendResult;
+    private TableRow trSendResults;
+
+    private Button btnProcessJob;
+
+    private Button btnRequestJob;
+
+    private Button btnCompressFiles;
+
+    private Button btnSendResults;
 
     private String folderPath;
-
-    private boolean ranPipeline = false;
 
     private String resultsSummary;
 
@@ -139,6 +162,8 @@ public class MinITActivity extends AppCompatActivity {
     EditText serverAddressInput;
 
     private String zipFileName;
+
+    private ArrayList<String> fileList;
 
     public static void logHandler(Handler handler) {
         handler.post(new Runnable() {
@@ -157,6 +182,12 @@ public class MinITActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_minit);
 
+        if (PreferenceUtil.getSharedPreferenceInt(R.string.id_app_mode) == PipelineState.MINIT_RUNNING.ordinal() &&
+                PreferenceUtil.getSharedPreferenceStepList(R.string.id_step_list) != null &&
+                PreferenceUtil.getSharedPreferenceObject(R.string.id_wrapper_obj) != null) {
+            showResumeMessage(PipelineState.MINIT_RUNNING);
+        }
+
         statusTextView = findViewById(R.id.txt_status);
         progressBar = findViewById(R.id.progress_upload_status);
 
@@ -165,19 +196,28 @@ public class MinITActivity extends AppCompatActivity {
         serverAddressInput = findViewById(R.id.input_server_address);
 
         connectionLogText = findViewById(R.id.text_conn_log);
-        final Button btnRquestJob = findViewById(R.id.btn_request_job);
-        btnSendResult = findViewById(R.id.btn_send_result);
+
+        trSendResults = findViewById(R.id.tr_select_files_send);
+
+        btnRequestJob = findViewById(R.id.btn_request_job);
+        btnProcessJob = findViewById(R.id.btn_process_job);
+        btnCompressFiles = findViewById(R.id.btn_select_files);
+        btnSendResults = findViewById(R.id.btn_send_result);
 
         if (getIntent().getExtras() != null) {
             resultsSummary = getIntent().getExtras().getString("PIPELINE_STATUS");
             folderPath = getIntent().getExtras().getString("FOLDER_PATH");
             if (resultsSummary != null && !TextUtils.isEmpty(resultsSummary)) {
-                ranPipeline = true;
-                btnRquestJob.setText("Send Results");
+                btnRequestJob.setVisibility(View.GONE);
+                trSendResults.setVisibility(View.VISIBLE);
+            }
+        } else {
+            if (PreferenceUtil.getSharedPreferenceInt(R.string.id_app_mode) == PipelineState.TO_BE_UPLOAD.ordinal()) {
+                showResumeMessage(PipelineState.TO_BE_UPLOAD);
             }
         }
 
-        btnRquestJob.setOnClickListener(new View.OnClickListener() {
+        btnRequestJob.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -186,21 +226,41 @@ public class MinITActivity extends AppCompatActivity {
                     serverIP = serverAddressInput.getText().toString().trim();
 
                     ServerConnectionUtils.setServerAddress(serverIP);
-                    if (ranPipeline) {
-                        uploadDataSet();
-                    } else {
-                        requestJob();
-                    }
-
+                    requestJob();
                 } else {
                     Toast.makeText(MinITActivity.this, "Please input a server IP", Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
-        btnSendResult.setOnClickListener(new View.OnClickListener() {
+        btnCompressFiles.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                openFileManager(false, true);
+            }
+        });
+
+        btnSendResults.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                if (serverAddressInput.getText() != null && !TextUtils
+                        .isEmpty(serverAddressInput.getText().toString().trim())) {
+                    serverIP = serverAddressInput.getText().toString().trim();
+                    ServerConnectionUtils.setServerAddress(serverIP);
+                    openFileManager(false, false);
+                } else {
+                    Toast.makeText(MinITActivity.this, "Please input a server IP", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        btnProcessJob.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                PreferenceUtil
+                        .setSharedPreferenceObject(R.string.id_wrapper_obj, ServerConnectionUtils.getWrapperObject());
+
                 Intent intent = new Intent(MinITActivity.this, DownloadActivity.class);
                 // TODO Fix the following
                 // Protocol, file server IP and Port
@@ -248,7 +308,7 @@ public class MinITActivity extends AppCompatActivity {
                     public void run() {
                         GUIConfiguration.configureSteps(job.getSteps());
                         zipFileName = job.getPrefix();
-                        btnSendResult.setVisibility(View.VISIBLE);
+                        btnProcessJob.setVisibility(View.VISIBLE);
                     }
                 });
             }
@@ -275,8 +335,16 @@ public class MinITActivity extends AppCompatActivity {
         });
     }
 
-    private void uploadDataSet() {
+    private void uploadDataSet(String filePath) {
+        new FTPUploadTask().execute(serverIP, filePath);
+    }
+
+    private void compressDataSet() {
         // TODO check wifi connectivity
+        folderPath = fileList.get(fileList.size() - 1);
+        String zipFileName = folderPath + "/" + folderPath.substring(folderPath.lastIndexOf("/") + 1)
+                + ".out.zip";
+
         ZipManager zipManager = new ZipManager(MinITActivity.this, new ZipListener() {
             @Override
             public void onStarted(@NonNull final long totalBytes) {
@@ -308,8 +376,6 @@ public class MinITActivity extends AppCompatActivity {
                     public void run() {
                         if (success) {
                             statusTextView.setText("Zip Successful");
-                            String path = folderPath + ".out.zip";
-                            new FTPUploadTask().execute(serverIP, path);
                         } else {
                             statusTextView.setText("Zip Error");
                         }
@@ -317,7 +383,98 @@ public class MinITActivity extends AppCompatActivity {
                 });
             }
         });
-        zipManager.zip(folderPath);
+
+        fileList.remove(fileList.size() - 1);
+        zipManager.zip(fileList, zipFileName);
+    }
+
+    private void openFileManager(boolean dirOnly, boolean toCompress) {
+        fileList = new ArrayList<>();
+
+        if (toCompress) {
+            new ChooserDialog(MinITActivity.this)
+                    .withFilter(dirOnly, false)
+                    .enableMultiple(true)
+                    .withChosenListener(new ChooserDialog.Result() {
+                        @Override
+                        public void onChoosePath(String path, File pathFile) {
+                            if (fileList.contains(path)) {
+                                fileList.remove(path);
+                            } else {
+                                fileList.add(path);
+                            }
+                        }
+                    })
+                    // to handle the back key pressed or clicked outside the dialog:
+                    .withOnCancelListener(new DialogInterface.OnCancelListener() {
+                        public void onCancel(DialogInterface dialog) {
+                            dialog.cancel();
+                        }
+                    })
+                    .withOnDismissListener(new OnDismissListener() {
+                        @Override
+                        public void onDismiss(final DialogInterface dialog) {
+                            compressDataSet();
+                        }
+                    })
+                    .withResources(R.string.title_choose_any_file, R.string.title_choose, R.string.dialog_cancel)
+                    .build()
+                    .show();
+        } else {
+            new ChooserDialog(MinITActivity.this)
+                    .withFilter(dirOnly, false)
+                    // to handle the result(s)
+                    .withChosenListener(new ChooserDialog.Result() {
+                        @Override
+                        public void onChoosePath(String path, File pathFile) {
+                            uploadDataSet(path);
+                        }
+                    })
+                    .build()
+                    .show();
+        }
+    }
+
+    private void showResumeMessage(PipelineState state) {
+
+        String msg;
+
+        if (state == PipelineState.TO_BE_UPLOAD) {
+            msg = "You can upload the data from previous job";
+        } else {
+            msg = "You can re run the previous job";
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle("Resume App State")
+                .setMessage(msg)
+                .setPositiveButton("Resume", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        ServerConnectionUtils.setWrapperObject(
+                                (WrapperObject) PreferenceUtil
+                                        .getSharedPreferenceObject(R.string.id_wrapper_obj));
+                        if (state == PipelineState.TO_BE_UPLOAD) {
+                            btnRequestJob.setVisibility(View.GONE);
+                            trSendResults.setVisibility(View.VISIBLE);
+                            resultsSummary = PreferenceUtil.getSharedPreferenceString(R.string.id_results_summary);
+                        } else {
+                            GUIConfiguration.setPipelineState(PipelineState.CONFIGURED);
+                            GUIConfiguration
+                                    .setSteps(PreferenceUtil.getSharedPreferenceStepList(R.string.id_step_list));
+                            Intent intent = new Intent(MinITActivity.this, TerminalActivity.class);
+                            startActivity(intent);
+                        }
+                    }
+                })
+                .setNegativeButton("Get new Job", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(final DialogInterface dialog, final int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .setCancelable(false)
+                .show();
     }
 
     private boolean validateIPAddress(final String ip) {

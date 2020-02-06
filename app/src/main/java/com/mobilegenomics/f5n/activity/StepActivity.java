@@ -15,6 +15,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -211,6 +213,13 @@ public class StepActivity extends AppCompatActivity {
                 if (argument.isFile()) {
                     editText = new AutoCompleteTextView(this);
                     ((AutoCompleteTextView) editText).setAdapter(adapter);
+                    ((AutoCompleteTextView) editText).setOnItemClickListener(new OnItemClickListener() {
+                        @Override
+                        public void onItemClick(final AdapterView<?> parent, final View view, final int position,
+                                final long id) {
+                            editText.setText(folderPath + "/" + parent.getAdapter().getItem(position));
+                        }
+                    });
                 } else {
                     editText = new EditText(this);
                 }
@@ -255,9 +264,6 @@ public class StepActivity extends AppCompatActivity {
                                 if (argument.isFile()) {
                                     GUIConfiguration
                                             .configureLikedFileArgument(argument.getArgID(), argValue);
-                                    if (folderPath != null && !TextUtils.isEmpty(folderPath)) {
-                                        argValue = folderPath + "/" + argValue;
-                                    }
                                 }
                                 argument.setArgValue(argValue);
                             } else {

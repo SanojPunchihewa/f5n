@@ -147,6 +147,10 @@ public class GUIConfiguration {
         return steps;
     }
 
+    public static void setSteps(ArrayList<Step> newSteps) {
+        steps = newSteps;
+    }
+
     public static void configureLikedFileArgument(String fileName, String value) {
         linkedFileArguments.put(fileName, value);
     }

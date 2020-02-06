@@ -30,6 +30,7 @@ import com.mobilegenomics.f5n.core.NativeCommands;
 import com.mobilegenomics.f5n.core.PipelineComponent;
 import com.mobilegenomics.f5n.support.FileUtil;
 import com.mobilegenomics.f5n.support.PipelineState;
+import com.mobilegenomics.f5n.support.PreferenceUtil;
 import com.mobilegenomics.f5n.support.TimeFormat;
 import java.io.BufferedReader;
 import java.io.File;
@@ -276,9 +277,17 @@ public class ConfirmationActivity extends AppCompatActivity {
             btnWriteLog.setVisibility(View.VISIBLE);
             btnProceed.setEnabled(true);
             mProgressBar.setVisibility(View.GONE);
+            PreferenceUtil
+                    .setSharedPreferenceInt(R.string.id_app_mode, GUIConfiguration.getPipelineState().ordinal());
+
             if (GUIConfiguration.getAppMode() == AppMode.SLAVE) {
                 mp.start();
                 mp.setLooping(true);
+                GUIConfiguration.setPipelineState(PipelineState.TO_BE_UPLOAD);
+                PreferenceUtil
+                        .setSharedPreferenceInt(R.string.id_app_mode, GUIConfiguration.getPipelineState().ordinal());
+                PreferenceUtil
+                        .setSharedPreferenceString(R.string.id_results_summary, resultsSummary);
                 btnSendResults.setVisibility(View.VISIBLE);
             }
         }

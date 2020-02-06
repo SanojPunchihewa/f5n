@@ -23,6 +23,7 @@ import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.PipelineStep;
 import com.mobilegenomics.f5n.support.DownloadListener;
 import com.mobilegenomics.f5n.support.FileUtil;
+import com.mobilegenomics.f5n.support.PipelineState;
 import com.mobilegenomics.f5n.support.PreferenceUtil;
 import com.mobilegenomics.f5n.support.TimeFormat;
 import com.mobilegenomics.f5n.support.ZipListener;
@@ -137,6 +138,7 @@ public class DemoActivity extends AppCompatActivity {
                     GUIConfiguration.addPipelineStep(step);
                 }
                 GUIConfiguration.printList();
+                GUIConfiguration.setPipelineState(PipelineState.CONFIGURED);
                 GUIConfiguration.configureSteps(DemoActivity.this,
                         Environment.getExternalStorageDirectory() + "/" + folderName + "/"
                                 + fileName.substring(0, fileName.lastIndexOf(".")));

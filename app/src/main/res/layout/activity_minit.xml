@@ -59,11 +59,38 @@
             android:onClick="pasteIPAddress" />
     </TableRow>
 
+    <TableRow
+        android:id="@+id/tr_select_files_send"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:gravity="center"
+        android:layout_below="@id/tr_copy_paste_ip"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/btn_select_files"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Compress Files"
+            android:onClick="copyIPAddress" />
+
+        <Button
+            android:id="@+id/btn_send_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Upload Files"
+            android:onClick="pasteIPAddress" />
+    </TableRow>
+
     <TextView
         android:id="@+id/txt_status"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/tr_copy_paste_ip"
+        android:layout_below="@id/tr_select_files_send"
         android:layout_marginLeft="10dp" />
 
     <ProgressBar
@@ -81,7 +108,7 @@
         android:layout_height="match_parent"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/progress_upload_status"
-        android:layout_above="@id/btn_send_result"
+        android:layout_above="@id/btn_process_job"
         android:layout_margin="10dp"
         android:id="@+id/scroll_view">
 
@@ -93,7 +120,7 @@
     </ScrollView>
 
     <Button
-        android:id="@+id/btn_send_result"
+        android:id="@+id/btn_process_job"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

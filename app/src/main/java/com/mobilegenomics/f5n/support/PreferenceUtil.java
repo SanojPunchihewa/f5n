@@ -5,7 +5,14 @@ import android.content.SharedPreferences.Editor;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import androidx.annotation.Nullable;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.mobilegenomics.f5n.Application;
+import com.mobilegenomics.f5n.core.Step;
+import com.mobilegenomics.f5n.dto.WrapperObject;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PreferenceUtil {
 
@@ -55,6 +62,116 @@ public class PreferenceUtil {
         } else {
             editor.putString(Application.getAppContext().getString(preferenceId), uri.toString());
         }
+        editor.apply();
+    }
+
+    /**
+     * Retrieve a list shared preference.
+     *
+     * @param preferenceId the id of the shared preference.
+     * @return the corresponding preference value.
+     */
+    public static ArrayList<Step> getSharedPreferenceStepList(final int preferenceId) {
+        String jsonString = getSharedPreferences()
+                .getString(Application.getAppContext().getString(preferenceId), null);
+
+        if (jsonString == null) {
+            return null;
+        } else {
+            Gson gson = new Gson();
+            Type type = new TypeToken<List<Step>>() {
+            }.getType();
+            return gson.fromJson(jsonString, type);
+        }
+    }
+
+    /**
+     * Set a shared preference for a List.
+     *
+     * @param preferenceId the id of the shared preference.
+     * @param list         the target value of the preference.
+     */
+    public static void setSharedPreferenceStepList(final int preferenceId, @Nullable final List<Step> list) {
+        Editor editor = getSharedPreferences().edit();
+        Gson gson = new Gson();
+        String strList = gson.toJson(list);
+        editor.putString(Application.getAppContext().getString(preferenceId), strList);
+        editor.apply();
+    }
+
+    /**
+     * Retrieve an Object shared preference.
+     *
+     * @param preferenceId the id of the shared preference.
+     * @return the corresponding preference value.
+     */
+    public static Object getSharedPreferenceObject(final int preferenceId) {
+        String jsonString = getSharedPreferences()
+                .getString(Application.getAppContext().getString(preferenceId), null);
+
+        if (jsonString == null) {
+            return null;
+        } else {
+            Gson gson = new Gson();
+            return gson.fromJson(jsonString, WrapperObject.class);
+        }
+    }
+
+    /**
+     * Set a shared preference for an Object.
+     *
+     * @param preferenceId the id of the shared preference.
+     * @param object       the target value of the preference.
+     */
+    public static void setSharedPreferenceObject(final int preferenceId, @Nullable final Object object) {
+        Editor editor = getSharedPreferences().edit();
+        Gson gson = new Gson();
+        String strObject = gson.toJson(object);
+        editor.putString(Application.getAppContext().getString(preferenceId), strObject);
+        editor.apply();
+    }
+
+    /**
+     * Retrieve app state shared preference.
+     *
+     * @param preferenceId the id of the shared preference.
+     * @return the corresponding preference value.
+     */
+    public static int getSharedPreferenceInt(final int preferenceId) {
+        return getSharedPreferences().getInt(Application.getAppContext().getString(preferenceId), -1);
+    }
+
+    /**
+     * Set a shared preference for app state
+     *
+     * @param preferenceId the id of the shared preference.
+     * @param value        the target value of the preference.
+     */
+    public static void setSharedPreferenceInt(final int preferenceId, @Nullable final int value) {
+        Editor editor = getSharedPreferences().edit();
+        editor.putInt(Application.getAppContext().getString(preferenceId), value);
+        editor.apply();
+    }
+
+    /**
+     * Retrieve app state shared preference.
+     *
+     * @param preferenceId the id of the shared preference.
+     * @return the corresponding preference value.
+     */
+    public static String getSharedPreferenceString(final int preferenceId) {
+        return getSharedPreferences().getString(Application.getAppContext().getString(preferenceId), "");
+    }
+
+    /**
+     * Set a shared preference for app state
+     *
+     * @param preferenceId the id of the shared preference.
+     * @param value        the target value of the preference.
+     */
+    public static void setSharedPreferenceString(final int preferenceId, @Nullable final String value) {
+        Editor editor = getSharedPreferences().edit();
+        editor.putString(Application.getAppContext().getString(preferenceId), value);
         editor.apply();
     }
 

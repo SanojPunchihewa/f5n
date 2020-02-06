@@ -15,5 +15,12 @@
     - If you have less memory available, minimizing the app while running some process, may stop the process and generate incomplete results</string>
 
     <string name="sdcard_uri">SD_CARD_TREE_URI</string>
+    <string name="id_step_list">STEP_LIST</string>
+    <string name="id_folder_path">FOLDER_PATH</string>
+    <string name="id_app_mode">APP_MODE</string>
+    <string name="id_wrapper_obj">WRAPPER_OBJ</string>
+    <string name="id_results_summary">RESULTS_SUMMARY</string>
+
+    <string name="title_choose_any_file">Choose files</string>
 
 </resources>
