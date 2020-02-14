@@ -33,6 +33,7 @@ import com.mobilegenomics.f5n.support.PipelineState;
 import com.mobilegenomics.f5n.support.PreferenceUtil;
 import com.mobilegenomics.f5n.support.ServerCallback;
 import com.mobilegenomics.f5n.support.ServerConnectionUtils;
+import com.mobilegenomics.f5n.support.TimeFormat;
 import com.mobilegenomics.f5n.support.ZipListener;
 import com.mobilegenomics.f5n.support.ZipManager;
 import com.obsez.android.lib.filechooser.ChooserDialog;
@@ -52,6 +53,8 @@ public class MinITActivity extends AppCompatActivity {
         boolean status;
 
         long fileSize;
+
+        long uploadStartTime;
 
         @Override
         protected Boolean doInBackground(String... urls) {
@@ -107,11 +110,13 @@ public class MinITActivity extends AppCompatActivity {
         protected void onPostExecute(final Boolean uploadSuccess) {
             super.onPostExecute(uploadSuccess);
             Log.i(TAG, "Upload Finished");
+            long uploadTime = System.currentTimeMillis() - uploadStartTime;
             if (uploadSuccess) {
+                String time = TimeFormat.millisToShortDHMS(uploadTime);
                 GUIConfiguration.setPipelineState(PipelineState.COMPLETED);
                 PreferenceUtil
                         .setSharedPreferenceInt(R.string.id_app_mode, GUIConfiguration.getPipelineState().ordinal());
-                statusTextView.setText("Upload Completed");
+                statusTextView.setText("Upload Completed in " + time);
                 sendJobResults();
             } else {
                 statusTextView.setText("Upload Error");
@@ -121,6 +126,7 @@ public class MinITActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            uploadStartTime = System.currentTimeMillis();
             statusTextView.setText("Upload started");
         }
 

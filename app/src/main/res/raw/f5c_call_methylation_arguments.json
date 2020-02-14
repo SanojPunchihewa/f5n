@@ -62,14 +62,14 @@
     },
     {
       "argName": "batch size",
-      "argValue": "512",
-      "argDescription": "batch size -max number of reads loaded at once [512]",
+      "argValue": "256",
+      "argDescription": "batch size -max number of reads loaded at once [256]",
       "flag": "-K",
       "argID": "tobedecided",
       "isDependentOn": "argIDofanotherArg",
       "hasFlag": true,
       "flagOnly": false,
-      "required": false,
+      "required": true,
       "isFile": false
     },
     {
@@ -85,32 +85,20 @@
       "isFile": false
     },
     {
-      "argName": "help",
-      "argValue": null,
-      "argDescription": "help",
-      "flag": "-h",
-      "argID": "tobedecided",
-      "isDependentOn": "argIDofanotherArg",
-      "hasFlag": true,
-      "flagOnly": true,
-      "required": false,
-      "isFile": false
-    },
-    {
       "argName": "min map quality",
-      "argValue": "0",
+      "argValue": null,
       "argDescription": "minimum mapping quality [30]",
       "flag": "--min-mapq",
       "argID": "tobedecided",
       "isDependentOn": "argIDofanotherArg",
       "hasFlag": true,
       "flagOnly": false,
-      "required": true,
+      "required": false,
       "isFile": false
     },
     {
       "argName": "consider secondary map",
-      "argValue": "no",
+      "argValue": null,
       "argDescription": "consider secondary mappings or not [no]",
       "flag": "--secondary=",
       "argID": "tobedecided",
@@ -121,10 +109,22 @@
       "isFile": false
     },
     {
-      "argName": "skip unreadable or terminate",
-      "argValue": "yes",
-      "argDescription": "skip any unreadable fast5 or terminate program [yes]",
-      "flag": "--skip-unreadable=",
+      "argName": "skip ultra long reads and write to file",
+      "argValue": null,
+      "argDescription": "skip ultra long reads and write those entries to the bam file provided as the argument",
+      "flag": "--skip-ultra",
+      "argID": "tobedecided",
+      "isDependentOn": "argIDofanotherArg",
+      "hasFlag": true,
+      "flagOnly": false,
+      "required": false,
+      "isFile": true
+    },
+    {
+      "argName": "threshold to skip ultra long reads",
+      "argValue": null,
+      "argDescription": "threshold to skip ultra long reads [100000]",
+      "flag": "--ultra-thresh",
       "argID": "tobedecided",
       "isDependentOn": "argIDofanotherArg",
       "hasFlag": true,
@@ -134,25 +134,13 @@
     },
     {
       "argName": "verbosity",
-      "argValue": "0",
+      "argValue": null,
       "argDescription": "verbosity level [0]",
       "flag": "--verbose",
       "argID": "tobedecided",
       "isDependentOn": "argIDofanotherArg",
       "hasFlag": true,
       "flagOnly": false,
-      "required": false,
-      "isFile": false
-    },
-    {
-      "argName": "version",
-      "argValue": null,
-      "argDescription": "print version",
-      "flag": "--version",
-      "argID": "tobedecided",
-      "isDependentOn": "argIDofanotherArg",
-      "hasFlag": true,
-      "flagOnly": true,
       "required": false,
       "isFile": false
     }
