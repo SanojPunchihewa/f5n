@@ -31,6 +31,7 @@ import com.mobilegenomics.f5n.support.DownloadListener;
 import com.mobilegenomics.f5n.support.DownloadManager;
 import com.mobilegenomics.f5n.support.PipelineState;
 import com.mobilegenomics.f5n.support.PreferenceUtil;
+import com.mobilegenomics.f5n.support.TimeFormat;
 import com.mobilegenomics.f5n.support.ZipListener;
 import com.mobilegenomics.f5n.support.ZipManager;
 import com.obsez.android.lib.filechooser.ChooserDialog;
@@ -45,6 +46,8 @@ import org.apache.commons.net.io.CopyStreamAdapter;
 public class DownloadActivity extends AppCompatActivity {
 
     class FTPDownloadTask extends AsyncTask<String, Long, Boolean> {
+
+        long downloadStartTime;
 
         long fileSize;
 
@@ -93,8 +96,10 @@ public class DownloadActivity extends AppCompatActivity {
         protected void onPostExecute(final Boolean downloadSuccess) {
             super.onPostExecute(downloadSuccess);
             Log.i(TAG, "Download Finished");
+            long downloadTime = System.currentTimeMillis() - downloadStartTime;
             if (downloadSuccess) {
-                statusTextView.setText("Download Completed");
+                String time = TimeFormat.millisToShortDHMS(downloadTime);
+                statusTextView.setText("Download Completed in " + time);
             } else {
                 statusTextView.setText("Download Error");
             }
@@ -105,6 +110,7 @@ public class DownloadActivity extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             Log.i(TAG, "Download Started");
+            downloadStartTime = System.currentTimeMillis();
             statusTextView.setText("Download Started");
             progressBar.setMax(100);
             disableButtons();
