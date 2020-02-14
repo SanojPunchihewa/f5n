@@ -119,13 +119,15 @@ public class DemoActivity extends AppCompatActivity {
             @Override
             public void onClick(final View v) {
                 btnDownloadAndExtract.setEnabled(false);
+                String datasetFolder = Environment.getExternalStorageDirectory() + "/" + folderName
+                        + "/ecoli-data-set";
+                FileUtil.deleteFolder(new File(datasetFolder));
                 downloadDataSet(ecoliDataSetURL);
             }
         });
         linearLayout.addView(btnDownloadAndExtract);
 
         txtLogView = new TextView(this);
-//        txtLogView.setTextSize(f);
         linearLayout.addView(txtLogView);
 
         btnRunPipeline = new Button(this);

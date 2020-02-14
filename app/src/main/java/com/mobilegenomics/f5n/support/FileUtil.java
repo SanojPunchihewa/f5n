@@ -235,4 +235,16 @@ public class FileUtil {
         return !filePath.contains(internalStorage);
     }
 
+    /**
+     * Delete a folder and its content
+     */
+    public static void deleteFolder(File fodler) {
+        if (fodler.isDirectory()) {
+            for (File child : fodler.listFiles()) {
+                deleteFolder(child);
+            }
+        }
+        fodler.delete();
+    }
+
 }
