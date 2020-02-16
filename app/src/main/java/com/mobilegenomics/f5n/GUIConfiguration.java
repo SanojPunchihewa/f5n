@@ -230,6 +230,11 @@ public class GUIConfiguration {
         if (argument.getArgID().equals("SAMTOOL_SORT_OUTPUT_FILE")) {
             argument.setArgValue(folder + "/reads.sorted.bam");
         }
+        // For the Demo we need to use 100M max memory for samtools sort
+        if (argument.getArgID().equals("SAMTOOL_MAX_MEMORY")) {
+            argument.setSetByUser(true);
+            argument.setArgValue("100M");
+        }
 
         if (argument.getArgID().equals("SAMTOOL_INDEX_INPUT_FILE")) {
             argument.setArgValue(folder + "/reads.sorted.bam");
