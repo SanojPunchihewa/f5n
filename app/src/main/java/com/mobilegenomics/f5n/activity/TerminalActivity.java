@@ -203,7 +203,8 @@ public class TerminalActivity extends AppCompatActivity {
     private void showCrashError() {
         new AlertDialog.Builder(this)
                 .setTitle("F5N Crashed")
-                .setMessage("App Crashed due to Out Of Memory")
+                .setMessage(
+                        "One of the Native libraries has encountered a problem, most probably an Out Of Memory. Refer tmp.log in main storage/mobile-genomics folder for more information")
                 .setPositiveButton("Go to Start page", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
