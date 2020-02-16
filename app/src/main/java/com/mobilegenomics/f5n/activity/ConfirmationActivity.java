@@ -206,6 +206,13 @@ public class ConfirmationActivity extends AppCompatActivity {
         separator2.setBackgroundColor(Color.parseColor("#000000"));
         linearLayout.addView(separator2);
 
+        if (GUIConfiguration.getAppMode() == AppMode.STANDALONE) {
+            TextView txtOuputFolderInfo = new TextView(this);
+            txtOuputFolderInfo.setText(
+                    "By default, output files are written to the mobile-genomics folder in your main storage. If you have updated the output paths please check the respective folders");
+            linearLayout.addView(txtOuputFolderInfo);
+        }
+
         mp = MediaPlayer.create(this, R.raw.alarm);
 
         btnWriteLog = new Button(this);

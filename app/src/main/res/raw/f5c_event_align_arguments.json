@@ -52,7 +52,7 @@
       "argName": "event summary file",
       "argValue": "event.summary.txt",
       "argDescription": "path to event summary file",
-      "flag": "--event-summary=",
+      "flag": "--summary",
       "argID": "F5C_ALIGN_SUMMARY_OUTPUT_FILE",
       "isDependentOn": null,
       "hasFlag": true,

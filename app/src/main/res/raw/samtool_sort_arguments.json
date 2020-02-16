@@ -29,7 +29,7 @@
       "argValue": "768M",
       "argDescription": "max memory per thread; suffix K/M/G recognized",
       "flag": "-m",
-      "argID": "tobedecided",
+      "argID": "SAMTOOL_MAX_MEMORY",
       "isDependentOn": "argIDofanotherArg",
       "hasFlag": true,
       "flagOnly": false,
