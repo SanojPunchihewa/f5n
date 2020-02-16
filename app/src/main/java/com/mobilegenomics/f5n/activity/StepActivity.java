@@ -6,6 +6,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -66,11 +67,15 @@ public class StepActivity extends AppCompatActivity {
 
     private List<String> fileNames;
 
+    private String MOBILE_GENOMICS_FOLDER_PATH;
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_step);
+
+        MOBILE_GENOMICS_FOLDER_PATH = Environment.getExternalStorageDirectory() + "/" + "mobile-genomics/";
 
         fileNames = new ArrayList<>();
 
@@ -220,19 +225,23 @@ public class StepActivity extends AppCompatActivity {
                             editText.setText(folderPath + "/" + parent.getAdapter().getItem(position));
                         }
                     });
-                } else {
-                    editText = new EditText(this);
-                }
-                editText.setId(argument_id + 1000);
-                if (argument.isFile()) {
                     if (argument.getIsDependentOn() != null) {
                         editText.setText(GUIConfiguration.getLinkedFileArgument(argument.getIsDependentOn()));
                     } else if (argument.getArgValue() != null) {
                         editText.setText(argument.getArgValue());
                     }
+                    if (argument.getArgID().contains("OUTPUT") || argument.getArgID().contains("TEMP")) {
+                        if (editText.getText() != null && !TextUtils.isEmpty(editText.getText().toString())) {
+                            editText.setText(MOBILE_GENOMICS_FOLDER_PATH + editText.getText().toString());
+                        } else {
+                            editText.setText(MOBILE_GENOMICS_FOLDER_PATH);
+                        }
+                    }
                 } else {
+                    editText = new EditText(this);
                     editText.setText(argument.getArgValue());
                 }
+                editText.setId(argument_id + 1000);
                 linearLayout.addView(editText);
                 LinearLayout.LayoutParams editText_LayoutParams =
                         new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
@@ -260,6 +269,10 @@ public class StepActivity extends AppCompatActivity {
                         if (!argument.isFlagOnly()) {
                             EditText editText = findViewById(arg_id + 1000);
                             if (editText.getText() != null && !TextUtils.isEmpty(editText.getText().toString())) {
+                                if (argument.isFile() && editText.getText().toString().endsWith("/")) {
+                                    haveSetAllRequiredArgs = false;
+                                    editText.setError("Please specify a file name");
+                                }
                                 String argValue = editText.getText().toString();
                                 if (argument.isFile()) {
                                     GUIConfiguration
