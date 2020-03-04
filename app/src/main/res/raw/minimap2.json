@@ -4,7 +4,7 @@
       "argName": "Temporary Prefix for multi-part index",
       "argValue": null,
       "argDescription": "Prefix to create temporary files. Typically used for a multi-part index",
-      "flag": "--multi-prefix=",
+      "flag": "--split-prefix",
       "argID": "MINIMAP2_TEMP_FILE",
       "isDependentOn": "null",
       "hasFlag": true,
