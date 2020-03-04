@@ -5,6 +5,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -66,6 +67,17 @@ public class HelpActivity extends AppCompatActivity {
             }
         });
         linearLayout.addView(btnTutorial);
+
+        TextView txtToolVersions = new TextView(this);
+        txtToolVersions.setMovementMethod(LinkMovementMethod.getInstance());
+        txtToolVersions.setText(
+                Html.fromHtml("<b>Tool versions used in this app</b><br>" +
+                        "- Minimap2 v2.17-r974-dirty, commit <a href=\"https://github.com/lh3/minimap2/compare/d2de282...master\">d2de282</a><br><br>"
+                        +
+                        "- Samtools v1.10, commit <a href=\"https://github.com/samtools/samtools/compare/5ca6ee2...develop\">5ca6ee2</a><br><br>"
+                        +
+                        "- F5C v0.3-beta, commit <a href=\"https://github.com/hasindu2008/f5c/compare/cea05f7...master\">cea05f7</a>"));
+        linearLayout.addView(txtToolVersions);
 
         TextView txtContribute = new TextView(this);
         txtContribute.setText(
