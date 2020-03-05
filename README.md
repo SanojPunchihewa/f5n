@@ -19,7 +19,7 @@ In this way ONT data can be corrected for errors in the field, on the fly!
 ### Flowchart
 ![Diagram](https://github.com/hiruna72/f5n/blob/master/flowchart.png)
 
-### Network
+### Real-time sequence analysis (in alpha phase)
 The source code for the Server can be found [here](https://github.com/AnjanaSenanayake/f5n_server) 
 
 ![Diagram](https://github.com/hiruna72/f5n/blob/master/server_mobile_connection.png)
