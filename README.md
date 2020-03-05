@@ -39,6 +39,16 @@ wget "https://github.com/SanojPunchihewa/f5n/releases/download/$VERSION/mobilege
 
 Signature keys of builds are different. Before you switch the installation source, you will have to uninstall the f5n application.
 
+### Demo
+
+Configure single/multiple tools             |  Help
+:-------------------------:|:-------------------------:
+![](/gif/demo_gif.gif)  |  ![](/gif/help_gif.gif)
+
+### Datasets
+
+You can use publicly available [datasets](https://github.com/nanopore-wgs-consortium/NA12878/blob/master/Genome.md)
+
 ### How to contribute
 Please contribute to our work by testing,debugging and developing our product. A guide to how to contribute is available [here](https://github.com/MarcDiethelm/contributing/blob/master/README.md)
  
