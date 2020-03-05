@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Chronometer;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
@@ -60,6 +61,8 @@ public class ConfirmationActivity extends AppCompatActivity {
     LinearLayout linearLayout;
 
     Button btnWriteLog;
+
+    Chronometer txtTimer;
 
     Button btnProceed;
 
@@ -119,11 +122,34 @@ public class ConfirmationActivity extends AppCompatActivity {
             folderPath = getIntent().getExtras().getString("FOLDER_PATH");
         }
 
+        LinearLayout.LayoutParams layoutParams1 =
+                new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
+                        LayoutParams.WRAP_CONTENT);
+        LinearLayout horizontalLayout = new LinearLayout(this);
+        horizontalLayout.setOrientation(LinearLayout.HORIZONTAL);
+
         btnProceed = new Button(this);
+        layoutParams1.weight = 1f;
+        btnProceed.setLayoutParams(layoutParams1);
+        horizontalLayout.addView(btnProceed);
+
+        LinearLayout.LayoutParams layoutParams2 =
+                new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
+                        LayoutParams.WRAP_CONTENT);
+
+        txtTimer = new Chronometer(this);
+        txtTimer.setPadding(20, 0, 0, 0);
+        layoutParams2.weight = 4f;
+        txtTimer.setLayoutParams(layoutParams2);
+        horizontalLayout.addView(txtTimer);
+
+        linearLayout.addView(horizontalLayout);
+
         btnProceed.setText("Run the Pipeline");
         btnProceed.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(final View v) {
+                txtTimer.start();
                 btnProceed.setEnabled(false);
                 mProgressBar.setVisibility(View.VISIBLE);
                 GUIConfiguration.createPipeline();
@@ -173,7 +199,6 @@ public class ConfirmationActivity extends AppCompatActivity {
                 new RunPipeline().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
         });
-        linearLayout.addView(btnProceed);
 
         mProgressBar = new ProgressBar(this,
                 null,
@@ -272,6 +297,7 @@ public class ConfirmationActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(final String s) {
             super.onPostExecute(s);
+            txtTimer.stop();
             GUIConfiguration.setPipelineState(PipelineState.COMPLETED);
             NativeCommands.getNativeInstance().finishPipeline(logPipePath);
             List<PipelineComponent> pipelineComponents = GUIConfiguration.getPipeline();

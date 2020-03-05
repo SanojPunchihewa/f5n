@@ -6,7 +6,8 @@ public enum PipelineStep {
     SAMTOOL_INDEX(2, "samtool index"),
     F5C_INDEX(3, "f5c index"),
     F5C_CALL_METHYLATION(4, "f5c call-methylation"),
-    F5C_EVENT_ALIGNMENT(5, "f5c eventalign");
+    F5C_EVENT_ALIGNMENT(5, "f5c eventalign"),
+    F5C_METH_FREQ(6, "f5c meth-freq");
 
     private final int value;
 

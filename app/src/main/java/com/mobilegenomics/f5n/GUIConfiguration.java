@@ -181,6 +181,9 @@ public class GUIConfiguration {
             case F5C_EVENT_ALIGNMENT:
                 rawFile = R.raw.f5c_event_align_arguments;
                 break;
+            case F5C_METH_FREQ:
+                rawFile = R.raw.f5c_meth_freq_arguments;
+                break;
             default:
                 Log.e(TAG, "Invalid Pipeline Step");
                 break;

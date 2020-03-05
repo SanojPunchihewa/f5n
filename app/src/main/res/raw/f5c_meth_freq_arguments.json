@@ -1,0 +1,52 @@
+{
+  "args": [
+    {
+      "argName": "Input meth file",
+      "argValue": null,
+      "argDescription": "Call methylation file",
+      "flag": "-i",
+      "argID": "F5C_METH_FREQ_INPUT_FILE",
+      "isDependentOn": "F5C_METH_OUTPUT_FILE",
+      "hasFlag": true,
+      "flagOnly": false,
+      "required": true,
+      "isFile": true
+    },
+    {
+      "argName": "meth freq file",
+      "argValue": null,
+      "argDescription": "Methylation frequency file",
+      "flag": "-o",
+      "argID": "F5C_METH_FREQ_FILE",
+      "isDependentOn": "argIDofanotherArg",
+      "hasFlag": true,
+      "flagOnly": false,
+      "required": true,
+      "isFile": true
+    },
+    {
+      "argName": "Call threshold",
+      "argValue": "2.5",
+      "argDescription": "Call threshold [2.5]",
+      "flag": "-c",
+      "argID": "tobedecided",
+      "isDependentOn": "argIDofanotherArg",
+      "hasFlag": true,
+      "flagOnly": false,
+      "required": false,
+      "isFile": false
+    },
+    {
+      "argName": "Split groups",
+      "argValue": null,
+      "argDescription": "Split groups",
+      "flag": "-s",
+      "argID": "tobedecided",
+      "isDependentOn": "argIDofanotherArg",
+      "hasFlag": true,
+      "flagOnly": true,
+      "required": false,
+      "isFile": false
+    }
+  ]
+}

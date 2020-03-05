@@ -119,11 +119,20 @@
             android:orientation="vertical" />
     </ScrollView>
 
+    <TextView
+        android:id="@+id/txt_uder_dev"
+        android:text="This option is under development"
+        android:layout_alignParentBottom="true"
+        android:gravity="center_horizontal"
+        android:padding="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <Button
         android:id="@+id/btn_process_job"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_above="@id/txt_uder_dev"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="10dp"
         android:visibility="gone"
