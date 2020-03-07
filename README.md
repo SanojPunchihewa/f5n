@@ -41,9 +41,9 @@ Signature keys of builds are different. Before you switch the installation sourc
 
 ### Demo
 
-Configure single/multiple tools             |  Help
-:-------------------------:|:-------------------------:
-![](/gif/demo_gif.gif)  |  ![](/gif/help_gif.gif)
+Configure single/multiple tools             |  Help    |  Cluster
+:-------------------------:|:-------------------------:|:-------------------------:
+![](/gif/demo_gif.gif)  |  ![](/gif/help_gif.gif) | ![](/gif/f5n-cluster-demo.gif)
 
 ### Datasets
 
