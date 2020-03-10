@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">f5n</string>
 
+    <!--Strings used in standalone-->"
+    <string name="btn_use_gui_mode">Use GUI Mode</string>
+    <string name="btn_use_terminal_mode">Use Terminal Mode</string>
+    <string name="btn_load_prev_config">Load Previous Config</string>
+
     <!--Strings used in minIT feature-->
     <string name="hint_server_connect">Enter server address</string>
     <string name="btn_connect">Connect</string>
