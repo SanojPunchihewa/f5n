@@ -292,7 +292,7 @@ public class MinITActivity extends AppCompatActivity {
 
     private void configureStepFolderPath() {
         for (Step step : GUIConfiguration.getSteps()) {
-            step.setCommandString(step.getCommandString().replaceAll(DATA_SET_PATH, DATASET_FOLDER + zipFileName.substring(0, zipFileName.length() - 4)));
+            step.setCommandString(step.getCommandString().replaceAll(DATA_SET_PATH, PreferenceUtil.getSharedPreferenceString(R.string.key_default_storage)));
         }
     }
 

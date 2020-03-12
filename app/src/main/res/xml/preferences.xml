@@ -1,0 +1,53 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory
+        android:title="General"
+        app:iconSpaceReserved="false">
+        <Preference
+            android:key="@string/key_default_storage"
+            android:title="@string/title_default_storage"
+            android:summary="@string/value_default_storage"
+            android:defaultValue="@string/value_default_storage"
+            app:iconSpaceReserved="false"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_header_about"
+        app:iconSpaceReserved="false">
+
+        <Preference
+            android:selectable="false"
+            android:summary="@string/summary_about"
+            app:iconSpaceReserved="false"/>
+
+        <Preference
+            android:summary="@string/app_version"
+            android:title="@string/title_version"
+            app:iconSpaceReserved="false"/>
+
+        <Preference
+            android:key="@string/key_send_feedback"
+            android:summary="@string/summary_support"
+            android:title="@string/title_send_feedback"
+            app:iconSpaceReserved="false"/>
+
+        <!-- preference opens url in browser -->
+        <Preference
+            android:summary="@string/summary_faq"
+            android:title="@string/title_faq"
+            app:iconSpaceReserved="false">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="@string/url_faq"
+                app:iconSpaceReserved="false"/>
+        </Preference>
+
+        <Preference android:title="@string/title_terms"
+            app:iconSpaceReserved="false">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="@string/url_terms" />
+        </Preference>
+    </PreferenceCategory>
+</PreferenceScreen>
