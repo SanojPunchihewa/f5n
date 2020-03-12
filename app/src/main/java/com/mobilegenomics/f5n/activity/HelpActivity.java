@@ -38,8 +38,8 @@ public class HelpActivity extends AppCompatActivity {
         linearLayout.addView(txtIntro2);
 
         TextView txtIntro3 = new TextView(this);
-        txtIntro3.setText(
-                "This app needs <b>storage permission</b> in order to read/write files generated from the pipeline steps\n");
+        txtIntro3.setText(Html.fromHtml(
+                "This app needs <b>storage permission</b> in order to read/write files generated from the pipeline steps\n"));
         linearLayout.addView(txtIntro3);
 
         TextView txtIntro4 = new TextView(this);
