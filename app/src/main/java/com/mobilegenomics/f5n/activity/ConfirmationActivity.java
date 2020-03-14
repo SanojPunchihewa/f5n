@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.LinearLayout;
@@ -149,6 +150,7 @@ public class ConfirmationActivity extends AppCompatActivity {
         btnProceed.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(final View v) {
+                getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                 txtTimer.start();
                 btnProceed.setEnabled(false);
                 mProgressBar.setVisibility(View.VISIBLE);
@@ -298,6 +300,7 @@ public class ConfirmationActivity extends AppCompatActivity {
         protected void onPostExecute(final String s) {
             super.onPostExecute(s);
             txtTimer.stop();
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             GUIConfiguration.setPipelineState(PipelineState.COMPLETED);
             NativeCommands.getNativeInstance().finishPipeline(logPipePath);
             List<PipelineComponent> pipelineComponents = GUIConfiguration.getPipeline();
