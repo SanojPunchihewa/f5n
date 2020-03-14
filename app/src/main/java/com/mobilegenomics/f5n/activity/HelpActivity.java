@@ -53,10 +53,15 @@ public class HelpActivity extends AppCompatActivity {
         linearLayout.addView(txtIntro5);
 
         TextView txtIntro6 = new TextView(this);
-        txtIntro6.setText(
+        txtIntro6.setText(Html.fromHtml(
+                "<b>Turning off the display</b> or <b>locking your device</b> may stop the pipeline process and generate incomplete results<br>"));
+        linearLayout.addView(txtIntro6);
+
+        TextView txtIntro7 = new TextView(this);
+        txtIntro7.setText(
                 Html.fromHtml("Refer <b>f5n.log</b> in main_storage/mobile-genomics folder to read the log.<br>"
                         + "Refer <b>tmp.log</b> in main_storage/mobile-genomics folder in cases where the app fails in the middle of a process.<br>"));
-        linearLayout.addView(txtIntro6);
+        linearLayout.addView(txtIntro7);
 
         Button btnTutorial = new Button(this);
         btnTutorial.setText("View Tutorial");

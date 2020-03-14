@@ -151,6 +151,9 @@ public class ConfirmationActivity extends AppCompatActivity {
             @Override
             public void onClick(final View v) {
                 getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                Toast.makeText(ConfirmationActivity.this,
+                        "Please keep the display on to make sure the pipeline execute successfully",
+                        Toast.LENGTH_SHORT).show();
                 txtTimer.start();
                 btnProceed.setEnabled(false);
                 mProgressBar.setVisibility(View.VISIBLE);
