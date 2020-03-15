@@ -1,5 +1,6 @@
 package com.mobilegenomics.f5n.activity;
 
+import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -9,10 +10,13 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.provider.Settings;
+import android.provider.Settings.SettingNotFoundException;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Chronometer;
@@ -79,10 +83,31 @@ public class ConfirmationActivity extends AppCompatActivity {
 
     File logPipeFile;
 
+    //Variable to store brightness value
+    private int brightness;
+
+    //Content resolver used as a handle to the system's settings
+    private ContentResolver cResolver;
+
+    //Window object, that will store a reference to the current window
+    private Window window;
+
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_vertical);
+
+        cResolver = getContentResolver();
+
+        try {
+            Settings.System.putInt(cResolver,
+                    Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
+            //Get the current system brightness
+            brightness = Settings.System.getInt(cResolver, Settings.System.SCREEN_BRIGHTNESS);
+        } catch (SettingNotFoundException e) {
+            //Throw an error case it couldn't be retrieved
+            Log.e(TAG, "Cannot access system brightness");
+        }
 
         String dirPath = Environment.getExternalStorageDirectory() + "/" + "mobile-genomics";
 
@@ -151,6 +176,7 @@ public class ConfirmationActivity extends AppCompatActivity {
             @Override
             public void onClick(final View v) {
                 getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                changeBrightness(0);
                 Toast.makeText(ConfirmationActivity.this,
                         "Please keep the display on to make sure the pipeline execute successfully",
                         Toast.LENGTH_SHORT).show();
@@ -304,6 +330,7 @@ public class ConfirmationActivity extends AppCompatActivity {
             super.onPostExecute(s);
             txtTimer.stop();
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            changeBrightness(brightness);
             GUIConfiguration.setPipelineState(PipelineState.COMPLETED);
             NativeCommands.getNativeInstance().finishPipeline(logPipePath);
             List<PipelineComponent> pipelineComponents = GUIConfiguration.getPipeline();
@@ -396,6 +423,7 @@ public class ConfirmationActivity extends AppCompatActivity {
         PipelineState state = GUIConfiguration.getPipelineState();
         switch (state) {
             case CONFIGURED:
+                changeBrightness(brightness);
                 super.onBackPressed();
                 break;
             case RUNNING:
@@ -440,6 +468,7 @@ public class ConfirmationActivity extends AppCompatActivity {
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         // TODO Kill the native process
+                        changeBrightness(brightness);
                         ConfirmationActivity.super.onBackPressed();
                     }
                 })
@@ -450,5 +479,28 @@ public class ConfirmationActivity extends AppCompatActivity {
                     }
                 })
                 .show();
+    }
+
+    private void changeBrightness(int value) {
+        // Check whether has the write settings permission or not.
+        boolean settingsCanWrite = true;
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            settingsCanWrite = Settings.System.canWrite(getApplicationContext());
+        }
+
+        if (settingsCanWrite) {
+            //Get the current window
+            window = getWindow();
+            //Set the system brightness using the brightness variable value
+            Settings.System.putInt(cResolver, Settings.System.SCREEN_BRIGHTNESS, value);
+            //Get the current window attributes
+            WindowManager.LayoutParams layoutpars = window.getAttributes();
+            //Set the brightness of this window
+            layoutpars.screenBrightness = value / (float) 255;
+            //Apply attribute changes to this window
+            window.setAttributes(layoutpars);
+
+        }
     }
 }
