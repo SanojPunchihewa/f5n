@@ -4,12 +4,15 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+
 import androidx.annotation.Nullable;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mobilegenomics.f5n.Application;
 import com.mobilegenomics.f5n.core.Step;
 import com.mobilegenomics.f5n.dto.WrapperObject;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -161,6 +164,17 @@ public class PreferenceUtil {
      */
     public static String getSharedPreferenceString(final int preferenceId) {
         return getSharedPreferences().getString(Application.getAppContext().getString(preferenceId), "");
+    }
+
+    /**
+     * Retrieve app state shared preference.
+     *
+     * @param preferenceId the id of the shared preference.
+     * @param defaultValue default value if not set by user.
+     * @return the corresponding preference value or provided default value
+     */
+    public static String getSharedPreferenceString(final int preferenceId, final String defaultValue) {
+        return getSharedPreferences().getString(Application.getAppContext().getString(preferenceId), defaultValue);
     }
 
     /**

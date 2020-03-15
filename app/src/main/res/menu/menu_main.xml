@@ -6,7 +6,7 @@
         android:id="@+id/action_settings"
         android:title="Settings"
         app:showAsAction="always"
-        android:icon="@drawable/ic_settings_black_24dp"/>
+        android:icon="@drawable/ic_settings_white_24dp"/>
     <item
         android:id="@+id/action_help"
         android:title="Help"

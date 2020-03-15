@@ -291,8 +291,9 @@ public class MinITActivity extends AppCompatActivity {
     }
 
     private void configureStepFolderPath() {
+        String defaultStoragePath = PreferenceUtil.getSharedPreferenceString(R.string.key_storage_preference, Environment.getExternalStorageDirectory() + "/" + "mobile-genomics");
         for (Step step : GUIConfiguration.getSteps()) {
-            step.setCommandString(step.getCommandString().replaceAll(DATA_SET_PATH, PreferenceUtil.getSharedPreferenceString(R.string.key_default_storage)));
+            step.setCommandString(step.getCommandString().replaceAll(DATA_SET_PATH, defaultStoragePath));
         }
     }
 
