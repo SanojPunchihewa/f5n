@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">f5n</string>
+    <string name="app_name">F5N</string>
 
     <!--Strings used in minIT feature-->
     <string name="hint_server_connect">Enter server address</string>

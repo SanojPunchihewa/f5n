@@ -24,19 +24,41 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.PipelineActivity" />
-        <activity android:name=".activity.StepActivity" />
-        <activity android:name=".activity.ConfirmationActivity" />
-        <activity android:name=".activity.DownloadActivity" />
-        <activity android:name=".activity.MinITActivity" />
-        <activity android:name=".activity.TerminalActivity" />
+        <activity
+            android:name=".activity.PipelineActivity"
+            android:label="Select Steps" />
+
+        <activity
+            android:name=".activity.StepActivity"
+            android:label="Configure tool GUI Mode" />
+
+        <activity
+            android:name=".activity.ConfirmationActivity"
+            android:label="Pipeline Execution" />
+
+        <activity
+            android:name=".activity.DownloadActivity"
+            android:label="Download and Extract" />
+
+        <activity
+            android:name=".activity.MinITActivity"
+            android:label="Connect to F5N Server" />
+
+        <activity
+            android:name=".activity.TerminalActivity"
+            android:label="Configure tool Terminal Mode" />
+
         <activity
             android:name=".activity.HelpActivity"
             android:label="Help" />
+
         <activity
             android:name=".activity.TutorialActivity"
             android:label="How To" />
-        <activity android:name=".activity.DemoActivity" />
+
+        <activity
+            android:name=".activity.DemoActivity"
+            android:label="Demo Mode" />
     </application>
 
 </manifest>
