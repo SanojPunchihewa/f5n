@@ -39,9 +39,9 @@
     <string name="key_version_preference">key_version_preference</string>
     <string name="summary_about">Mobile application for Reference Guided Sequence Alignment using Nanopore Data. You can find out more from https://github.com/SanojPunchihewa/f5n</string>
     <string name="title_version">Version</string>
+    <string name="key_feedback_preference">key_feedback_preference</string>
     <string name="title_send_feedback">Send Feedback</string>
-    <string name="summary_support">Got any queries? We are happy to help!</string>
-    <string name="key_send_feedback">key_send_feedback</string>
+    <string name="summary_feedback">Got any queries? We are happy to help!</string>
     <string name="title_faq">FAQ</string>
     <string name="summary_faq">View frequently asked questions</string>
     <string name="url_faq">https://github.com/SanojPunchihewa/f5n/blob/master/README.md</string>

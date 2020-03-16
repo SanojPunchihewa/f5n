@@ -35,10 +35,9 @@
             android:title="@string/title_version"
             app:iconSpaceReserved="false"/>
 
-        <!--TODO send email-->
         <Preference
-            android:key="@string/key_send_feedback"
-            android:summary="@string/summary_support"
+            android:key="@string/key_feedback_preference"
+            android:summary="@string/summary_feedback"
             android:title="@string/title_send_feedback"
             app:iconSpaceReserved="false"/>
 

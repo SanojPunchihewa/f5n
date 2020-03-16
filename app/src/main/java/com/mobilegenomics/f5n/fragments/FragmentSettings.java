@@ -1,7 +1,9 @@
 package com.mobilegenomics.f5n.fragments;
 
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 
@@ -20,16 +22,18 @@ public class FragmentSettings extends PreferenceFragmentCompat {
 
     private String folderPath;
     private Preference storagePreference;
-    private Preference refereceGnomePreference;
+    private Preference referenceGnomePreference;
     private Preference versionPreference;
+    private Preference feedbackPreference;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.preferences, rootKey);
 
         storagePreference = findPreference(getResources().getString(R.string.key_storage_preference));
-        refereceGnomePreference = findPreference(getResources().getString(R.string.key_reference_gnome));
+        referenceGnomePreference = findPreference(getResources().getString(R.string.key_reference_gnome));
         versionPreference = findPreference(getResources().getString(R.string.key_version_preference));
+        feedbackPreference = findPreference(getResources().getString(R.string.key_feedback_preference));
 
         String storagePath = PreferenceUtil.getSharedPreferenceString(R.string.key_storage_preference, MOBILE_GENOMICS_FOLDER_PATH);
         storagePreference.setDefaultValue(storagePath);
@@ -43,9 +47,9 @@ public class FragmentSettings extends PreferenceFragmentCompat {
         });
 
         String referenceGnomePath = PreferenceUtil.getSharedPreferenceString(R.string.key_reference_gnome, MOBILE_GENOMICS_FOLDER_PATH);
-        refereceGnomePreference.setDefaultValue(referenceGnomePath);
-        refereceGnomePreference.setSummary(referenceGnomePath);
-        refereceGnomePreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+        referenceGnomePreference.setDefaultValue(referenceGnomePath);
+        referenceGnomePreference.setSummary(referenceGnomePath);
+        referenceGnomePreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 setReferenceGnome();
@@ -61,6 +65,14 @@ public class FragmentSettings extends PreferenceFragmentCompat {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
+
+        feedbackPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                sendFeedback();
+                return true;
+            }
+        });
     }
 
     private void setDataStorage() {
@@ -86,12 +98,24 @@ public class FragmentSettings extends PreferenceFragmentCompat {
                     @Override
                     public void onChoosePath(String path, File pathFile) {
                         folderPath = path + "/";
-                        refereceGnomePreference.setDefaultValue(folderPath);
-                        refereceGnomePreference.setSummary(folderPath);
+                        referenceGnomePreference.setDefaultValue(folderPath);
+                        referenceGnomePreference.setSummary(folderPath);
                         PreferenceUtil.setSharedPreferenceString(R.string.key_reference_gnome, folderPath);
                     }
                 })
                 .build()
                 .show();
+    }
+
+    private void sendFeedback() {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("plain/text");
+        intent.setData(Uri.parse("mailto:"));
+        String[] to = {"hiruna72@gmail.com"};
+        intent.putExtra(Intent.EXTRA_EMAIL, to);
+        intent.putExtra(Intent.EXTRA_SUBJECT, "f5n mobile-genomics");
+        intent.putExtra(Intent.EXTRA_TEXT, "--Write your feedback here--");
+        intent.setType("message/rfc822");
+        startActivity(Intent.createChooser(intent, "Send Feedback via Email"));
     }
 }
