@@ -154,8 +154,6 @@ public class MinITActivity extends AppCompatActivity {
 
     private static final String TAG = MinITActivity.class.getSimpleName();
 
-    private static final String DATA_SET_PATH = "\\$DATA_SET_PATH";
-
     private static TextView connectionLogText;
 
     ProgressBar progressBar;
@@ -184,7 +182,9 @@ public class MinITActivity extends AppCompatActivity {
 
     private ArrayList<String> fileList;
 
-    private String DATASET_FOLDER = Environment.getExternalStorageDirectory() + "/mobile-genomics/";
+    private String DEFAULT_DATA_PATH = Environment.getExternalStorageDirectory() + "/mobile-genomics/";
+    private static final String CUSTOM_DATA = "\\$CUSTOM_DATA/";
+    private static final String DATA_SET = "\\$DATA_SET/";
 
     public static void logHandler(Handler handler) {
         handler.post(new Runnable() {
@@ -291,9 +291,11 @@ public class MinITActivity extends AppCompatActivity {
     }
 
     private void configureStepFolderPath() {
-        String defaultStoragePath = PreferenceUtil.getSharedPreferenceString(R.string.key_storage_preference, Environment.getExternalStorageDirectory() + "/" + "mobile-genomics");
+        String dataSetFolderPath = DEFAULT_DATA_PATH + zipFileName.substring(0, zipFileName.length() - 4) + "/";
+        String customDataPath = PreferenceUtil.getSharedPreferenceString(R.string.key_storage_preference, DEFAULT_DATA_PATH);
         for (Step step : GUIConfiguration.getSteps()) {
-            step.setCommandString(step.getCommandString().replaceAll(DATA_SET_PATH, defaultStoragePath));
+            step.setCommandString(step.getCommandString().replaceAll(DATA_SET, dataSetFolderPath));
+            step.setCommandString(step.getCommandString().replaceAll(CUSTOM_DATA, customDataPath));
         }
     }
 
@@ -339,7 +341,7 @@ public class MinITActivity extends AppCompatActivity {
 
                             GUIConfiguration.setPipelineState(PipelineState.TO_BE_CONFIGURED);
                             Intent intent = new Intent(MinITActivity.this, TerminalActivity.class);
-                            intent.putExtra("FOLDER_PATH", DATASET_FOLDER);
+                            intent.putExtra("FOLDER_PATH", DEFAULT_DATA_PATH);
                             startActivity(intent);
                         } else {
                             statusTextView.setText("Unzip Error");
@@ -599,7 +601,7 @@ public class MinITActivity extends AppCompatActivity {
                         fileSize = (ff[0].getSize());
                     }
 
-                    File dir = new File(DATASET_FOLDER + urls[1]);
+                    File dir = new File(DEFAULT_DATA_PATH + urls[1]);
 
                     OutputStream out = new FileOutputStream(dir);
                     status = con.retrieveFile(urls[1], out);
@@ -623,7 +625,7 @@ public class MinITActivity extends AppCompatActivity {
             if (downloadSuccess) {
                 String time = TimeFormat.millisToShortDHMS(downloadTime);
                 statusTextView.setText("Download Completed in " + time);
-                extractZip(DATASET_FOLDER + zipFileName);
+                extractZip(DEFAULT_DATA_PATH + zipFileName);
             } else {
                 statusTextView.setText("Download Error");
             }

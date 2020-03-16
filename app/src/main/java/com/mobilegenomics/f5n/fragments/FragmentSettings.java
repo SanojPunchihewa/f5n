@@ -54,7 +54,7 @@ public class FragmentSettings extends PreferenceFragmentCompat {
                 .withChosenListener(new ChooserDialog.Result() {
                     @Override
                     public void onChoosePath(String path, File pathFile) {
-                        folderPath = path;
+                        folderPath = path + "/";
                         storagePreference.setDefaultValue(folderPath);
                         storagePreference.setSummary(folderPath);
                         PreferenceUtil.setSharedPreferenceString(R.string.key_storage_preference, folderPath);
