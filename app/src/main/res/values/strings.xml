@@ -21,6 +21,7 @@
     <string name="id_app_mode">APP_MODE</string>
     <string name="id_wrapper_obj">WRAPPER_OBJ</string>
     <string name="id_results_summary">RESULTS_SUMMARY</string>
+    <string name="id_screen_brightness">SCREEN_BRIGHTNESS</string>
 
     <string name="title_choose_any_file">Choose files</string>
 
