@@ -68,6 +68,8 @@ public class ConfirmationActivity extends AppCompatActivity {
 
     Button btnWriteLog;
 
+    Button btnGoToStart;
+
     Chronometer txtTimer;
 
     Button btnProceed;
@@ -178,9 +180,6 @@ public class ConfirmationActivity extends AppCompatActivity {
             public void onClick(final View v) {
                 getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                 ScreenDimUtil.changeBrightness(cResolver, window, 0);
-                Toast.makeText(ConfirmationActivity.this,
-                        "Please keep the display on to make sure the pipeline execute successfully",
-                        Toast.LENGTH_SHORT).show();
                 txtTimer.start();
                 btnProceed.setEnabled(false);
                 mProgressBar.setVisibility(View.VISIBLE);
@@ -266,9 +265,14 @@ public class ConfirmationActivity extends AppCompatActivity {
         if (GUIConfiguration.getAppMode() == AppMode.STANDALONE) {
             TextView txtOuputFolderInfo = new TextView(this);
             txtOuputFolderInfo.setText(
-                    "By default, output files are written to the mobile-genomics folder in your main storage. If you have updated the output paths please check the respective folders");
+                    "By default, output files are written to the mobile-genomics folder in your main storage. If you have updated the output paths please check the respective folders\n");
             linearLayout.addView(txtOuputFolderInfo);
         }
+
+        TextView txtOuputFolderInfo = new TextView(this);
+        txtOuputFolderInfo.setText(
+                "Brightness will be reduced when running the pipeline to save power. Minimizing the app or turning off the display will abort the process");
+        linearLayout.addView(txtOuputFolderInfo);
 
         mp = MediaPlayer.create(this, R.raw.alarm);
 
@@ -282,6 +286,21 @@ public class ConfirmationActivity extends AppCompatActivity {
         });
         btnWriteLog.setVisibility(View.GONE);
         linearLayout.addView(btnWriteLog);
+
+        if (GUIConfiguration.getAppMode() == AppMode.STANDALONE || GUIConfiguration.getAppMode() == AppMode.DEMO) {
+            btnGoToStart = new Button(this);
+            btnGoToStart.setText("Go to Start Screen");
+            btnGoToStart.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(final View v) {
+                    Intent intent = new Intent(ConfirmationActivity.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                }
+            });
+            btnGoToStart.setVisibility(View.GONE);
+            linearLayout.addView(btnGoToStart);
+        }
 
         if (GUIConfiguration.getAppMode() == AppMode.SLAVE) {
 
@@ -343,6 +362,10 @@ public class ConfirmationActivity extends AppCompatActivity {
                 linearLayout.addView(txtRuntime);
             }
             btnWriteLog.setVisibility(View.VISIBLE);
+            if (GUIConfiguration.getAppMode() == AppMode.STANDALONE
+                    || GUIConfiguration.getAppMode() == AppMode.DEMO) {
+                btnGoToStart.setVisibility(View.VISIBLE);
+            }
             btnProceed.setEnabled(true);
             mProgressBar.setVisibility(View.GONE);
             PreferenceUtil

@@ -166,10 +166,10 @@ public class GUIConfiguration {
             case MINIMAP2_SEQUENCE_ALIGNMENT:
                 rawFile = R.raw.minimap2;
                 break;
-            case SAMTOOL_SORT:
+            case SAMTOOLS_SORT:
                 rawFile = R.raw.samtool_sort_arguments;
                 break;
-            case SAMTOOL_INDEX:
+            case SAMTOOLS_INDEX:
                 rawFile = R.raw.samtool_index_arguments;
                 break;
             case F5C_INDEX:
