@@ -25,6 +25,7 @@ import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.Step;
 import com.mobilegenomics.f5n.support.PipelineState;
 import com.mobilegenomics.f5n.support.PreferenceUtil;
+import com.mobilegenomics.f5n.support.ScreenDimUtil;
 import com.obsez.android.lib.filechooser.ChooserDialog;
 import java.util.List;
 import java.util.Objects;
@@ -59,6 +60,8 @@ public class TerminalActivity extends AppCompatActivity {
         if (GUIConfiguration.getPipelineState() == null) {
             // TODO Find a better fix
             // The app has crashed !
+            ScreenDimUtil.changeBrightness(getContentResolver(), getWindow(),
+                    PreferenceUtil.getSharedPreferenceInt(R.string.id_screen_brightness));
             showCrashError();
         } else {
 

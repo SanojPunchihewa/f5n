@@ -1,5 +1,6 @@
 package com.mobilegenomics.f5n.activity;
 
+import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -9,10 +10,14 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.provider.Settings;
+import android.provider.Settings.SettingNotFoundException;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.LinearLayout;
@@ -32,6 +37,7 @@ import com.mobilegenomics.f5n.core.PipelineComponent;
 import com.mobilegenomics.f5n.support.FileUtil;
 import com.mobilegenomics.f5n.support.PipelineState;
 import com.mobilegenomics.f5n.support.PreferenceUtil;
+import com.mobilegenomics.f5n.support.ScreenDimUtil;
 import com.mobilegenomics.f5n.support.TimeFormat;
 import java.io.BufferedReader;
 import java.io.File;
@@ -62,6 +68,8 @@ public class ConfirmationActivity extends AppCompatActivity {
 
     Button btnWriteLog;
 
+    Button btnGoToStart;
+
     Chronometer txtTimer;
 
     Button btnProceed;
@@ -78,10 +86,31 @@ public class ConfirmationActivity extends AppCompatActivity {
 
     File logPipeFile;
 
+    //Content resolver used as a handle to the system's settings
+    private ContentResolver cResolver;
+
+    //Window object, that will store a reference to the current window
+    private Window window;
+
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_vertical);
+
+        cResolver = getContentResolver();
+
+        window = getWindow();
+
+        try {
+            Settings.System.putInt(cResolver,
+                    Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
+            //Get the current system brightness
+            int brightness = Settings.System.getInt(cResolver, Settings.System.SCREEN_BRIGHTNESS);
+            PreferenceUtil.setSharedPreferenceInt(R.string.id_screen_brightness, brightness);
+        } catch (SettingNotFoundException e) {
+            //Throw an error case it couldn't be retrieved
+            Log.e(TAG, "Cannot access system brightness");
+        }
 
         String dirPath = Environment.getExternalStorageDirectory() + "/" + "mobile-genomics";
 
@@ -149,6 +178,8 @@ public class ConfirmationActivity extends AppCompatActivity {
         btnProceed.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(final View v) {
+                getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                ScreenDimUtil.changeBrightness(cResolver, window, 0);
                 txtTimer.start();
                 btnProceed.setEnabled(false);
                 mProgressBar.setVisibility(View.VISIBLE);
@@ -234,9 +265,14 @@ public class ConfirmationActivity extends AppCompatActivity {
         if (GUIConfiguration.getAppMode() == AppMode.STANDALONE) {
             TextView txtOuputFolderInfo = new TextView(this);
             txtOuputFolderInfo.setText(
-                    "By default, output files are written to the mobile-genomics folder in your main storage. If you have updated the output paths please check the respective folders");
+                    "By default, output files are written to the mobile-genomics folder in your main storage. If you have updated the output paths please check the respective folders\n");
             linearLayout.addView(txtOuputFolderInfo);
         }
+
+        TextView txtOuputFolderInfo = new TextView(this);
+        txtOuputFolderInfo.setText(
+                "Brightness will be reduced when running the pipeline to save power. Minimizing the app or turning off the display will abort the process");
+        linearLayout.addView(txtOuputFolderInfo);
 
         mp = MediaPlayer.create(this, R.raw.alarm);
 
@@ -250,6 +286,21 @@ public class ConfirmationActivity extends AppCompatActivity {
         });
         btnWriteLog.setVisibility(View.GONE);
         linearLayout.addView(btnWriteLog);
+
+        if (GUIConfiguration.getAppMode() == AppMode.STANDALONE || GUIConfiguration.getAppMode() == AppMode.DEMO) {
+            btnGoToStart = new Button(this);
+            btnGoToStart.setText("Go to Start Screen");
+            btnGoToStart.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(final View v) {
+                    Intent intent = new Intent(ConfirmationActivity.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                }
+            });
+            btnGoToStart.setVisibility(View.GONE);
+            linearLayout.addView(btnGoToStart);
+        }
 
         if (GUIConfiguration.getAppMode() == AppMode.SLAVE) {
 
@@ -298,6 +349,9 @@ public class ConfirmationActivity extends AppCompatActivity {
         protected void onPostExecute(final String s) {
             super.onPostExecute(s);
             txtTimer.stop();
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            ScreenDimUtil.changeBrightness(cResolver, window,
+                    PreferenceUtil.getSharedPreferenceInt(R.string.id_screen_brightness));
             GUIConfiguration.setPipelineState(PipelineState.COMPLETED);
             NativeCommands.getNativeInstance().finishPipeline(logPipePath);
             List<PipelineComponent> pipelineComponents = GUIConfiguration.getPipeline();
@@ -308,6 +362,10 @@ public class ConfirmationActivity extends AppCompatActivity {
                 linearLayout.addView(txtRuntime);
             }
             btnWriteLog.setVisibility(View.VISIBLE);
+            if (GUIConfiguration.getAppMode() == AppMode.STANDALONE
+                    || GUIConfiguration.getAppMode() == AppMode.DEMO) {
+                btnGoToStart.setVisibility(View.VISIBLE);
+            }
             btnProceed.setEnabled(true);
             mProgressBar.setVisibility(View.GONE);
             PreferenceUtil
@@ -390,6 +448,8 @@ public class ConfirmationActivity extends AppCompatActivity {
         PipelineState state = GUIConfiguration.getPipelineState();
         switch (state) {
             case CONFIGURED:
+                ScreenDimUtil.changeBrightness(cResolver, window,
+                        PreferenceUtil.getSharedPreferenceInt(R.string.id_screen_brightness));
                 super.onBackPressed();
                 break;
             case RUNNING:
@@ -434,6 +494,8 @@ public class ConfirmationActivity extends AppCompatActivity {
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         // TODO Kill the native process
+                        ScreenDimUtil.changeBrightness(cResolver, window,
+                                PreferenceUtil.getSharedPreferenceInt(R.string.id_screen_brightness));
                         ConfirmationActivity.super.onBackPressed();
                     }
                 })

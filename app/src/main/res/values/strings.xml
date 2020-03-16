@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">f5n</string>
+    <string name="app_name">F5N</string>
 
     <!--Strings used in minIT feature-->
     <string name="hint_server_connect">Enter server address</string>
@@ -11,6 +11,7 @@
 
     <string name="app_info">F5N is a Mobile application for Reference Guided Sequence Alignment using Oxford Nanopore Technology Data.\n\nPlease read the following terms before you use this application.\n\n
     - This app needs storage permission inorder to read/write files generated from the pipeline steps\n
+    - Grant System Settings Write permission to dim the display to save power when running a pipeline. Check help for more information\n
     - This app needs at least 2GB free RAM to smoothly function\n
     - If you have less memory available, minimizing the app while running some process, may stop the process and generate incomplete results</string>
 
@@ -20,6 +21,7 @@
     <string name="id_app_mode">APP_MODE</string>
     <string name="id_wrapper_obj">WRAPPER_OBJ</string>
     <string name="id_results_summary">RESULTS_SUMMARY</string>
+    <string name="id_screen_brightness">SCREEN_BRIGHTNESS</string>
 
     <string name="title_choose_any_file">Choose files</string>
 
