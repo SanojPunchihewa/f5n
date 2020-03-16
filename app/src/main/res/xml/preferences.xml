@@ -6,7 +6,18 @@
         <Preference
             android:key="@string/key_storage_preference"
             android:title="@string/title_default_storage"
-            app:iconSpaceReserved="false" />
+            app:iconSpaceReserved="false"
+            app:allowDividerBelow="true"
+            app:enableCopying="true"
+            app:persistent="false"/>
+
+        <Preference
+            android:key="@string/key_reference_gnome"
+            android:title="@string/title_reference_gnome"
+            app:iconSpaceReserved="false"
+            app:allowDividerBelow="true"
+            app:enableCopying="true"
+            app:persistent="false"/>
 
     </PreferenceCategory>
 

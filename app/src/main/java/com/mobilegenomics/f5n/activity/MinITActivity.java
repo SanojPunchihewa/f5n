@@ -182,9 +182,10 @@ public class MinITActivity extends AppCompatActivity {
 
     private ArrayList<String> fileList;
 
-    private String DEFAULT_DATA_PATH = Environment.getExternalStorageDirectory() + "/mobile-genomics/";
-    private static final String CUSTOM_DATA = "\\$CUSTOM_DATA/";
+    private String DEFAULT_STORAGE_PATH = Environment.getExternalStorageDirectory() + "/mobile-genomics/";
+    private String STORAGE_PATH = PreferenceUtil.getSharedPreferenceString(R.string.key_storage_preference, DEFAULT_STORAGE_PATH);
     private static final String DATA_SET = "\\$DATA_SET/";
+    private static final String REFERENCE_GNOME = "\\$REF_GNOME/";
 
     public static void logHandler(Handler handler) {
         handler.post(new Runnable() {
@@ -291,11 +292,11 @@ public class MinITActivity extends AppCompatActivity {
     }
 
     private void configureStepFolderPath() {
-        String dataSetFolderPath = DEFAULT_DATA_PATH + zipFileName.substring(0, zipFileName.length() - 4) + "/";
-        String customDataPath = PreferenceUtil.getSharedPreferenceString(R.string.key_storage_preference, DEFAULT_DATA_PATH);
+        String dataSetFolderPath = STORAGE_PATH + zipFileName.substring(0, zipFileName.length() - 4) + "/";
+        String referenceGnomePath = PreferenceUtil.getSharedPreferenceString(R.string.key_reference_gnome, dataSetFolderPath);
         for (Step step : GUIConfiguration.getSteps()) {
             step.setCommandString(step.getCommandString().replaceAll(DATA_SET, dataSetFolderPath));
-            step.setCommandString(step.getCommandString().replaceAll(CUSTOM_DATA, customDataPath));
+            step.setCommandString(step.getCommandString().replaceAll(REFERENCE_GNOME, referenceGnomePath));
         }
     }
 
@@ -341,7 +342,7 @@ public class MinITActivity extends AppCompatActivity {
 
                             GUIConfiguration.setPipelineState(PipelineState.TO_BE_CONFIGURED);
                             Intent intent = new Intent(MinITActivity.this, TerminalActivity.class);
-                            intent.putExtra("FOLDER_PATH", DEFAULT_DATA_PATH);
+                            intent.putExtra("FOLDER_PATH", STORAGE_PATH);
                             startActivity(intent);
                         } else {
                             statusTextView.setText("Unzip Error");
@@ -601,7 +602,7 @@ public class MinITActivity extends AppCompatActivity {
                         fileSize = (ff[0].getSize());
                     }
 
-                    File dir = new File(DEFAULT_DATA_PATH + urls[1]);
+                    File dir = new File(STORAGE_PATH + urls[1]);
 
                     OutputStream out = new FileOutputStream(dir);
                     status = con.retrieveFile(urls[1], out);
@@ -625,7 +626,7 @@ public class MinITActivity extends AppCompatActivity {
             if (downloadSuccess) {
                 String time = TimeFormat.millisToShortDHMS(downloadTime);
                 statusTextView.setText("Download Completed in " + time);
-                extractZip(DEFAULT_DATA_PATH + zipFileName);
+                extractZip(STORAGE_PATH + zipFileName);
             } else {
                 statusTextView.setText("Download Error");
             }

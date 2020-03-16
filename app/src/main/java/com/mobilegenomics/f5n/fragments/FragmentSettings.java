@@ -20,6 +20,7 @@ public class FragmentSettings extends PreferenceFragmentCompat {
 
     private String folderPath;
     private Preference storagePreference;
+    private Preference refereceGnomePreference;
     private Preference versionPreference;
 
     @Override
@@ -27,13 +28,27 @@ public class FragmentSettings extends PreferenceFragmentCompat {
         setPreferencesFromResource(R.xml.preferences, rootKey);
 
         storagePreference = findPreference(getResources().getString(R.string.key_storage_preference));
+        refereceGnomePreference = findPreference(getResources().getString(R.string.key_reference_gnome));
         versionPreference = findPreference(getResources().getString(R.string.key_version_preference));
-        storagePreference.setDefaultValue(MOBILE_GENOMICS_FOLDER_PATH);
-        storagePreference.setSummary(MOBILE_GENOMICS_FOLDER_PATH);
+
+        String storagePath = PreferenceUtil.getSharedPreferenceString(R.string.key_storage_preference, MOBILE_GENOMICS_FOLDER_PATH);
+        storagePreference.setDefaultValue(storagePath);
+        storagePreference.setSummary(storagePath);
         storagePreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                openFileManager();
+                setDataStorage();
+                return true;
+            }
+        });
+
+        String referenceGnomePath = PreferenceUtil.getSharedPreferenceString(R.string.key_reference_gnome, MOBILE_GENOMICS_FOLDER_PATH);
+        refereceGnomePreference.setDefaultValue(referenceGnomePath);
+        refereceGnomePreference.setSummary(referenceGnomePath);
+        refereceGnomePreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                setReferenceGnome();
                 return true;
             }
         });
@@ -48,7 +63,7 @@ public class FragmentSettings extends PreferenceFragmentCompat {
         }
     }
 
-    private void openFileManager() {
+    private void setDataStorage() {
         new ChooserDialog(getActivity())
                 .withFilter(true, false)
                 .withChosenListener(new ChooserDialog.Result() {
@@ -58,6 +73,22 @@ public class FragmentSettings extends PreferenceFragmentCompat {
                         storagePreference.setDefaultValue(folderPath);
                         storagePreference.setSummary(folderPath);
                         PreferenceUtil.setSharedPreferenceString(R.string.key_storage_preference, folderPath);
+                    }
+                })
+                .build()
+                .show();
+    }
+
+    private void setReferenceGnome() {
+        new ChooserDialog(getActivity())
+                .withFilter(true, false)
+                .withChosenListener(new ChooserDialog.Result() {
+                    @Override
+                    public void onChoosePath(String path, File pathFile) {
+                        folderPath = path + "/";
+                        refereceGnomePreference.setDefaultValue(folderPath);
+                        refereceGnomePreference.setSummary(folderPath);
+                        PreferenceUtil.setSharedPreferenceString(R.string.key_reference_gnome, folderPath);
                     }
                 })
                 .build()
