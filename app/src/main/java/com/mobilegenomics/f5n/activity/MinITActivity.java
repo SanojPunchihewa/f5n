@@ -6,8 +6,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
@@ -19,14 +21,17 @@ import android.widget.ProgressBar;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.liulishuo.okdownload.core.Util;
 import com.mobilegenomics.f5n.BuildConfig;
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
+import com.mobilegenomics.f5n.core.Step;
 import com.mobilegenomics.f5n.dto.State;
 import com.mobilegenomics.f5n.dto.WrapperObject;
 import com.mobilegenomics.f5n.support.PipelineState;
@@ -37,14 +42,20 @@ import com.mobilegenomics.f5n.support.TimeFormat;
 import com.mobilegenomics.f5n.support.ZipListener;
 import com.mobilegenomics.f5n.support.ZipManager;
 import com.obsez.android.lib.filechooser.ChooserDialog;
-import java.io.File;
-import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.Objects;
+
 import net.gotev.uploadservice.UploadService;
+
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.io.CopyStreamAdapter;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Objects;
 
 public class MinITActivity extends AppCompatActivity {
 
@@ -171,6 +182,11 @@ public class MinITActivity extends AppCompatActivity {
 
     private ArrayList<String> fileList;
 
+    private String DEFAULT_STORAGE_PATH = Environment.getExternalStorageDirectory() + "/mobile-genomics/";
+    private String STORAGE_PATH = PreferenceUtil.getSharedPreferenceString(R.string.key_storage_preference, DEFAULT_STORAGE_PATH);
+    private static final String DATA_SET = "\\$DATA_SET/";
+    private static final String REFERENCE_GNOME = "\\$REF_GNOME/";
+
     public static void logHandler(Handler handler) {
         handler.post(new Runnable() {
             @Override
@@ -267,14 +283,77 @@ public class MinITActivity extends AppCompatActivity {
                 PreferenceUtil
                         .setSharedPreferenceObject(R.string.id_wrapper_obj, ServerConnectionUtils.getWrapperObject());
 
-                Intent intent = new Intent(MinITActivity.this, DownloadActivity.class);
+                configureStepFolderPath();
                 // TODO Fix the following
                 // Protocol, file server IP and Port
-                intent.putExtra("DATA_SET_URL", serverIP);
-                intent.putExtra("FILE_NAME", zipFileName);
-                startActivity(intent);
+                downloadDataSetFTP();
             }
         });
+    }
+
+    private void configureStepFolderPath() {
+        String dataSetFolderPath = STORAGE_PATH + zipFileName.substring(0, zipFileName.length() - 4) + "/";
+        String referenceGnomePath = PreferenceUtil.getSharedPreferenceString(R.string.key_reference_gnome, dataSetFolderPath);
+        for (Step step : GUIConfiguration.getSteps()) {
+            step.setCommandString(step.getCommandString().replaceAll(DATA_SET, dataSetFolderPath));
+            step.setCommandString(step.getCommandString().replaceAll(REFERENCE_GNOME, referenceGnomePath));
+        }
+    }
+
+    private void downloadDataSetFTP() {
+        new MinITActivity.FTPDownloadTask().execute(serverIP, zipFileName);
+    }
+
+    private void extractZip(String filePath) {
+
+        ZipManager zipManager = new ZipManager(MinITActivity.this, new ZipListener() {
+            @Override
+            public void onStarted(@NonNull final long totalBytes) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressBar.setMax(100);
+                        statusTextView.setText("Unzip started");
+                        connectionLogText.append("Extracting data set...\n");
+                    }
+                });
+            }
+
+            @Override
+            public void onProgress(@NonNull final long bytesDone, @NonNull final long totalBytes) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        int perc = ZipManager.getZipPercentage(bytesDone, totalBytes);
+                        progressBar.setProgress(perc);
+                        statusTextView.setText("Unzipping: " + perc + "%");
+                    }
+                });
+            }
+
+            @Override
+            public void onComplete(@NonNull final boolean success, @Nullable final Exception exception) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (success) {
+                            statusTextView.setText("Unzip Successful");
+                            connectionLogText.append("Extracting data set completed\n");
+
+                            GUIConfiguration.setPipelineState(PipelineState.TO_BE_CONFIGURED);
+                            Intent intent = new Intent(MinITActivity.this, TerminalActivity.class);
+                            intent.putExtra("FOLDER_PATH", STORAGE_PATH);
+                            startActivity(intent);
+                        } else {
+                            statusTextView.setText("Unzip Error");
+                            connectionLogText.append("Extracting data set error\n");
+                        }
+                    }
+                });
+            }
+        });
+        Uri treeUri = PreferenceUtil.getSharedPreferenceUri(R.string.sdcard_uri);
+        zipManager.unzip(treeUri, filePath);
     }
 
     public void copyIPAddress(View view) {
@@ -313,7 +392,7 @@ public class MinITActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         GUIConfiguration.configureSteps(job.getSteps());
-                        zipFileName = job.getPrefix();
+                        zipFileName = job.getPrefix() + ".zip";
                         btnProcessJob.setVisibility(View.VISIBLE);
                     }
                 });
@@ -489,4 +568,88 @@ public class MinITActivity extends AppCompatActivity {
         return ip.matches(PATTERN);
     }
 
+    class FTPDownloadTask extends AsyncTask<String, Long, Boolean> {
+
+        long downloadStartTime;
+
+        long fileSize;
+
+        boolean status;
+
+        @Override
+        protected Boolean doInBackground(String... urls) {
+            FTPClient con;
+            try {
+                con = new FTPClient();
+                con.setDefaultPort(8000);
+                con.connect(urls[0]);
+
+                con.setCopyStreamListener(new CopyStreamAdapter() {
+                    @Override
+                    public void bytesTransferred(long totalBytesTransferred, int bytesTransferred, long streamSize) {
+                        publishProgress(totalBytesTransferred);
+                    }
+
+                });
+
+                if (con.login("test", "test")) {
+                    con.enterLocalPassiveMode(); // important!
+                    con.setFileType(FTP.BINARY_FILE_TYPE);
+                    con.setBufferSize(1024000);
+                    FTPFile[] ff = con.listFiles(urls[1]);
+
+                    if (ff != null) {
+                        fileSize = (ff[0].getSize());
+                    }
+
+                    File dir = new File(STORAGE_PATH + urls[1]);
+
+                    OutputStream out = new FileOutputStream(dir);
+                    status = con.retrieveFile(urls[1], out);
+                    out.close();
+                    con.logout();
+                    con.disconnect();
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Error: " + e);
+                status = false;
+            }
+            return status;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean downloadSuccess) {
+            super.onPostExecute(downloadSuccess);
+            Log.i(TAG, "Download Finished");
+            connectionLogText.append("Download completed\n");
+            long downloadTime = System.currentTimeMillis() - downloadStartTime;
+            if (downloadSuccess) {
+                String time = TimeFormat.millisToShortDHMS(downloadTime);
+                statusTextView.setText("Download Completed in " + time);
+                extractZip(STORAGE_PATH + zipFileName);
+            } else {
+                statusTextView.setText("Download Error");
+            }
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            Log.i(TAG, "Download Started");
+            connectionLogText.append("\nDownload Started for" + zipFileName + "\n");
+            downloadStartTime = System.currentTimeMillis();
+            statusTextView.setText("Download Started");
+            progressBar.setMax(100);
+        }
+
+        @Override
+        protected void onProgressUpdate(final Long... values) {
+            super.onProgressUpdate(values);
+            String total = Util.humanReadableBytes(fileSize, true);
+            String downloaded = Util.humanReadableBytes(values[0], true);
+            statusTextView.setText("Downloading: " + downloaded + "/" + total);
+            float percent = (float) values[0] / fileSize;
+            progressBar.setProgress((int) percent * progressBar.getMax());
+        }
+    }
 }

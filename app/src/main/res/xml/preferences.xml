@@ -1,0 +1,63 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory
+        android:title="General"
+        app:iconSpaceReserved="false">
+        <Preference
+            android:key="@string/key_storage_preference"
+            android:title="@string/title_default_storage"
+            app:iconSpaceReserved="false"
+            app:allowDividerBelow="true"
+            app:enableCopying="true"
+            app:persistent="false"/>
+
+        <Preference
+            android:key="@string/key_reference_gnome"
+            android:title="@string/title_reference_gnome"
+            app:iconSpaceReserved="false"
+            app:allowDividerBelow="true"
+            app:enableCopying="true"
+            app:persistent="false"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/pref_header_about"
+        app:iconSpaceReserved="false">
+
+        <Preference
+            android:selectable="false"
+            android:summary="@string/summary_about"
+            app:iconSpaceReserved="false"/>
+
+        <Preference
+            android:key="@string/key_version_preference"
+            android:title="@string/title_version"
+            app:iconSpaceReserved="false"/>
+
+        <Preference
+            android:key="@string/key_feedback_preference"
+            android:summary="@string/summary_feedback"
+            android:title="@string/title_send_feedback"
+            app:iconSpaceReserved="false"/>
+
+        <!-- TODO open faq page-->
+        <Preference
+            android:summary="@string/summary_faq"
+            android:title="@string/title_faq"
+            app:iconSpaceReserved="false">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="@string/url_faq"
+                app:iconSpaceReserved="false"/>
+        </Preference>
+
+        <!-- TODO open T&C page-->
+        <Preference android:title="@string/title_terms"
+            app:iconSpaceReserved="false">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="@string/url_terms" />
+        </Preference>
+    </PreferenceCategory>
+</PreferenceScreen>

@@ -19,6 +19,7 @@ import androidx.core.app.ActivityCompat;
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.AppMode;
+import com.mobilegenomics.f5n.fragments.FragmentSettings;
 import com.mobilegenomics.f5n.support.PermissionResultCallback;
 import com.mobilegenomics.f5n.support.PermissionUtils;
 import java.util.ArrayList;
@@ -149,6 +150,9 @@ public class MainActivity extends AppCompatActivity implements
             case R.id.action_help:
                 startActivity(new Intent(MainActivity.this, HelpActivity.class));
                 return true;
+            case R.id.action_settings:
+                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
