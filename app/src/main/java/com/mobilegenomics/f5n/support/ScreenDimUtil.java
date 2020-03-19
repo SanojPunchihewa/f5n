@@ -17,6 +17,8 @@ public class ScreenDimUtil {
         }
 
         if (settingsCanWrite) {
+            Settings.System.putInt(cResolver,
+                    Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
             //Set the system brightness using the brightness variable value
             Settings.System.putInt(cResolver, Settings.System.SCREEN_BRIGHTNESS, value);
             //Get the current window attributes
