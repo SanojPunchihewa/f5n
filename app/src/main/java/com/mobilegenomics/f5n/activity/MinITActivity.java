@@ -488,6 +488,7 @@ public class MinITActivity extends AppCompatActivity {
 
     private void openFileManager(boolean dirOnly, boolean toCompress) {
         fileList = new ArrayList<>();
+        final boolean[] isCancelled = {false};
 
         if (toCompress) {
             new ChooserDialog(MinITActivity.this)
@@ -506,13 +507,25 @@ public class MinITActivity extends AppCompatActivity {
                     // to handle the back key pressed or clicked outside the dialog:
                     .withOnCancelListener(new DialogInterface.OnCancelListener() {
                         public void onCancel(DialogInterface dialog) {
+                            isCancelled[0] = true;
                             dialog.cancel();
+                        }
+                    })
+                    .withNegativeButtonListener(new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(final DialogInterface dialog, final int which) {
+                            isCancelled[0] = true;
                         }
                     })
                     .withOnDismissListener(new OnDismissListener() {
                         @Override
                         public void onDismiss(final DialogInterface dialog) {
-                            compressDataSet();
+                            if (!fileList.isEmpty() && !isCancelled[0]) {
+                                compressDataSet();
+                            } else {
+                                Toast.makeText(MinITActivity.this, "No files selected to compress",
+                                        Toast.LENGTH_SHORT).show();
+                            }
                         }
                     })
                     .withResources(R.string.title_choose_any_file, R.string.title_choose, R.string.dialog_cancel)
