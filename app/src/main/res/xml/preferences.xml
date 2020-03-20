@@ -9,7 +9,7 @@
             app:iconSpaceReserved="false"
             app:allowDividerBelow="true"
             app:enableCopying="true"
-            app:persistent="false"/>
+            app:persistent="false" />
 
         <Preference
             android:key="@string/key_reference_gnome"
@@ -17,7 +17,25 @@
             app:iconSpaceReserved="false"
             app:allowDividerBelow="true"
             app:enableCopying="true"
-            app:persistent="false"/>
+            app:persistent="false" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="Permissions"
+        app:iconSpaceReserved="false">
+        <SwitchPreference
+            android:key="@string/key_sdcard_storage_permission"
+            android:title="@string/title_sdcard_write"
+            android:defaultValue="false"
+            app:iconSpaceReserved="false"
+            android:summary="@string/summary_sdcard_write" />
+        <SwitchPreference
+            android:key="@string/key_write_settings_permission"
+            android:title="@string/title_reduce_brightness"
+            android:defaultValue="false"
+            app:iconSpaceReserved="false"
+            android:summary="@string/summary_reduce_brightness" />
 
     </PreferenceCategory>
 
@@ -28,18 +46,18 @@
         <Preference
             android:selectable="false"
             android:summary="@string/summary_about"
-            app:iconSpaceReserved="false"/>
+            app:iconSpaceReserved="false" />
 
         <Preference
             android:key="@string/key_version_preference"
             android:title="@string/title_version"
-            app:iconSpaceReserved="false"/>
+            app:iconSpaceReserved="false" />
 
         <Preference
             android:key="@string/key_feedback_preference"
             android:summary="@string/summary_feedback"
             android:title="@string/title_send_feedback"
-            app:iconSpaceReserved="false"/>
+            app:iconSpaceReserved="false" />
 
         <!-- TODO open faq page-->
         <Preference
@@ -49,11 +67,12 @@
             <intent
                 android:action="android.intent.action.VIEW"
                 android:data="@string/url_faq"
-                app:iconSpaceReserved="false"/>
+                app:iconSpaceReserved="false" />
         </Preference>
 
         <!-- TODO open T&C page-->
-        <Preference android:title="@string/title_terms"
+        <Preference
+            android:title="@string/title_terms"
             app:iconSpaceReserved="false">
             <intent
                 android:action="android.intent.action.VIEW"

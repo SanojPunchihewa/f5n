@@ -5,6 +5,7 @@ import android.provider.Settings;
 import android.view.Window;
 import android.view.WindowManager;
 import com.mobilegenomics.f5n.Application;
+import com.mobilegenomics.f5n.R;
 
 public class ScreenDimUtil {
 
@@ -16,7 +17,7 @@ public class ScreenDimUtil {
             settingsCanWrite = Settings.System.canWrite(Application.getAppContext());
         }
 
-        if (settingsCanWrite) {
+        if (settingsCanWrite && PreferenceUtil.getSharedPreferenceBool(R.string.id_dim_screen)) {
             Settings.System.putInt(cResolver,
                     Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
             //Set the system brightness using the brightness variable value
