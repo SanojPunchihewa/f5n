@@ -216,7 +216,8 @@ public class MinITActivity extends AppCompatActivity {
 
         serverAddressInput = findViewById(R.id.input_server_address);
 
-        connectionLogText = findViewById(R.id.text_conn_log);
+        if(connectionLogText == null)
+            connectionLogText = findViewById(R.id.text_conn_log);
 
         trSendResults = findViewById(R.id.tr_select_files_send);
 
