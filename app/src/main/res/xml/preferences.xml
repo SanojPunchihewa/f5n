@@ -26,16 +26,16 @@
         app:iconSpaceReserved="false">
         <SwitchPreference
             android:key="@string/key_sdcard_storage_permission"
-            android:title="SD Card Write Permissions"
+            android:title="@string/title_sdcard_write"
             android:defaultValue="false"
             app:iconSpaceReserved="false"
-            android:summary="Inorder to write to SdCard you must grant write access to f5n. Press the this and use the Android System dialog to select the root of the storage" />
+            android:summary="@string/summary_sdcard_write" />
         <SwitchPreference
             android:key="@string/key_write_settings_permission"
-            android:title="System Settings Write Permission"
+            android:title="@string/title_reduce_brightness"
             android:defaultValue="false"
             app:iconSpaceReserved="false"
-            android:summary="F5N will automatically dim the display while a pipeline is running and restore to the default value after the execution" />
+            android:summary="@string/summary_reduce_brightness" />
 
     </PreferenceCategory>
 
