@@ -1,14 +1,11 @@
 package com.mobilegenomics.f5n.activity;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -21,111 +18,19 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import com.liulishuo.okdownload.DownloadTask;
-import com.liulishuo.okdownload.core.Util;
 import com.liulishuo.okdownload.core.cause.EndCause;
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.AppMode;
 import com.mobilegenomics.f5n.support.DownloadListener;
 import com.mobilegenomics.f5n.support.DownloadManager;
-import com.mobilegenomics.f5n.support.PipelineState;
 import com.mobilegenomics.f5n.support.PreferenceUtil;
-import com.mobilegenomics.f5n.support.TimeFormat;
 import com.mobilegenomics.f5n.support.ZipListener;
 import com.mobilegenomics.f5n.support.ZipManager;
 import com.obsez.android.lib.filechooser.ChooserDialog;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPFile;
-import org.apache.commons.net.io.CopyStreamAdapter;
 
 public class DownloadActivity extends AppCompatActivity {
-
-    class FTPDownloadTask extends AsyncTask<String, Long, Boolean> {
-
-        long downloadStartTime;
-
-        long fileSize;
-
-        boolean status;
-
-        @Override
-        protected Boolean doInBackground(String... urls) {
-            FTPClient con;
-            try {
-                con = new FTPClient();
-                con.setDefaultPort(8000);
-                con.connect(urls[0]);
-
-                con.setCopyStreamListener(new CopyStreamAdapter() {
-                    @Override
-                    public void bytesTransferred(long totalBytesTransferred, int bytesTransferred, long streamSize) {
-                        publishProgress(totalBytesTransferred);
-                    }
-
-                });
-
-                if (con.login("test", "test")) {
-                    con.enterLocalPassiveMode(); // important!
-                    con.setFileType(FTP.BINARY_FILE_TYPE);
-                    con.setBufferSize(1024000);
-                    FTPFile[] ff = con.listFiles(urls[1]);
-
-                    if (ff != null) {
-                        fileSize = (ff[0].getSize());
-                    }
-
-                    OutputStream out = new FileOutputStream(new File(folderPath + "/" + urls[1]));
-                    status = con.retrieveFile(urls[1], out);
-                    out.close();
-                    con.logout();
-                    con.disconnect();
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Error: " + e);
-                status = false;
-            }
-            return status;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean downloadSuccess) {
-            super.onPostExecute(downloadSuccess);
-            Log.i(TAG, "Download Finished");
-            long downloadTime = System.currentTimeMillis() - downloadStartTime;
-            if (downloadSuccess) {
-                String time = TimeFormat.millisToShortDHMS(downloadTime);
-                statusTextView.setText("Download Completed in " + time);
-            } else {
-                statusTextView.setText("Download Error");
-            }
-            enableButtons();
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            Log.i(TAG, "Download Started");
-            downloadStartTime = System.currentTimeMillis();
-            statusTextView.setText("Download Started");
-            progressBar.setMax(100);
-            disableButtons();
-        }
-
-        @Override
-        protected void onProgressUpdate(final Long... values) {
-            super.onProgressUpdate(values);
-            String total = Util.humanReadableBytes(fileSize, true);
-            String downloaded = Util.humanReadableBytes(values[0], true);
-            statusTextView.setText("Downloading: " + downloaded + "/" + total);
-            float percent = (float) values[0] / fileSize;
-            progressBar.setProgress((int) percent * progressBar.getMax());
-        }
-    }
 
     private static final String TAG = DownloadActivity.class.getSimpleName();
 
@@ -154,8 +59,6 @@ public class DownloadActivity extends AppCompatActivity {
     TextView statusTextView;
 
     EditText urlInputPath;
-
-    private DownloadTask downloadTask;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -211,8 +114,7 @@ public class DownloadActivity extends AppCompatActivity {
             @Override
             public void onClick(final View v) {
                 if (urlInputPath.getText() != null && !TextUtils.isEmpty(urlInputPath.getText().toString().trim())) {
-                    //downloadDataSet(urlInputPath.getText().toString().trim());
-                    downloadDatasetFTP(urlInputPath.getText().toString().trim());
+                    downloadDataSet(urlInputPath.getText().toString().trim());
                 } else {
                     Toast.makeText(DownloadActivity.this, "Please input a URL", Toast.LENGTH_SHORT).show();
                 }
@@ -276,23 +178,6 @@ public class DownloadActivity extends AppCompatActivity {
                 "Cannot download or extract to SD card? Please check Help -> View Tutorial");
         txtSDCardWarning.setTextColor(getResources().getColor(R.color.colorRead));
         linearLayout.addView(txtSDCardWarning);
-
-        if (GUIConfiguration.getAppMode() == AppMode.SLAVE) {
-            btnRunPipeline = new Button(this);
-            btnRunPipeline.setText("Run Pipeline");
-            btnRunPipeline.setVisibility(View.GONE);
-            linearLayout.addView(btnRunPipeline);
-            btnRunPipeline.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(final View v) {
-                    GUIConfiguration.setPipelineState(PipelineState.TO_BE_CONFIGURED);
-                    Intent intent = new Intent(DownloadActivity.this, TerminalActivity.class);
-                    intent.putExtra("FOLDER_PATH", folderPath.substring(0, folderPath.lastIndexOf(".")));
-                    startActivity(intent);
-                }
-            });
-        }
-
     }
 
     private void enableButtons() {
@@ -319,12 +204,6 @@ public class DownloadActivity extends AppCompatActivity {
                 });
         Uri treeUri = PreferenceUtil.getSharedPreferenceUri(R.string.sdcard_uri);
         downloadManager.download(DownloadActivity.this, treeUri);
-    }
-
-    private void downloadDatasetFTP(String url) {
-        String[] urlData = url.split("/");
-        Log.d(TAG, "URL=" + urlData[1]);
-        new FTPDownloadTask().execute(urlData[0], urlData[1]);
     }
 
     private void extractZip(String filepath) {

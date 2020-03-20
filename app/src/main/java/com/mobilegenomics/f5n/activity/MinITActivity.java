@@ -21,19 +21,20 @@ import android.widget.ProgressBar;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.liulishuo.okdownload.core.Util;
+import com.liulishuo.okdownload.core.cause.EndCause;
 import com.mobilegenomics.f5n.BuildConfig;
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.Step;
 import com.mobilegenomics.f5n.dto.State;
 import com.mobilegenomics.f5n.dto.WrapperObject;
+import com.mobilegenomics.f5n.support.DownloadListener;
+import com.mobilegenomics.f5n.support.FTPDownloadManager;
 import com.mobilegenomics.f5n.support.PipelineState;
 import com.mobilegenomics.f5n.support.PreferenceUtil;
 import com.mobilegenomics.f5n.support.ServerCallback;
@@ -42,20 +43,14 @@ import com.mobilegenomics.f5n.support.TimeFormat;
 import com.mobilegenomics.f5n.support.ZipListener;
 import com.mobilegenomics.f5n.support.ZipManager;
 import com.obsez.android.lib.filechooser.ChooserDialog;
-
-import net.gotev.uploadservice.UploadService;
-
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPFile;
-import org.apache.commons.net.io.CopyStreamAdapter;
-
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Objects;
+import net.gotev.uploadservice.UploadService;
+import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.io.CopyStreamAdapter;
 
 public class MinITActivity extends AppCompatActivity {
 
@@ -72,8 +67,8 @@ public class MinITActivity extends AppCompatActivity {
             FTPClient con;
             try {
 
-                Log.e(TAG, "Address = " + urls[0]);
-                Log.e(TAG, "File path = " + urls[1]);
+                Log.d(TAG, "Address = " + urls[0]);
+                Log.d(TAG, "File path = " + urls[1]);
 
                 con = new FTPClient();
                 con.setDefaultPort(8000);
@@ -183,8 +178,12 @@ public class MinITActivity extends AppCompatActivity {
     private ArrayList<String> fileList;
 
     private String DEFAULT_STORAGE_PATH = Environment.getExternalStorageDirectory() + "/mobile-genomics/";
-    private String STORAGE_PATH = PreferenceUtil.getSharedPreferenceString(R.string.key_storage_preference, DEFAULT_STORAGE_PATH);
+
+    private String STORAGE_PATH = PreferenceUtil
+            .getSharedPreferenceString(R.string.key_storage_preference, DEFAULT_STORAGE_PATH);
+
     private static final String DATA_SET = "\\$DATA_SET/";
+
     private static final String REFERENCE_GNOME = "\\$REF_GNOME/";
 
     public static void logHandler(Handler handler) {
@@ -293,7 +292,8 @@ public class MinITActivity extends AppCompatActivity {
 
     private void configureStepFolderPath() {
         String dataSetFolderPath = STORAGE_PATH + zipFileName.substring(0, zipFileName.length() - 4) + "/";
-        String referenceGnomePath = PreferenceUtil.getSharedPreferenceString(R.string.key_reference_gnome, dataSetFolderPath);
+        String referenceGnomePath = PreferenceUtil
+                .getSharedPreferenceString(R.string.key_reference_gnome, dataSetFolderPath);
         for (Step step : GUIConfiguration.getSteps()) {
             step.setCommandString(step.getCommandString().replaceAll(DATA_SET, dataSetFolderPath));
             step.setCommandString(step.getCommandString().replaceAll(REFERENCE_GNOME, referenceGnomePath));
@@ -301,7 +301,20 @@ public class MinITActivity extends AppCompatActivity {
     }
 
     private void downloadDataSetFTP() {
-        new MinITActivity.FTPDownloadTask().execute(serverIP, zipFileName);
+        String url = serverIP + "/" + zipFileName;
+        FTPDownloadManager downloadManager = new FTPDownloadManager(url, STORAGE_PATH, statusTextView, progressBar,
+                new DownloadListener() {
+                    @Override
+                    public void onComplete(@NonNull final EndCause cause, @Nullable final Exception realCause) {
+                        if (cause == EndCause.COMPLETED) {
+                            extractZip(STORAGE_PATH + zipFileName);
+                        } else {
+                            statusTextView.setText(
+                                    "Unable to start the unzipping process due to an error in the download process");
+                        }
+                    }
+                });
+        downloadManager.download();
     }
 
     private void extractZip(String filePath) {
@@ -566,90 +579,5 @@ public class MinITActivity extends AppCompatActivity {
         String PATTERN
                 = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";
         return ip.matches(PATTERN);
-    }
-
-    class FTPDownloadTask extends AsyncTask<String, Long, Boolean> {
-
-        long downloadStartTime;
-
-        long fileSize;
-
-        boolean status;
-
-        @Override
-        protected Boolean doInBackground(String... urls) {
-            FTPClient con;
-            try {
-                con = new FTPClient();
-                con.setDefaultPort(8000);
-                con.connect(urls[0]);
-
-                con.setCopyStreamListener(new CopyStreamAdapter() {
-                    @Override
-                    public void bytesTransferred(long totalBytesTransferred, int bytesTransferred, long streamSize) {
-                        publishProgress(totalBytesTransferred);
-                    }
-
-                });
-
-                if (con.login("test", "test")) {
-                    con.enterLocalPassiveMode(); // important!
-                    con.setFileType(FTP.BINARY_FILE_TYPE);
-                    con.setBufferSize(1024000);
-                    FTPFile[] ff = con.listFiles(urls[1]);
-
-                    if (ff != null) {
-                        fileSize = (ff[0].getSize());
-                    }
-
-                    File dir = new File(STORAGE_PATH + urls[1]);
-
-                    OutputStream out = new FileOutputStream(dir);
-                    status = con.retrieveFile(urls[1], out);
-                    out.close();
-                    con.logout();
-                    con.disconnect();
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Error: " + e);
-                status = false;
-            }
-            return status;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean downloadSuccess) {
-            super.onPostExecute(downloadSuccess);
-            Log.i(TAG, "Download Finished");
-            connectionLogText.append("Download completed\n");
-            long downloadTime = System.currentTimeMillis() - downloadStartTime;
-            if (downloadSuccess) {
-                String time = TimeFormat.millisToShortDHMS(downloadTime);
-                statusTextView.setText("Download Completed in " + time);
-                extractZip(STORAGE_PATH + zipFileName);
-            } else {
-                statusTextView.setText("Download Error");
-            }
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            Log.i(TAG, "Download Started");
-            connectionLogText.append("\nDownload Started for" + zipFileName + "\n");
-            downloadStartTime = System.currentTimeMillis();
-            statusTextView.setText("Download Started");
-            progressBar.setMax(100);
-        }
-
-        @Override
-        protected void onProgressUpdate(final Long... values) {
-            super.onProgressUpdate(values);
-            String total = Util.humanReadableBytes(fileSize, true);
-            String downloaded = Util.humanReadableBytes(values[0], true);
-            statusTextView.setText("Downloading: " + downloaded + "/" + total);
-            float percent = (float) values[0] / fileSize;
-            progressBar.setProgress((int) percent * progressBar.getMax());
-        }
     }
 }
