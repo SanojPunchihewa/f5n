@@ -281,6 +281,15 @@ public class GUIConfiguration {
         if (argument.getArgID().equals("F5C_ALIGN_SUMMARY_OUTPUT_FILE")) {
             argument.setArgValue(folder + "/event.summary.txt");
         }
+
+        // f5c methylation frequency input/output files
+        if (argument.getArgID().equals("F5C_METH_FREQ_INPUT_FILE")) {
+            argument.setArgValue(folder + "/f5c-methylation.tsv");
+        }
+        if (argument.getArgID().equals("F5C_METH_FREQ_FILE")) {
+            argument.setArgValue(folder + "/f5c-methylation-freq.tsv");
+        }
+
     }
 
 }
