@@ -102,8 +102,6 @@ public class ConfirmationActivity extends AppCompatActivity {
         window = getWindow();
 
         try {
-            Settings.System.putInt(cResolver,
-                    Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);
             //Get the current system brightness
             int brightness = Settings.System.getInt(cResolver, Settings.System.SCREEN_BRIGHTNESS);
             PreferenceUtil.setSharedPreferenceInt(R.string.id_screen_brightness, brightness);
