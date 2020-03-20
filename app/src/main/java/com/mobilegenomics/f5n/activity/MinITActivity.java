@@ -21,10 +21,12 @@ import android.widget.ProgressBar;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.liulishuo.okdownload.core.Util;
 import com.liulishuo.okdownload.core.cause.EndCause;
 import com.mobilegenomics.f5n.BuildConfig;
@@ -43,14 +45,17 @@ import com.mobilegenomics.f5n.support.TimeFormat;
 import com.mobilegenomics.f5n.support.ZipListener;
 import com.mobilegenomics.f5n.support.ZipManager;
 import com.obsez.android.lib.filechooser.ChooserDialog;
+
+import net.gotev.uploadservice.UploadService;
+
+import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.io.CopyStreamAdapter;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Objects;
-import net.gotev.uploadservice.UploadService;
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.io.CopyStreamAdapter;
 
 public class MinITActivity extends AppCompatActivity {
 
@@ -157,11 +162,15 @@ public class MinITActivity extends AppCompatActivity {
 
     private TableRow trSendResults;
 
+    private TableRow trBackToRequestJob;
+
     private Button btnProcessJob;
 
     private Button btnRequestJob;
 
     private Button btnCompressFiles;
+
+    private Button btnBackToRequestJob;
 
     private Button btnSendResults;
 
@@ -219,10 +228,12 @@ public class MinITActivity extends AppCompatActivity {
         connectionLogText = findViewById(R.id.text_conn_log);
 
         trSendResults = findViewById(R.id.tr_select_files_send);
+        trBackToRequestJob = findViewById(R.id.tr_back_to_req_job);
 
         btnRequestJob = findViewById(R.id.btn_request_job);
         btnProcessJob = findViewById(R.id.btn_process_job);
         btnCompressFiles = findViewById(R.id.btn_select_files);
+        btnBackToRequestJob = findViewById(R.id.btn_back_to_req_job);
         btnSendResults = findViewById(R.id.btn_send_result);
 
         if (getIntent().getExtras() != null) {
@@ -231,6 +242,7 @@ public class MinITActivity extends AppCompatActivity {
             if (resultsSummary != null && !TextUtils.isEmpty(resultsSummary)) {
                 btnRequestJob.setVisibility(View.GONE);
                 trSendResults.setVisibility(View.VISIBLE);
+                trBackToRequestJob.setVisibility(View.VISIBLE);
             }
         } else {
             if (PreferenceUtil.getSharedPreferenceInt(R.string.id_app_mode) == PipelineState.TO_BE_UPLOAD.ordinal()) {
@@ -286,6 +298,38 @@ public class MinITActivity extends AppCompatActivity {
                 // TODO Fix the following
                 // Protocol, file server IP and Port
                 downloadDataSetFTP();
+            }
+        });
+
+        btnBackToRequestJob.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (GUIConfiguration.getPipelineState() == PipelineState.TO_BE_UPLOAD) {
+                    new AlertDialog.Builder(MinITActivity.this)
+                            .setTitle("Confirm Action")
+                            .setMessage("Do you want to go back before uploading the results?")
+                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    GUIConfiguration.setPipelineState(PipelineState.COMPLETED);
+                                    btnRequestJob.setVisibility(View.VISIBLE);
+                                    trSendResults.setVisibility(View.GONE);
+                                    trBackToRequestJob.setVisibility(View.GONE);
+                                }
+                            })
+                            .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(final DialogInterface dialog, final int which) {
+                                    dialog.dismiss();
+                                }
+                            })
+                            .setCancelable(false)
+                            .show();
+                } else {
+                    btnRequestJob.setVisibility(View.VISIBLE);
+                    trSendResults.setVisibility(View.GONE);
+                    trBackToRequestJob.setVisibility(View.GONE);
+                }
             }
         });
     }
@@ -568,6 +612,7 @@ public class MinITActivity extends AppCompatActivity {
                         if (state == PipelineState.TO_BE_UPLOAD) {
                             btnRequestJob.setVisibility(View.GONE);
                             trSendResults.setVisibility(View.VISIBLE);
+                            trBackToRequestJob.setVisibility(View.VISIBLE);
                             resultsSummary = PreferenceUtil.getSharedPreferenceString(R.string.id_results_summary);
                         } else {
                             GUIConfiguration.setPipelineState(PipelineState.CONFIGURED);
