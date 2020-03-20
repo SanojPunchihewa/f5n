@@ -312,6 +312,8 @@ public class ConfirmationActivity extends AppCompatActivity {
                 public void onClick(final View v) {
                     mp.stop();
                     Intent intent = new Intent(ConfirmationActivity.this, MinITActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK |
+                            Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_FROM_BACKGROUND);
                     intent.putExtra("PIPELINE_STATUS", resultsSummary);
                     intent.putExtra("FOLDER_PATH", folderPath);
                     startActivity(intent);
