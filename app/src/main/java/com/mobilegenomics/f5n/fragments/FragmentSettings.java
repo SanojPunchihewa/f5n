@@ -1,30 +1,48 @@
 package com.mobilegenomics.f5n.fragments;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-
+import android.os.Handler;
+import android.provider.Settings;
 import androidx.preference.Preference;
+import androidx.preference.Preference.OnPreferenceClickListener;
 import androidx.preference.PreferenceFragmentCompat;
-
+import androidx.preference.SwitchPreference;
 import com.mobilegenomics.f5n.R;
+import com.mobilegenomics.f5n.activity.MainActivity;
+import com.mobilegenomics.f5n.support.FileUtil;
 import com.mobilegenomics.f5n.support.PreferenceUtil;
 import com.obsez.android.lib.filechooser.ChooserDialog;
-
 import java.io.File;
 
 public class FragmentSettings extends PreferenceFragmentCompat {
 
-    private final String MOBILE_GENOMICS_FOLDER_PATH = Environment.getExternalStorageDirectory() + "/" + "mobile-genomics/";
+    private static final int REQUEST_CODE_DOCUMENT_TREE = 148;
+
+    private final String MOBILE_GENOMICS_FOLDER_PATH = Environment.getExternalStorageDirectory() + "/"
+            + "mobile-genomics/";
 
     private String folderPath;
+
+    private boolean dimScreen;
+
     private Preference storagePreference;
+
     private Preference referenceGnomePreference;
+
     private Preference versionPreference;
+
     private Preference feedbackPreference;
+
+    private SwitchPreference permissionSDCardWritePreference;
+
+    private SwitchPreference permissionSystemSettingsWritePreference;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -34,8 +52,54 @@ public class FragmentSettings extends PreferenceFragmentCompat {
         referenceGnomePreference = findPreference(getResources().getString(R.string.key_reference_gnome));
         versionPreference = findPreference(getResources().getString(R.string.key_version_preference));
         feedbackPreference = findPreference(getResources().getString(R.string.key_feedback_preference));
+        permissionSDCardWritePreference = findPreference(
+                getResources().getString(R.string.key_sdcard_storage_permission));
+        permissionSystemSettingsWritePreference = findPreference(
+                getResources().getString(R.string.key_write_settings_permission));
 
-        String storagePath = PreferenceUtil.getSharedPreferenceString(R.string.key_storage_preference, MOBILE_GENOMICS_FOLDER_PATH);
+        if (PreferenceUtil.getSharedPreferenceUri(R.string.sdcard_uri) != null) {
+            permissionSDCardWritePreference.setChecked(true);
+        }
+
+        permissionSDCardWritePreference.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(final Preference preference) {
+                if (permissionSDCardWritePreference.isChecked()) {
+                    AskSDCardPermission();
+                } else {
+                    PreferenceUtil.setSharedPreferenceUri(R.string.sdcard_uri, null);
+                }
+                return false;
+            }
+        });
+
+        permissionSystemSettingsWritePreference
+                .setChecked(PreferenceUtil.getSharedPreferenceBool(R.string.id_dim_screen));
+
+        permissionSystemSettingsWritePreference.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(final Preference preference) {
+                if (permissionSystemSettingsWritePreference.isChecked()) {
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                        boolean settingsCanWrite = Settings.System.canWrite(getContext());
+                        if (!settingsCanWrite) {
+                            AskSystemSettingsWritePermission();
+                        } else {
+                            dimScreen = true;
+                        }
+                    } else {
+                        dimScreen = true;
+                    }
+                } else {
+                    dimScreen = false;
+                }
+                PreferenceUtil.setSharedPreferenceBool(R.string.id_dim_screen, dimScreen);
+                return false;
+            }
+        });
+
+        String storagePath = PreferenceUtil
+                .getSharedPreferenceString(R.string.key_storage_preference, MOBILE_GENOMICS_FOLDER_PATH);
         storagePreference.setDefaultValue(storagePath);
         storagePreference.setSummary(storagePath);
         storagePreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -46,7 +110,8 @@ public class FragmentSettings extends PreferenceFragmentCompat {
             }
         });
 
-        String referenceGnomePath = PreferenceUtil.getSharedPreferenceString(R.string.key_reference_gnome, MOBILE_GENOMICS_FOLDER_PATH);
+        String referenceGnomePath = PreferenceUtil
+                .getSharedPreferenceString(R.string.key_reference_gnome, MOBILE_GENOMICS_FOLDER_PATH);
         referenceGnomePreference.setDefaultValue(referenceGnomePath);
         referenceGnomePreference.setSummary(referenceGnomePath);
         referenceGnomePreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
@@ -118,4 +183,58 @@ public class FragmentSettings extends PreferenceFragmentCompat {
         intent.setType("message/rfc822");
         startActivity(Intent.createChooser(intent, "Send Feedback via Email"));
     }
+
+    private void AskSDCardPermission() {
+        if (FileUtil.isExternalSDCardAvailable(getContext())) {
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+            startActivityForResult(intent, REQUEST_CODE_DOCUMENT_TREE);
+        } else {
+            permissionSDCardWritePreference.setEnabled(false);
+            permissionSDCardWritePreference.setSwitchTextOn("No SD Card found");
+        }
+    }
+
+    private void AskSystemSettingsWritePermission() {
+
+        Handler handler = new Handler();
+
+        Runnable checkSettings = new Runnable() {
+            @Override
+            public void run() {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                    return;
+                }
+                boolean settingsCanWrite = Settings.System.canWrite(getContext());
+                if (settingsCanWrite) {
+                    PreferenceUtil.setSharedPreferenceBool(R.string.id_dim_screen, true);
+                    Intent intent = new Intent(getContext(), MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    return;
+                }
+                handler.postDelayed(this, 1000);
+            }
+        };
+
+        Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS,
+                Uri.parse("package:" + getContext().getPackageName()));
+        startActivity(intent);
+        handler.postDelayed(checkSettings, 1000);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_DOCUMENT_TREE && resultCode == Activity.RESULT_OK && data != null) {
+            // Get Uri from Storage Access Framework.
+            Uri treeUri = data.getData();
+
+            // Persist access permissions.
+            getActivity().getContentResolver()
+                    .takePersistableUriPermission(treeUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+            PreferenceUtil.setSharedPreferenceUri(R.string.sdcard_uri, treeUri);
+        }
+    }
+
 }

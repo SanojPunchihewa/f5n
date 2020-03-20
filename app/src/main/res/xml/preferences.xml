@@ -9,7 +9,7 @@
             app:iconSpaceReserved="false"
             app:allowDividerBelow="true"
             app:enableCopying="true"
-            app:persistent="false"/>
+            app:persistent="false" />
 
         <Preference
             android:key="@string/key_reference_gnome"
@@ -17,7 +17,25 @@
             app:iconSpaceReserved="false"
             app:allowDividerBelow="true"
             app:enableCopying="true"
-            app:persistent="false"/>
+            app:persistent="false" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="Permissions"
+        app:iconSpaceReserved="false">
+        <SwitchPreference
+            android:key="@string/key_sdcard_storage_permission"
+            android:title="SD Card Write Permissions"
+            android:defaultValue="false"
+            app:iconSpaceReserved="false"
+            android:summary="Inorder to write to SdCard you must grant write access to f5n. Press the this and use the Android System dialog to select the root of the storage" />
+        <SwitchPreference
+            android:key="@string/key_write_settings_permission"
+            android:title="System Settings Write Permission"
+            android:defaultValue="false"
+            app:iconSpaceReserved="false"
+            android:summary="F5N will automatically dim the display while a pipeline is running and restore to the default value after the execution" />
 
     </PreferenceCategory>
 
@@ -28,18 +46,18 @@
         <Preference
             android:selectable="false"
             android:summary="@string/summary_about"
-            app:iconSpaceReserved="false"/>
+            app:iconSpaceReserved="false" />
 
         <Preference
             android:key="@string/key_version_preference"
             android:title="@string/title_version"
-            app:iconSpaceReserved="false"/>
+            app:iconSpaceReserved="false" />
 
         <Preference
             android:key="@string/key_feedback_preference"
             android:summary="@string/summary_feedback"
             android:title="@string/title_send_feedback"
-            app:iconSpaceReserved="false"/>
+            app:iconSpaceReserved="false" />
 
         <!-- TODO open faq page-->
         <Preference
@@ -49,11 +67,12 @@
             <intent
                 android:action="android.intent.action.VIEW"
                 android:data="@string/url_faq"
-                app:iconSpaceReserved="false"/>
+                app:iconSpaceReserved="false" />
         </Preference>
 
         <!-- TODO open T&C page-->
-        <Preference android:title="@string/title_terms"
+        <Preference
+            android:title="@string/title_terms"
             app:iconSpaceReserved="false">
             <intent
                 android:action="android.intent.action.VIEW"

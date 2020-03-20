@@ -175,7 +175,7 @@ public class DownloadActivity extends AppCompatActivity {
 
         TextView txtSDCardWarning = new TextView(this);
         txtSDCardWarning.setText(
-                "Cannot download or extract to SD card? Please check Help -> View Tutorial");
+                "Cannot download or extract to SD card? Please check Settings");
         txtSDCardWarning.setTextColor(getResources().getColor(R.color.colorRead));
         linearLayout.addView(txtSDCardWarning);
     }
