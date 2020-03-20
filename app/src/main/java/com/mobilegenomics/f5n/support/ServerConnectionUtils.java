@@ -2,9 +2,11 @@ package com.mobilegenomics.f5n.support;
 
 import android.os.Handler;
 import android.util.Log;
+
 import com.mobilegenomics.f5n.activity.MinITActivity;
 import com.mobilegenomics.f5n.dto.State;
 import com.mobilegenomics.f5n.dto.WrapperObject;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -90,14 +92,15 @@ public class ServerConnectionUtils {
         String strInstance;
         if (connectionMessages == ConnectionMessages.TO_SERVER) {
             strInstance = "To server: " + logInstance;
-            logMessage.append("\n").append(strInstance);
+            logMessage.append(strInstance);
         } else if (connectionMessages == ConnectionMessages.FROM_SERVER) {
             strInstance = "From server: " + logInstance;
-            logMessage.append("\n").append(strInstance);
+            logMessage.append(strInstance);
         } else {
             strInstance = logInstance;
-            logMessage.append("\n").append(strInstance);
+            logMessage.append(strInstance);
         }
+        logMessage.append("\n");
         return strInstance;
     }
 
