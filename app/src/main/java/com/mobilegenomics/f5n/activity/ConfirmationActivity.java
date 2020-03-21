@@ -26,10 +26,12 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.NestedScrollView;
+
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.AppMode;
@@ -40,6 +42,7 @@ import com.mobilegenomics.f5n.support.PipelineState;
 import com.mobilegenomics.f5n.support.PreferenceUtil;
 import com.mobilegenomics.f5n.support.ScreenDimUtil;
 import com.mobilegenomics.f5n.support.TimeFormat;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -377,12 +380,9 @@ public class ConfirmationActivity extends AppCompatActivity {
             if (GUIConfiguration.getAppMode() == AppMode.SLAVE) {
                 mp.start();
                 mp.setLooping(true);
-                GUIConfiguration.setPipelineState(PipelineState.TO_BE_UPLOAD);
-                PreferenceUtil
-                        .setSharedPreferenceInt(R.string.id_app_mode, GUIConfiguration.getPipelineState().ordinal());
-                PreferenceUtil
-                        .setSharedPreferenceString(R.string.id_results_summary, resultsSummary);
+                PreferenceUtil.setSharedPreferenceString(R.string.id_results_summary, resultsSummary);
                 btnSendResults.setVisibility(View.VISIBLE);
+                GUIConfiguration.setPipelineState(PipelineState.MINIT_UPLOAD);
             }
         }
     }
@@ -451,6 +451,7 @@ public class ConfirmationActivity extends AppCompatActivity {
         PipelineState state = GUIConfiguration.getPipelineState();
         switch (state) {
             case CONFIGURED:
+            case MINIT_CONFIGURE:
                 ScreenDimUtil.changeBrightness(cResolver, window,
                         PreferenceUtil.getSharedPreferenceInt(R.string.id_screen_brightness));
                 super.onBackPressed();

@@ -2,7 +2,9 @@ package com.mobilegenomics.f5n;
 
 import android.content.Context;
 import android.util.Log;
+
 import androidx.annotation.RawRes;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -14,7 +16,9 @@ import com.mobilegenomics.f5n.core.PipelineStep;
 import com.mobilegenomics.f5n.core.Step;
 import com.mobilegenomics.f5n.support.JSONFileHelper;
 import com.mobilegenomics.f5n.support.PipelineState;
+import com.mobilegenomics.f5n.support.PreferenceUtil;
 import com.mobilegenomics.f5n.support.TimeFormat;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +43,7 @@ public class GUIConfiguration {
 
     public static void setPipelineState(PipelineState state) {
         pipelineState = state;
+        PreferenceUtil.setSharedPreferenceInt(R.string.id_app_mode, state.ordinal());
     }
 
     public static PipelineState getPipelineState() {
@@ -160,7 +165,7 @@ public class GUIConfiguration {
     }
 
     private static ArrayList<Argument> configureArguments(Context context, PipelineStep pipelineStep,
-            String folderPath) {
+                                                          String folderPath) {
         int rawFile = 0;
         switch (pipelineStep) {
             case MINIMAP2_SEQUENCE_ALIGNMENT:

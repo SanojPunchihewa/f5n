@@ -1,11 +1,13 @@
 package com.mobilegenomics.f5n.support;
 
 public enum PipelineState {
+    STATE_ZERO,
     TO_BE_CONFIGURED,
     CONFIGURED,
     RUNNING,
-    MINIT_RUNNING,
     COMPLETED,
-    TO_BE_UPLOAD,
-    PREV_CONFIG_LOAD
+    PREV_CONFIG_LOAD,
+    MINIT_DOWNLOAD,
+    MINIT_CONFIGURE,
+    MINIT_UPLOAD
 }

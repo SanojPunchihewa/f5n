@@ -124,9 +124,7 @@ public class MinITActivity extends AppCompatActivity {
             long uploadTime = System.currentTimeMillis() - uploadStartTime;
             if (uploadSuccess) {
                 String time = TimeFormat.millisToShortDHMS(uploadTime);
-                GUIConfiguration.setPipelineState(PipelineState.COMPLETED);
-                PreferenceUtil
-                        .setSharedPreferenceInt(R.string.id_app_mode, GUIConfiguration.getPipelineState().ordinal());
+                GUIConfiguration.setPipelineState(PipelineState.STATE_ZERO);
                 statusTextView.setText("Upload Completed in " + time);
                 sendJobResults();
             } else {
@@ -202,6 +200,7 @@ public class MinITActivity extends AppCompatActivity {
                 StringBuilder newLogMessage = ServerConnectionUtils.getLogMessage();
                 if (newLogMessage != null && newLogMessage.toString().trim().length() != 0) {
                     connectionLogText.setText(newLogMessage);
+                    PreferenceUtil.setSharedPreferenceString(R.string.id_prev_conn_log, newLogMessage.toString());
                 }
             }
         });
@@ -212,10 +211,12 @@ public class MinITActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_minit);
 
-        if (PreferenceUtil.getSharedPreferenceInt(R.string.id_app_mode) == PipelineState.MINIT_RUNNING.ordinal() &&
-                PreferenceUtil.getSharedPreferenceStepList(R.string.id_step_list) != null &&
+        if (PreferenceUtil.getSharedPreferenceInt(R.string.id_app_mode) == PipelineState.MINIT_DOWNLOAD.ordinal() &&
                 PreferenceUtil.getSharedPreferenceObject(R.string.id_wrapper_obj) != null) {
-            showResumeMessage(PipelineState.MINIT_RUNNING);
+            showResumeMessage(PipelineState.MINIT_DOWNLOAD);
+        } else if (PreferenceUtil.getSharedPreferenceInt(R.string.id_app_mode) == PipelineState.MINIT_CONFIGURE.ordinal() &&
+                PreferenceUtil.getSharedPreferenceObject(R.string.id_wrapper_obj) != null) {
+            showResumeMessage(PipelineState.MINIT_CONFIGURE);
         }
 
         statusTextView = findViewById(R.id.txt_status);
@@ -244,9 +245,9 @@ public class MinITActivity extends AppCompatActivity {
                 trSendResults.setVisibility(View.VISIBLE);
                 trBackToRequestJob.setVisibility(View.VISIBLE);
             }
-        } else {
-            if (PreferenceUtil.getSharedPreferenceInt(R.string.id_app_mode) == PipelineState.TO_BE_UPLOAD.ordinal()) {
-                showResumeMessage(PipelineState.TO_BE_UPLOAD);
+        } else { //TODO may be redundant code, remove later
+            if (PreferenceUtil.getSharedPreferenceInt(R.string.id_app_mode) == PipelineState.MINIT_UPLOAD.ordinal()) {
+                showResumeMessage(PipelineState.MINIT_UPLOAD);
             }
         }
 
@@ -304,14 +305,14 @@ public class MinITActivity extends AppCompatActivity {
         btnBackToRequestJob.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (GUIConfiguration.getPipelineState() == PipelineState.TO_BE_UPLOAD) {
+                if (GUIConfiguration.getPipelineState() == PipelineState.MINIT_UPLOAD) {
                     new AlertDialog.Builder(MinITActivity.this)
                             .setTitle("Confirm Action")
                             .setMessage("Do you want to go back before uploading the results?")
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
-                                    GUIConfiguration.setPipelineState(PipelineState.COMPLETED);
+                                    GUIConfiguration.setPipelineState(PipelineState.STATE_ZERO);
                                     btnRequestJob.setVisibility(View.VISIBLE);
                                     trSendResults.setVisibility(View.GONE);
                                     trBackToRequestJob.setVisibility(View.GONE);
@@ -397,7 +398,7 @@ public class MinITActivity extends AppCompatActivity {
                             statusTextView.setText("Unzip Successful");
                             connectionLogText.append("Extracting data set completed\n");
 
-                            GUIConfiguration.setPipelineState(PipelineState.TO_BE_CONFIGURED);
+                            GUIConfiguration.setPipelineState(PipelineState.MINIT_CONFIGURE);
                             Intent intent = new Intent(MinITActivity.this, TerminalActivity.class);
                             intent.putExtra("FOLDER_PATH", STORAGE_PATH);
                             startActivity(intent);
@@ -451,6 +452,7 @@ public class MinITActivity extends AppCompatActivity {
                         GUIConfiguration.configureSteps(job.getSteps());
                         zipFileName = job.getPrefix() + ".zip";
                         btnProcessJob.setVisibility(View.VISIBLE);
+                        GUIConfiguration.setPipelineState(PipelineState.MINIT_DOWNLOAD);
                     }
                 });
             }
@@ -592,12 +594,14 @@ public class MinITActivity extends AppCompatActivity {
 
     private void showResumeMessage(PipelineState state) {
 
-        String msg;
+        String msg = null;
 
-        if (state == PipelineState.TO_BE_UPLOAD) {
-            msg = "You can upload the data from previous job";
-        } else {
-            msg = "You can re run the previous job";
+        if (state == PipelineState.MINIT_DOWNLOAD) {
+            msg = "You can download the data set for previous job";
+        } else if (state == PipelineState.MINIT_CONFIGURE) {
+            msg = "You can reconfigure and run the previous job";
+        } else if (state == PipelineState.MINIT_UPLOAD) {
+            msg = "You can upload the result from previous job";
         }
 
         new AlertDialog.Builder(this)
@@ -606,26 +610,34 @@ public class MinITActivity extends AppCompatActivity {
                 .setPositiveButton("Resume", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        ServerConnectionUtils.setWrapperObject(
-                                (WrapperObject) PreferenceUtil
-                                        .getSharedPreferenceObject(R.string.id_wrapper_obj));
-                        if (state == PipelineState.TO_BE_UPLOAD) {
-                            btnRequestJob.setVisibility(View.GONE);
-                            trSendResults.setVisibility(View.VISIBLE);
-                            trBackToRequestJob.setVisibility(View.VISIBLE);
-                            resultsSummary = PreferenceUtil.getSharedPreferenceString(R.string.id_results_summary);
-                        } else {
-                            GUIConfiguration.setPipelineState(PipelineState.CONFIGURED);
+                        WrapperObject prevJob = (WrapperObject) PreferenceUtil.getSharedPreferenceObject(R.string.id_wrapper_obj);
+                        ServerConnectionUtils.setWrapperObject(prevJob);
+                        if (state == PipelineState.MINIT_DOWNLOAD && prevJob != null) {
+                            String previousConnectionLog = PreferenceUtil.getSharedPreferenceString(R.string.id_prev_conn_log);
+                            GUIConfiguration.configureSteps(prevJob.getSteps());
+                            zipFileName = prevJob.getPrefix() + ".zip";
+                            connectionLogText.setText(previousConnectionLog);
+                            btnProcessJob.setVisibility(View.VISIBLE);
+                            GUIConfiguration.setPipelineState(PipelineState.MINIT_DOWNLOAD);
+                        } else if (state == PipelineState.MINIT_CONFIGURE) {
                             GUIConfiguration
                                     .setSteps(PreferenceUtil.getSharedPreferenceStepList(R.string.id_step_list));
                             Intent intent = new Intent(MinITActivity.this, TerminalActivity.class);
                             startActivity(intent);
+                            GUIConfiguration.setPipelineState(PipelineState.MINIT_CONFIGURE);
+                        } else if (state == PipelineState.MINIT_UPLOAD) {
+                            btnRequestJob.setVisibility(View.GONE);
+                            trSendResults.setVisibility(View.VISIBLE);
+                            trBackToRequestJob.setVisibility(View.VISIBLE);
+                            resultsSummary = PreferenceUtil.getSharedPreferenceString(R.string.id_results_summary);
+                            GUIConfiguration.setPipelineState(PipelineState.MINIT_UPLOAD);
                         }
                     }
                 })
                 .setNegativeButton("Get new Job", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(final DialogInterface dialog, final int which) {
+                        GUIConfiguration.setPipelineState(PipelineState.STATE_ZERO);
                         dialog.dismiss();
                     }
                 })
