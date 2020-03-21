@@ -31,6 +31,7 @@
     <string name="id_screen_brightness">SCREEN_BRIGHTNESS</string>
     <string name="id_dim_screen">DIM_SCREEN</string>
     <string name="id_prev_conn_log">PREV_CONN_LOG</string>
+    <string name="id_compressed_file">COMPRESSED_FILE</string>
 
     <string name="title_choose_any_file">Choose files</string>
 

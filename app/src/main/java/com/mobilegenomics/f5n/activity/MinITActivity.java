@@ -245,8 +245,10 @@ public class MinITActivity extends AppCompatActivity {
                 trSendResults.setVisibility(View.VISIBLE);
                 trBackToRequestJob.setVisibility(View.VISIBLE);
             }
-        } else { //TODO may be redundant code, remove later
-            if (PreferenceUtil.getSharedPreferenceInt(R.string.id_app_mode) == PipelineState.MINIT_UPLOAD.ordinal()) {
+        } else {
+            if (PreferenceUtil.getSharedPreferenceInt(R.string.id_app_mode) == PipelineState.MINIT_COMPRESS.ordinal()) {
+                showResumeMessage(PipelineState.MINIT_COMPRESS);
+            } else if (PreferenceUtil.getSharedPreferenceInt(R.string.id_app_mode) == PipelineState.MINIT_UPLOAD.ordinal()) {
                 showResumeMessage(PipelineState.MINIT_UPLOAD);
             }
         }
@@ -511,6 +513,8 @@ public class MinITActivity extends AppCompatActivity {
                     public void run() {
                         if (success) {
                             statusTextView.setText("Zip Successful");
+                            GUIConfiguration.setPipelineState(PipelineState.MINIT_UPLOAD);
+                            PreferenceUtil.setSharedPreferenceString(R.string.id_compressed_file, zipFileName);
                             uploadDataSet(zipFileName);
                         } else {
                             statusTextView.setText("Zip Error");
@@ -528,46 +532,51 @@ public class MinITActivity extends AppCompatActivity {
         fileList = new ArrayList<>();
         final boolean[] isCancelled = {false};
 
-        new ChooserDialog(MinITActivity.this)
-                .withFilter(dirOnly, false)
-                .enableMultiple(true)
-                .withChosenListener(new ChooserDialog.Result() {
-                    @Override
-                    public void onChoosePath(String path, File pathFile) {
-                        if (fileList.contains(path)) {
-                            fileList.remove(path);
-                        } else {
-                            fileList.add(path);
+        if (PreferenceUtil.getSharedPreferenceInt(R.string.id_app_mode) == PipelineState.MINIT_UPLOAD.ordinal()) {
+            zipFileName = PreferenceUtil.getSharedPreferenceString(R.string.id_compressed_file);
+            uploadDataSet(zipFileName);
+        } else {
+            new ChooserDialog(MinITActivity.this)
+                    .withFilter(dirOnly, false)
+                    .enableMultiple(true)
+                    .withChosenListener(new ChooserDialog.Result() {
+                        @Override
+                        public void onChoosePath(String path, File pathFile) {
+                            if (fileList.contains(path)) {
+                                fileList.remove(path);
+                            } else {
+                                fileList.add(path);
+                            }
                         }
-                    }
-                })
-                // to handle the back key pressed or clicked outside the dialog:
-                .withOnCancelListener(new DialogInterface.OnCancelListener() {
-                    public void onCancel(DialogInterface dialog) {
-                        isCancelled[0] = true;
-                        dialog.cancel();
-                    }
-                })
-                .withNegativeButtonListener(new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(final DialogInterface dialog, final int which) {
-                        isCancelled[0] = true;
-                    }
-                })
-                .withOnDismissListener(new OnDismissListener() {
-                    @Override
-                    public void onDismiss(final DialogInterface dialog) {
-                        if (!fileList.isEmpty() && !isCancelled[0]) {
-                            compressDataSet();
-                        } else {
-                            Toast.makeText(MinITActivity.this, "No files selected to compress",
-                                    Toast.LENGTH_SHORT).show();
+                    })
+                    // to handle the back key pressed or clicked outside the dialog:
+                    .withOnCancelListener(new DialogInterface.OnCancelListener() {
+                        public void onCancel(DialogInterface dialog) {
+                            isCancelled[0] = true;
+                            dialog.cancel();
                         }
-                    }
-                })
-                .withResources(R.string.title_choose_any_file, R.string.title_choose, R.string.dialog_cancel)
-                .build()
-                .show();
+                    })
+                    .withNegativeButtonListener(new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(final DialogInterface dialog, final int which) {
+                            isCancelled[0] = true;
+                        }
+                    })
+                    .withOnDismissListener(new OnDismissListener() {
+                        @Override
+                        public void onDismiss(final DialogInterface dialog) {
+                            if (!fileList.isEmpty() && !isCancelled[0]) {
+                                compressDataSet();
+                            } else {
+                                Toast.makeText(MinITActivity.this, "No files selected to compress",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    })
+                    .withResources(R.string.title_choose_any_file, R.string.title_choose, R.string.dialog_cancel)
+                    .build()
+                    .show();
+        }
     }
 
     private void showResumeMessage(PipelineState state) {
@@ -580,6 +589,8 @@ public class MinITActivity extends AppCompatActivity {
             msg = "You can unzip the previous job";
         } else if (state == PipelineState.MINIT_CONFIGURE) {
             msg = "You can reconfigure and run the previous job";
+        } else if (state == PipelineState.MINIT_COMPRESS) {
+            msg = "You can upload the result from previous job";
         } else if (state == PipelineState.MINIT_UPLOAD) {
             msg = "You can upload the result from previous job";
         }
@@ -610,6 +621,12 @@ public class MinITActivity extends AppCompatActivity {
                             Intent intent = new Intent(MinITActivity.this, TerminalActivity.class);
                             startActivity(intent);
                             GUIConfiguration.setPipelineState(PipelineState.MINIT_CONFIGURE);
+                        } else if (state == PipelineState.MINIT_COMPRESS) {
+                            btnRequestJob.setVisibility(View.GONE);
+                            trSendResults.setVisibility(View.VISIBLE);
+                            trBackToRequestJob.setVisibility(View.VISIBLE);
+                            resultsSummary = PreferenceUtil.getSharedPreferenceString(R.string.id_results_summary);
+                            GUIConfiguration.setPipelineState(PipelineState.MINIT_COMPRESS);
                         } else if (state == PipelineState.MINIT_UPLOAD) {
                             btnRequestJob.setVisibility(View.GONE);
                             trSendResults.setVisibility(View.VISIBLE);

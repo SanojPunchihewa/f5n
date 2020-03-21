@@ -382,7 +382,7 @@ public class ConfirmationActivity extends AppCompatActivity {
                 mp.setLooping(true);
                 PreferenceUtil.setSharedPreferenceString(R.string.id_results_summary, resultsSummary);
                 btnSendResults.setVisibility(View.VISIBLE);
-                GUIConfiguration.setPipelineState(PipelineState.MINIT_UPLOAD);
+                GUIConfiguration.setPipelineState(PipelineState.MINIT_COMPRESS);
             }
         }
     }

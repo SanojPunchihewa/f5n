@@ -10,5 +10,6 @@ public enum PipelineState {
     MINIT_DOWNLOAD,
     MINIT_EXTRACT,
     MINIT_CONFIGURE,
+    MINIT_COMPRESS,
     MINIT_UPLOAD
 }
