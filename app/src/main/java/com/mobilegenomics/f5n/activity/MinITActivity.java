@@ -214,6 +214,9 @@ public class MinITActivity extends AppCompatActivity {
         if (PreferenceUtil.getSharedPreferenceInt(R.string.id_app_mode) == PipelineState.MINIT_DOWNLOAD.ordinal() &&
                 PreferenceUtil.getSharedPreferenceObject(R.string.id_wrapper_obj) != null) {
             showResumeMessage(PipelineState.MINIT_DOWNLOAD);
+        } else if (PreferenceUtil.getSharedPreferenceInt(R.string.id_app_mode) == PipelineState.MINIT_EXTRACT.ordinal() &&
+                PreferenceUtil.getSharedPreferenceObject(R.string.id_wrapper_obj) != null) {
+            showResumeMessage(PipelineState.MINIT_EXTRACT);
         } else if (PreferenceUtil.getSharedPreferenceInt(R.string.id_app_mode) == PipelineState.MINIT_CONFIGURE.ordinal() &&
                 PreferenceUtil.getSharedPreferenceObject(R.string.id_wrapper_obj) != null) {
             showResumeMessage(PipelineState.MINIT_CONFIGURE);
@@ -291,11 +294,8 @@ public class MinITActivity extends AppCompatActivity {
         btnProcessJob.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 PreferenceUtil
                         .setSharedPreferenceObject(R.string.id_wrapper_obj, ServerConnectionUtils.getWrapperObject());
-
-                configureStepFolderPath();
                 // TODO Fix the following
                 // Protocol, file server IP and Port
                 downloadDataSetFTP();
@@ -352,6 +352,7 @@ public class MinITActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull final EndCause cause, @Nullable final Exception realCause) {
                         if (cause == EndCause.COMPLETED) {
+                            GUIConfiguration.setPipelineState(PipelineState.MINIT_EXTRACT);
                             extractZip(STORAGE_PATH + zipFileName);
                         } else {
                             statusTextView.setText(
@@ -397,7 +398,7 @@ public class MinITActivity extends AppCompatActivity {
                         if (success) {
                             statusTextView.setText("Unzip Successful");
                             connectionLogText.append("Extracting data set completed\n");
-
+                            configureStepFolderPath();
                             GUIConfiguration.setPipelineState(PipelineState.MINIT_CONFIGURE);
                             Intent intent = new Intent(MinITActivity.this, TerminalActivity.class);
                             intent.putExtra("FOLDER_PATH", STORAGE_PATH);
@@ -598,6 +599,8 @@ public class MinITActivity extends AppCompatActivity {
 
         if (state == PipelineState.MINIT_DOWNLOAD) {
             msg = "You can download the data set for previous job";
+        } else if (state == PipelineState.MINIT_EXTRACT) {
+            msg = "You can unzip the previous job";
         } else if (state == PipelineState.MINIT_CONFIGURE) {
             msg = "You can reconfigure and run the previous job";
         } else if (state == PipelineState.MINIT_UPLOAD) {
@@ -612,13 +615,18 @@ public class MinITActivity extends AppCompatActivity {
                         dialog.dismiss();
                         WrapperObject prevJob = (WrapperObject) PreferenceUtil.getSharedPreferenceObject(R.string.id_wrapper_obj);
                         ServerConnectionUtils.setWrapperObject(prevJob);
+                        String previousConnectionLog = PreferenceUtil.getSharedPreferenceString(R.string.id_prev_conn_log);
                         if (state == PipelineState.MINIT_DOWNLOAD && prevJob != null) {
-                            String previousConnectionLog = PreferenceUtil.getSharedPreferenceString(R.string.id_prev_conn_log);
                             GUIConfiguration.configureSteps(prevJob.getSteps());
                             zipFileName = prevJob.getPrefix() + ".zip";
                             connectionLogText.setText(previousConnectionLog);
                             btnProcessJob.setVisibility(View.VISIBLE);
                             GUIConfiguration.setPipelineState(PipelineState.MINIT_DOWNLOAD);
+                        } else if (state == PipelineState.MINIT_EXTRACT) {
+                            connectionLogText.setText(previousConnectionLog);
+                            GUIConfiguration.configureSteps(prevJob.getSteps());
+                            zipFileName = prevJob.getPrefix() + ".zip";
+                            extractZip(STORAGE_PATH + zipFileName);
                         } else if (state == PipelineState.MINIT_CONFIGURE) {
                             GUIConfiguration
                                     .setSteps(PreferenceUtil.getSharedPreferenceStepList(R.string.id_step_list));

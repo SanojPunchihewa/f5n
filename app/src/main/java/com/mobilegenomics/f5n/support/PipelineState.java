@@ -8,6 +8,7 @@ public enum PipelineState {
     COMPLETED,
     PREV_CONFIG_LOAD,
     MINIT_DOWNLOAD,
+    MINIT_EXTRACT,
     MINIT_CONFIGURE,
     MINIT_UPLOAD
 }
