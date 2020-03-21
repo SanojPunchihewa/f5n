@@ -166,8 +166,6 @@ public class MinITActivity extends AppCompatActivity {
 
     private Button btnRequestJob;
 
-    private Button btnCompressFiles;
-
     private Button btnBackToRequestJob;
 
     private Button btnSendResults;
@@ -236,7 +234,6 @@ public class MinITActivity extends AppCompatActivity {
 
         btnRequestJob = findViewById(R.id.btn_request_job);
         btnProcessJob = findViewById(R.id.btn_process_job);
-        btnCompressFiles = findViewById(R.id.btn_select_files);
         btnBackToRequestJob = findViewById(R.id.btn_back_to_req_job);
         btnSendResults = findViewById(R.id.btn_send_result);
 
@@ -267,13 +264,6 @@ public class MinITActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(MinITActivity.this, "Please input a server IP", Toast.LENGTH_SHORT).show();
                 }
-            }
-        });
-
-        btnCompressFiles.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                openFileManager(false, true);
             }
         });
 
@@ -521,6 +511,7 @@ public class MinITActivity extends AppCompatActivity {
                     public void run() {
                         if (success) {
                             statusTextView.setText("Zip Successful");
+                            uploadDataSet(zipFileName);
                         } else {
                             statusTextView.setText("Zip Error");
                         }
@@ -537,60 +528,46 @@ public class MinITActivity extends AppCompatActivity {
         fileList = new ArrayList<>();
         final boolean[] isCancelled = {false};
 
-        if (toCompress) {
-            new ChooserDialog(MinITActivity.this)
-                    .withFilter(dirOnly, false)
-                    .enableMultiple(true)
-                    .withChosenListener(new ChooserDialog.Result() {
-                        @Override
-                        public void onChoosePath(String path, File pathFile) {
-                            if (fileList.contains(path)) {
-                                fileList.remove(path);
-                            } else {
-                                fileList.add(path);
-                            }
+        new ChooserDialog(MinITActivity.this)
+                .withFilter(dirOnly, false)
+                .enableMultiple(true)
+                .withChosenListener(new ChooserDialog.Result() {
+                    @Override
+                    public void onChoosePath(String path, File pathFile) {
+                        if (fileList.contains(path)) {
+                            fileList.remove(path);
+                        } else {
+                            fileList.add(path);
                         }
-                    })
-                    // to handle the back key pressed or clicked outside the dialog:
-                    .withOnCancelListener(new DialogInterface.OnCancelListener() {
-                        public void onCancel(DialogInterface dialog) {
-                            isCancelled[0] = true;
-                            dialog.cancel();
+                    }
+                })
+                // to handle the back key pressed or clicked outside the dialog:
+                .withOnCancelListener(new DialogInterface.OnCancelListener() {
+                    public void onCancel(DialogInterface dialog) {
+                        isCancelled[0] = true;
+                        dialog.cancel();
+                    }
+                })
+                .withNegativeButtonListener(new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(final DialogInterface dialog, final int which) {
+                        isCancelled[0] = true;
+                    }
+                })
+                .withOnDismissListener(new OnDismissListener() {
+                    @Override
+                    public void onDismiss(final DialogInterface dialog) {
+                        if (!fileList.isEmpty() && !isCancelled[0]) {
+                            compressDataSet();
+                        } else {
+                            Toast.makeText(MinITActivity.this, "No files selected to compress",
+                                    Toast.LENGTH_SHORT).show();
                         }
-                    })
-                    .withNegativeButtonListener(new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(final DialogInterface dialog, final int which) {
-                            isCancelled[0] = true;
-                        }
-                    })
-                    .withOnDismissListener(new OnDismissListener() {
-                        @Override
-                        public void onDismiss(final DialogInterface dialog) {
-                            if (!fileList.isEmpty() && !isCancelled[0]) {
-                                compressDataSet();
-                            } else {
-                                Toast.makeText(MinITActivity.this, "No files selected to compress",
-                                        Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    })
-                    .withResources(R.string.title_choose_any_file, R.string.title_choose, R.string.dialog_cancel)
-                    .build()
-                    .show();
-        } else {
-            new ChooserDialog(MinITActivity.this)
-                    .withFilter(dirOnly, false)
-                    // to handle the result(s)
-                    .withChosenListener(new ChooserDialog.Result() {
-                        @Override
-                        public void onChoosePath(String path, File pathFile) {
-                            uploadDataSet(path);
-                        }
-                    })
-                    .build()
-                    .show();
-        }
+                    }
+                })
+                .withResources(R.string.title_choose_any_file, R.string.title_choose, R.string.dialog_cancel)
+                .build()
+                .show();
     }
 
     private void showResumeMessage(PipelineState state) {
