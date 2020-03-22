@@ -339,7 +339,7 @@ public class MinITActivity extends AppCompatActivity {
 
     private void downloadDataSetFTP() {
         String url = serverIP + "/" + zipFileName;
-        FTPDownloadManager downloadManager = new FTPDownloadManager(url, STORAGE_PATH, statusTextView, progressBar,
+        FTPDownloadManager downloadManager = new FTPDownloadManager(url, STORAGE_PATH,
                 new DownloadListener() {
                     @Override
                     public void onComplete(@NonNull final EndCause cause, @Nullable final Exception realCause) {
@@ -352,7 +352,7 @@ public class MinITActivity extends AppCompatActivity {
                         }
                     }
                 });
-        downloadManager.download();
+        downloadManager.download(this);
     }
 
     private void extractZip(String filePath) {
