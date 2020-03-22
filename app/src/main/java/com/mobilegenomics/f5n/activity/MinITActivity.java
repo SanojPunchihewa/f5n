@@ -214,6 +214,7 @@ public class MinITActivity extends AppCompatActivity {
                                     btnRequestJob.setVisibility(View.VISIBLE);
                                     trSendResults.setVisibility(View.GONE);
                                     trBackToRequestJob.setVisibility(View.GONE);
+                                    connectionLogText.setText("");
                                 }
                             })
                             .setNegativeButton("No", new DialogInterface.OnClickListener() {
