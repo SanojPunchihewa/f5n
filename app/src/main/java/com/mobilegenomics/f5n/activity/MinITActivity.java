@@ -52,6 +52,8 @@ public class MinITActivity extends AppCompatActivity {
 
     private static final String TAG = MinITActivity.class.getSimpleName();
 
+    private static boolean AUTOMATED = false;
+
     private static TextView connectionLogText;
 
     ProgressBar progressBar;
@@ -141,9 +143,16 @@ public class MinITActivity extends AppCompatActivity {
             resultsSummary = getIntent().getExtras().getString("PIPELINE_STATUS");
             folderPath = getIntent().getExtras().getString("FOLDER_PATH");
             if (resultsSummary != null && !TextUtils.isEmpty(resultsSummary)) {
-                btnRequestJob.setVisibility(View.GONE);
-                trSendResults.setVisibility(View.VISIBLE);
-                trBackToRequestJob.setVisibility(View.VISIBLE);
+                if (MinITActivity.isAUTOMATED()) {
+                    btnRequestJob.setVisibility(View.GONE);
+                    trSendResults.setVisibility(View.GONE);
+                    trBackToRequestJob.setVisibility(View.VISIBLE);
+                    compressDataSet();
+                } else {
+                    btnRequestJob.setVisibility(View.GONE);
+                    trSendResults.setVisibility(View.VISIBLE);
+                    trBackToRequestJob.setVisibility(View.VISIBLE);
+                }
             }
         } else {
             if (PreferenceUtil.getSharedPreferenceInt(R.string.id_app_mode) == PipelineState.MINIT_COMPRESS.ordinal()) {
@@ -186,11 +195,7 @@ public class MinITActivity extends AppCompatActivity {
         btnProcessJob.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PreferenceUtil
-                        .setSharedPreferenceObject(R.string.id_wrapper_obj, ServerConnectionUtils.getWrapperObject());
-                // TODO Fix the following
-                // Protocol, file server IP and Port
-                downloadDataSetFTP();
+                processJob();
             }
         });
 
@@ -225,6 +230,14 @@ public class MinITActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void processJob() {
+        PreferenceUtil
+                .setSharedPreferenceObject(R.string.id_wrapper_obj, ServerConnectionUtils.getWrapperObject());
+        // TODO Fix the following
+        // Protocol, file server IP and Port
+        downloadDataSetFTP();
     }
 
     private void configureStepFolderPath() {
@@ -291,9 +304,13 @@ public class MinITActivity extends AppCompatActivity {
                             connectionLogText.append("Extracting data set completed\n");
                             configureStepFolderPath();
                             GUIConfiguration.setPipelineState(PipelineState.MINIT_CONFIGURE);
-                            Intent intent = new Intent(MinITActivity.this, TerminalActivity.class);
-                            intent.putExtra("FOLDER_PATH", STORAGE_PATH);
-                            startActivity(intent);
+                            if (AUTOMATED) {
+                                automatedSetUpLaunch(filePath);
+                            } else {
+                                Intent intent = new Intent(MinITActivity.this, TerminalActivity.class);
+                                intent.putExtra("FOLDER_PATH", STORAGE_PATH);
+                                startActivity(intent);
+                            }
                         } else {
                             statusTextView.setText("Unzip Error");
                             connectionLogText.append("Extracting data set error\n");
@@ -343,8 +360,14 @@ public class MinITActivity extends AppCompatActivity {
                     public void run() {
                         GUIConfiguration.configureSteps(job.getSteps());
                         zipFileName = job.getPrefix() + ".zip";
-                        btnProcessJob.setVisibility(View.VISIBLE);
                         GUIConfiguration.setPipelineState(PipelineState.MINIT_DOWNLOAD);
+                        setAUTOMATED(true);
+                        if (isAUTOMATED()) {
+                            btnProcessJob.setVisibility(View.GONE);
+                            processJob();
+                        } else {
+                            btnProcessJob.setVisibility(View.VISIBLE);
+                        }
                     }
                 });
             }
@@ -373,6 +396,7 @@ public class MinITActivity extends AppCompatActivity {
     }
 
     private void uploadDataSetFTP(String filePath) {
+        serverIP = ServerConnectionUtils.getServerAddress();
         new FTPManager().upload(serverIP, filePath, this, new DownloadListener() {
             @Override
             public void onComplete(@NonNull EndCause cause, @Nullable Exception realCause) {
@@ -385,6 +409,10 @@ public class MinITActivity extends AppCompatActivity {
 
     private void compressDataSet() {
         // TODO check wifi connectivity
+        if (isAUTOMATED()) {
+            fileList = getFileList(folderPath.substring(0, folderPath.length() - 4));
+            fileList.add(folderPath.substring(0, folderPath.length() - 4));
+        }
         folderPath = fileList.get(fileList.size() - 1);
         String zipFileName = folderPath + "/" + folderPath.substring(folderPath.lastIndexOf("/") + 1)
                 + ".out.zip";
@@ -433,6 +461,16 @@ public class MinITActivity extends AppCompatActivity {
 
         fileList.remove(fileList.size() - 1);
         zipManager.zip(fileList, zipFileName);
+    }
+
+    private ArrayList<String> getFileList(String path) {
+        ArrayList<String> fileList = new ArrayList<>();
+        File dir = new File(path);
+        for (File f : dir.listFiles()) {
+            if (f.isFile())
+                fileList.add(dir + "/" + f.getName());
+        }
+        return fileList;
     }
 
     private void openFileManager(boolean dirOnly, boolean toCompress) {
@@ -552,6 +590,21 @@ public class MinITActivity extends AppCompatActivity {
                 })
                 .setCancelable(false)
                 .show();
+    }
+
+    private void automatedSetUpLaunch(String filePath) {
+        GUIConfiguration.createPipeline();
+        Intent intent = new Intent(MinITActivity.this, ConfirmationActivity.class);
+        intent.putExtra("FOLDER_PATH", filePath);
+        startActivity(intent);
+    }
+
+    public static boolean isAUTOMATED() {
+        return AUTOMATED;
+    }
+
+    public static void setAUTOMATED(boolean AUTOMATED) {
+        MinITActivity.AUTOMATED = AUTOMATED;
     }
 
     private boolean validateIPAddress(final String ip) {

@@ -108,6 +108,10 @@ public class ServerConnectionUtils {
         ServerConnectionUtils.serverAddress = serverAddress;
     }
 
+    public static String getServerAddress() {
+        return serverAddress;
+    }
+
     public static StringBuilder getLogMessage() {
         return logMessage;
     }

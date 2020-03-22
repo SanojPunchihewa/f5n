@@ -180,56 +180,7 @@ public class ConfirmationActivity extends AppCompatActivity {
         btnProceed.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(final View v) {
-                getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-                ScreenDimUtil.changeBrightness(cResolver, window, 0);
-                txtTimer.start();
-                btnProceed.setEnabled(false);
-                mProgressBar.setVisibility(View.VISIBLE);
-                GUIConfiguration.createPipeline();
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        BufferedReader reader = null;
-                        try {
-                            reader = new BufferedReader(new FileReader(logPipePath));
-                            while (true) {
-                                String line = reader.readLine();
-                                if (line == null) {
-                                    //wait until there is more of the file for us to read
-                                    try {
-                                        Thread.sleep(500);
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
-                                } else {
-                                    if (line.equals(FILE_CLOSE_TAG)) {
-                                        break;
-                                    }
-                                    mHandler.post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            txtLogs.append(line + "\n");
-                                            scrollView.post(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    scrollView.fullScroll(View.FOCUS_DOWN);
-                                                }
-                                            });
-                                        }
-                                    });
-                                }
-                            }
-                            reader.close();
-                        } catch (FileNotFoundException e) {
-                            Log.e(TAG, "Pipe Not found: " + e);
-                        } catch (IOException e) {
-                            Log.e(TAG, "IO Exception: " + e);
-                        } finally {
-                            logPipeFile.delete();
-                        }
-                    }
-                }).start();
-                new RunPipeline().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                executePipeline();
             }
         });
 
@@ -313,7 +264,7 @@ public class ConfirmationActivity extends AppCompatActivity {
             btnSendResults.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(final View v) {
-                    mp.stop();
+                    //mp.stop();
                     Intent intent = new Intent(ConfirmationActivity.this, MinITActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK |
                             Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_FROM_BACKGROUND);
@@ -325,6 +276,65 @@ public class ConfirmationActivity extends AppCompatActivity {
             btnSendResults.setVisibility(View.GONE);
             linearLayout.addView(btnSendResults);
         }
+
+        if (MinITActivity.isAUTOMATED()) {
+            btnProceed.setVisibility(View.GONE);
+            btnSendResults.setVisibility(View.GONE);
+            executePipeline();
+        }
+    }
+
+    private void executePipeline() {
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        ScreenDimUtil.changeBrightness(cResolver, window, 0);
+        txtTimer.start();
+        btnProceed.setEnabled(false);
+        mProgressBar.setVisibility(View.VISIBLE);
+        GUIConfiguration.createPipeline();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                BufferedReader reader = null;
+                try {
+                    reader = new BufferedReader(new FileReader(logPipePath));
+                    while (true) {
+                        String line = reader.readLine();
+                        if (line == null) {
+                            //wait until there is more of the file for us to read
+                            try {
+                                Thread.sleep(500);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            if (line.equals(FILE_CLOSE_TAG)) {
+                                break;
+                            }
+                            mHandler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    txtLogs.append(line + "\n");
+                                    scrollView.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            scrollView.fullScroll(View.FOCUS_DOWN);
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    }
+                    reader.close();
+                } catch (FileNotFoundException e) {
+                    Log.e(TAG, "Pipe Not found: " + e);
+                } catch (IOException e) {
+                    Log.e(TAG, "IO Exception: " + e);
+                } finally {
+                    logPipeFile.delete();
+                }
+            }
+        }).start();
+        new RunPipeline().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     public class RunPipeline extends AsyncTask<String, Integer, String> {
@@ -378,11 +388,22 @@ public class ConfirmationActivity extends AppCompatActivity {
                     .setSharedPreferenceInt(R.string.id_app_mode, GUIConfiguration.getPipelineState().ordinal());
 
             if (GUIConfiguration.getAppMode() == AppMode.SLAVE) {
-                mp.start();
-                mp.setLooping(true);
+                //mp.start();
+                //mp.setLooping(true);
                 PreferenceUtil.setSharedPreferenceString(R.string.id_results_summary, resultsSummary);
-                btnSendResults.setVisibility(View.VISIBLE);
                 GUIConfiguration.setPipelineState(PipelineState.MINIT_COMPRESS);
+                if (MinITActivity.isAUTOMATED()) {
+                    btnSendResults.setVisibility(View.GONE);
+                    writeLogToFile();
+                    Intent intent = new Intent(ConfirmationActivity.this, MinITActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK |
+                            Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_FROM_BACKGROUND);
+                    intent.putExtra("PIPELINE_STATUS", resultsSummary);
+                    intent.putExtra("FOLDER_PATH", folderPath);
+                    startActivity(intent);
+                } else {
+                    btnSendResults.setVisibility(View.VISIBLE);
+                }
             }
         }
     }
