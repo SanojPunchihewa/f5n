@@ -7,12 +7,10 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -27,7 +25,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.liulishuo.okdownload.core.Util;
 import com.liulishuo.okdownload.core.cause.EndCause;
 import com.mobilegenomics.f5n.BuildConfig;
 import com.mobilegenomics.f5n.GUIConfiguration;
@@ -36,119 +33,22 @@ import com.mobilegenomics.f5n.core.Step;
 import com.mobilegenomics.f5n.dto.State;
 import com.mobilegenomics.f5n.dto.WrapperObject;
 import com.mobilegenomics.f5n.support.DownloadListener;
-import com.mobilegenomics.f5n.support.FTPDownloadManager;
+import com.mobilegenomics.f5n.support.FTPManager;
 import com.mobilegenomics.f5n.support.PipelineState;
 import com.mobilegenomics.f5n.support.PreferenceUtil;
 import com.mobilegenomics.f5n.support.ServerCallback;
 import com.mobilegenomics.f5n.support.ServerConnectionUtils;
-import com.mobilegenomics.f5n.support.TimeFormat;
 import com.mobilegenomics.f5n.support.ZipListener;
 import com.mobilegenomics.f5n.support.ZipManager;
 import com.obsez.android.lib.filechooser.ChooserDialog;
 
 import net.gotev.uploadservice.UploadService;
 
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.io.CopyStreamAdapter;
-
 import java.io.File;
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class MinITActivity extends AppCompatActivity {
-
-    class FTPUploadTask extends AsyncTask<String, Long, Boolean> {
-
-        boolean status;
-
-        long fileSize;
-
-        long uploadStartTime;
-
-        @Override
-        protected Boolean doInBackground(String... urls) {
-            FTPClient con;
-            try {
-
-                Log.d(TAG, "Address = " + urls[0]);
-                Log.d(TAG, "File path = " + urls[1]);
-
-                con = new FTPClient();
-                con.setDefaultPort(8000);
-                con.connect(urls[0]);
-
-                con.setCopyStreamListener(new CopyStreamAdapter() {
-                    @Override
-                    public void bytesTransferred(long totalBytesTransferred, int bytesTransferred, long streamSize) {
-                        //this method will be called every time some bytes are transferred
-//                        int percent = (int) (totalBytesTransferred * 100 / fileSize);
-                        publishProgress(totalBytesTransferred);
-                    }
-
-                });
-
-                if (con.login("test", "test")) {
-                    con.enterLocalPassiveMode(); // important!
-                    con.setFileType(FTP.BINARY_FILE_TYPE);
-                    con.setBufferSize(1024000);
-                    File fileIn = new File(urls[1]);
-                    fileSize = fileIn.length();
-
-                    FileInputStream in = new FileInputStream(fileIn);
-                    String filePath = "outputs/" + new File(urls[1]).getName();
-                    boolean result = con.storeFile(filePath, in);
-                    in.close();
-                    status = result;
-                    con.logout();
-                    con.disconnect();
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Upload Error: ", e);
-                status = false;
-            }
-            return status;
-        }
-
-        @Override
-        protected void onCancelled() {
-            super.onCancelled();
-            statusTextView.setText("Upload cancelled");
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean uploadSuccess) {
-            super.onPostExecute(uploadSuccess);
-            Log.i(TAG, "Upload Finished");
-            long uploadTime = System.currentTimeMillis() - uploadStartTime;
-            if (uploadSuccess) {
-                String time = TimeFormat.millisToShortDHMS(uploadTime);
-                GUIConfiguration.setPipelineState(PipelineState.STATE_ZERO);
-                statusTextView.setText("Upload Completed in " + time);
-                sendJobResults();
-            } else {
-                statusTextView.setText("Upload Error");
-            }
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            uploadStartTime = System.currentTimeMillis();
-            statusTextView.setText("Upload started");
-        }
-
-        @Override
-        protected void onProgressUpdate(final Long... values) {
-            super.onProgressUpdate(values);
-            String total = Util.humanReadableBytes(fileSize, true);
-            String downloaded = Util.humanReadableBytes(values[0], true);
-            statusTextView.setText("Uploading: " + downloaded + "/" + total);
-            float percent = (float) values[0] / fileSize;
-            progressBar.setProgress((int) percent * progressBar.getMax());
-        }
-    }
 
     private static final String TAG = MinITActivity.class.getSimpleName();
 
@@ -339,7 +239,7 @@ public class MinITActivity extends AppCompatActivity {
 
     private void downloadDataSetFTP() {
         String url = serverIP + "/" + zipFileName;
-        FTPDownloadManager downloadManager = new FTPDownloadManager(url, STORAGE_PATH,
+        new FTPManager().download(url, STORAGE_PATH, this,
                 new DownloadListener() {
                     @Override
                     public void onComplete(@NonNull final EndCause cause, @Nullable final Exception realCause) {
@@ -352,7 +252,6 @@ public class MinITActivity extends AppCompatActivity {
                         }
                     }
                 });
-        downloadManager.download(this);
     }
 
     private void extractZip(String filePath) {
@@ -465,6 +364,7 @@ public class MinITActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        GUIConfiguration.setPipelineState(PipelineState.STATE_ZERO);
                         Toast.makeText(MinITActivity.this, "Success", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -472,8 +372,15 @@ public class MinITActivity extends AppCompatActivity {
         });
     }
 
-    private void uploadDataSet(String filePath) {
-        new FTPUploadTask().execute(serverIP, filePath);
+    private void uploadDataSetFTP(String filePath) {
+        new FTPManager().upload(serverIP, filePath, this, new DownloadListener() {
+            @Override
+            public void onComplete(@NonNull EndCause cause, @Nullable Exception realCause) {
+                if (cause == EndCause.COMPLETED) {
+                    sendJobResults();
+                }
+            }
+        });
     }
 
     private void compressDataSet() {
@@ -515,7 +422,7 @@ public class MinITActivity extends AppCompatActivity {
                             statusTextView.setText("Zip Successful");
                             GUIConfiguration.setPipelineState(PipelineState.MINIT_UPLOAD);
                             PreferenceUtil.setSharedPreferenceString(R.string.id_compressed_file, zipFileName);
-                            uploadDataSet(zipFileName);
+                            uploadDataSetFTP(zipFileName);
                         } else {
                             statusTextView.setText("Zip Error");
                         }
@@ -534,7 +441,7 @@ public class MinITActivity extends AppCompatActivity {
 
         if (PreferenceUtil.getSharedPreferenceInt(R.string.id_app_mode) == PipelineState.MINIT_UPLOAD.ordinal()) {
             zipFileName = PreferenceUtil.getSharedPreferenceString(R.string.id_compressed_file);
-            uploadDataSet(zipFileName);
+            uploadDataSetFTP(zipFileName);
         } else {
             new ChooserDialog(MinITActivity.this)
                     .withFilter(dirOnly, false)
