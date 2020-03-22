@@ -17,9 +17,11 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.Step;
@@ -27,6 +29,7 @@ import com.mobilegenomics.f5n.support.PipelineState;
 import com.mobilegenomics.f5n.support.PreferenceUtil;
 import com.mobilegenomics.f5n.support.ScreenDimUtil;
 import com.obsez.android.lib.filechooser.ChooserDialog;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -70,7 +73,7 @@ public class TerminalActivity extends AppCompatActivity {
             editTextFolderPath.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(final CharSequence s, final int start, final int count,
-                        final int after) {
+                                              final int after) {
 
                 }
 
@@ -122,8 +125,7 @@ public class TerminalActivity extends AppCompatActivity {
             steps = GUIConfiguration.getSteps();
 
             // If resumed, set the folder path
-            if (PreferenceUtil.getSharedPreferenceInt(R.string.id_app_mode) == PipelineState.MINIT_RUNNING
-                    .ordinal()) {
+            if (PreferenceUtil.getSharedPreferenceInt(R.string.id_app_mode) == PipelineState.MINIT_CONFIGURE.ordinal()) {
                 folderPath = PreferenceUtil.getSharedPreferenceString(R.string.id_folder_path);
             }
 
@@ -170,12 +172,10 @@ public class TerminalActivity extends AppCompatActivity {
 
                     GUIConfiguration.createPipeline();
 
-                    // TODO App mode state is always the same?, change to get it from the calling activity
-                    PreferenceUtil
-                            .setSharedPreferenceInt(R.string.id_app_mode, PipelineState.MINIT_RUNNING.ordinal());
                     PreferenceUtil.setSharedPreferenceStepList(R.string.id_step_list, steps);
                     PreferenceUtil.setSharedPreferenceString(R.string.id_folder_path, folderPath);
-                    GUIConfiguration.setPipelineState(PipelineState.CONFIGURED);
+                    if (GUIConfiguration.getPipelineState() != PipelineState.MINIT_CONFIGURE)
+                        GUIConfiguration.setPipelineState(PipelineState.CONFIGURED);
 
                     Intent intent = new Intent(TerminalActivity.this, ConfirmationActivity.class);
                     intent.putExtra("FOLDER_PATH", folderPath);
