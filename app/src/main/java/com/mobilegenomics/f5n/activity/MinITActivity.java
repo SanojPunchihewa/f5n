@@ -172,6 +172,8 @@ public class MinITActivity extends AppCompatActivity {
                     serverIP = serverAddressInput.getText().toString().trim();
 
                     ServerConnectionUtils.setServerAddress(serverIP);
+                    connectionLogText.setText(null);
+                    statusTextView.setText(null);
                     requestJob();
                 } else {
                     Toast.makeText(MinITActivity.this, "Please input a server IP", Toast.LENGTH_SHORT).show();
@@ -210,11 +212,7 @@ public class MinITActivity extends AppCompatActivity {
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
-                                    GUIConfiguration.setPipelineState(PipelineState.STATE_ZERO);
-                                    btnRequestJob.setVisibility(View.VISIBLE);
-                                    trSendResults.setVisibility(View.GONE);
-                                    trBackToRequestJob.setVisibility(View.GONE);
-                                    connectionLogText.setText("");
+                                    returnToAnotherRequestJob();
                                 }
                             })
                             .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -405,6 +403,8 @@ public class MinITActivity extends AppCompatActivity {
             public void onComplete(@NonNull EndCause cause, @Nullable Exception realCause) {
                 if (cause == EndCause.COMPLETED) {
                     sendJobResults();
+                } else {
+                    showManualCompressUploadMessage();
                 }
             }
         });
@@ -464,7 +464,7 @@ public class MinITActivity extends AppCompatActivity {
                             uploadDataSetFTP(zipFileName);
                         } else {
                             statusTextView.setText("Zip Error");
-                            showManualCompressMessage();
+                            showManualCompressUploadMessage();
                         }
                     }
                 });
@@ -475,11 +475,19 @@ public class MinITActivity extends AppCompatActivity {
         zipManager.zip(fileList, zipFileName);
     }
 
-    private void showManualCompressMessage() {
+    private void showManualCompressUploadMessage() {
+        String title, msg;
+        if (GUIConfiguration.getPipelineState() == PipelineState.MINIT_COMPRESS) {
+            title = "Compress files manually";
+            msg = "One or more files selected to upload does not exists. Please select files manually and compress to upload";
+        } else {
+            title = "Upload files manually";
+            msg = "File upload failed. Please try manual upload";
+        }
         new AlertDialog.Builder(this)
-                .setTitle("Compress files manually")
-                .setMessage("One or more files selected to upload does not exists. Please select files manually and compress to upload")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                .setTitle(title)
+                .setMessage(msg)
+                .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                         WrapperObject prevJob = (WrapperObject) PreferenceUtil.getSharedPreferenceObject(R.string.id_wrapper_obj);
@@ -493,7 +501,7 @@ public class MinITActivity extends AppCompatActivity {
                 .setNegativeButton("Get new Job", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(final DialogInterface dialog, final int which) {
-                        GUIConfiguration.setPipelineState(PipelineState.STATE_ZERO);
+                        returnToAnotherRequestJob();
                         dialog.dismiss();
                     }
                 })
@@ -501,7 +509,17 @@ public class MinITActivity extends AppCompatActivity {
                 .show();
     }
 
+    private void returnToAnotherRequestJob() {
+        GUIConfiguration.setPipelineState(PipelineState.STATE_ZERO);
+        btnRequestJob.setVisibility(View.VISIBLE);
+        trSendResults.setVisibility(View.GONE);
+        trBackToRequestJob.setVisibility(View.GONE);
+        connectionLogText.setText(null);
+        statusTextView.setText(null);
+    }
+
     private ArrayList<String> getFileList(String path) {
+        // TODO consider about getting file names inside folders
         ArrayList<String> fileList = new ArrayList<>();
         File dir = new File(path);
         for (File f : dir.listFiles()) {
