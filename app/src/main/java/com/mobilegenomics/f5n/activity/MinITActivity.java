@@ -47,6 +47,7 @@ import net.gotev.uploadservice.UploadService;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Set;
 
 public class MinITActivity extends AppCompatActivity {
 
@@ -410,7 +411,15 @@ public class MinITActivity extends AppCompatActivity {
     private void compressDataSet() {
         // TODO check wifi connectivity
         if (isAUTOMATED()) {
-            fileList = getFileList(folderPath.substring(0, folderPath.length() - 4));
+            Set<String> files = PreferenceUtil.getSharedPreferencesStringList(R.string.key_min_it_upload_files);
+            if (files != null && !files.isEmpty()) {
+                fileList = new ArrayList<>();
+                for (String fileName : files) {
+                    fileList.add(folderPath.substring(0, folderPath.length() - 4) + "/" + fileName);
+                }
+            } else {
+                fileList = getFileList(folderPath.substring(0, folderPath.length() - 4));
+            }
             fileList.add(folderPath.substring(0, folderPath.length() - 4));
         }
         folderPath = fileList.get(fileList.size() - 1);
@@ -453,6 +462,7 @@ public class MinITActivity extends AppCompatActivity {
                             uploadDataSetFTP(zipFileName);
                         } else {
                             statusTextView.setText("Zip Error");
+                            showManualCompressMessage();
                         }
                     }
                 });
@@ -461,6 +471,32 @@ public class MinITActivity extends AppCompatActivity {
 
         fileList.remove(fileList.size() - 1);
         zipManager.zip(fileList, zipFileName);
+    }
+
+    private void showManualCompressMessage() {
+        new AlertDialog.Builder(this)
+                .setTitle("Compress files manually")
+                .setMessage("One or more files selected to upload does not exists. Please select files manually and compress to upload")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        WrapperObject prevJob = (WrapperObject) PreferenceUtil.getSharedPreferenceObject(R.string.id_wrapper_obj);
+                        ServerConnectionUtils.setWrapperObject(prevJob);
+                        btnRequestJob.setVisibility(View.GONE);
+                        trSendResults.setVisibility(View.VISIBLE);
+                        trBackToRequestJob.setVisibility(View.VISIBLE);
+                        setAUTOMATED(false);
+                    }
+                })
+                .setNegativeButton("Get new Job", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(final DialogInterface dialog, final int which) {
+                        GUIConfiguration.setPipelineState(PipelineState.STATE_ZERO);
+                        dialog.dismiss();
+                    }
+                })
+                .setCancelable(false)
+                .show();
     }
 
     private ArrayList<String> getFileList(String path) {
