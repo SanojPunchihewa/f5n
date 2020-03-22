@@ -1,5 +1,6 @@
 package com.mobilegenomics.f5n.fragments;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -10,6 +11,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.Settings;
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceClickListener;
 import androidx.preference.PreferenceFragmentCompat;
@@ -24,6 +27,8 @@ import java.io.File;
 public class FragmentSettings extends PreferenceFragmentCompat {
 
     private static final int REQUEST_CODE_DOCUMENT_TREE = 148;
+
+    private static final int REQUEST_PERMISSION_STORAGE = 158;
 
     private final String MOBILE_GENOMICS_FOLDER_PATH = Environment.getExternalStorageDirectory() + "/"
             + "mobile-genomics/";
@@ -40,13 +45,19 @@ public class FragmentSettings extends PreferenceFragmentCompat {
 
     private Preference feedbackPreference;
 
+    private SwitchPreference permissionStoragePreference;
+
     private SwitchPreference permissionSDCardWritePreference;
 
     private SwitchPreference permissionSystemSettingsWritePreference;
 
+    private String storagePermission;
+
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.preferences, rootKey);
+
+        storagePermission = (Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
         storagePreference = findPreference(getResources().getString(R.string.key_storage_preference));
         referenceGnomePreference = findPreference(getResources().getString(R.string.key_reference_gnome));
@@ -56,6 +67,31 @@ public class FragmentSettings extends PreferenceFragmentCompat {
                 getResources().getString(R.string.key_sdcard_storage_permission));
         permissionSystemSettingsWritePreference = findPreference(
                 getResources().getString(R.string.key_write_settings_permission));
+        permissionStoragePreference = findPreference(getResources().getString(R.string.key_storage_permission));
+
+        if (checkPermission(storagePermission)) {
+            permissionStoragePreference.setChecked(true);
+        } else {
+            permissionStoragePreference.setChecked(false);
+        }
+
+        permissionStoragePreference.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(final Preference preference) {
+                if (permissionStoragePreference.isChecked()) {
+                    requestPermissions(new String[]{storagePermission}, REQUEST_PERMISSION_STORAGE);
+                    // TODO Implement permission to Pre Marshmallow devices
+//                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+//                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                    Uri uri = Uri.fromParts("package", getPackageName(), null);
+//                    intent.setData(uri);
+//                    startActivity(intent);
+                } else {
+                    permissionStoragePreference.setChecked(true);
+                }
+                return false;
+            }
+        });
 
         if (PreferenceUtil.getSharedPreferenceUri(R.string.sdcard_uri) != null) {
             permissionSDCardWritePreference.setChecked(true);
@@ -237,4 +273,22 @@ public class FragmentSettings extends PreferenceFragmentCompat {
         }
     }
 
+    public boolean checkPermission(String permission) {
+
+        if (ContextCompat.checkSelfPermission(getContext(), permission) == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions,
+            @NonNull final int[] grantResults) {
+        if (requestCode == REQUEST_PERMISSION_STORAGE && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            permissionStoragePreference.setChecked(true);
+        } else {
+            // We were not granted permission this time, so don't try to show the contact picker
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
 }

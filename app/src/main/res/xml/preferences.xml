@@ -25,6 +25,11 @@
         android:title="Permissions"
         app:iconSpaceReserved="false">
         <SwitchPreference
+            android:key="@string/key_storage_permission"
+            android:title="@string/title_storage_write"
+            android:defaultValue="false"
+            app:iconSpaceReserved="false" />
+        <SwitchPreference
             android:key="@string/key_sdcard_storage_permission"
             android:title="@string/title_sdcard_write"
             android:defaultValue="false"
