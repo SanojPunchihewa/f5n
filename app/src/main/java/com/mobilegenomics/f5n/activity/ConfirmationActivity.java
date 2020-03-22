@@ -248,9 +248,13 @@ public class ConfirmationActivity extends AppCompatActivity {
             btnGoToStart.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(final View v) {
-                    Intent intent = new Intent(ConfirmationActivity.this, MainActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
+                    if (!logWrittenToFile) {
+                        showWriteToFileDialog(true);
+                    } else {
+                        Intent intent = new Intent(ConfirmationActivity.this, MainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                    }
                 }
             });
             btnGoToStart.setVisibility(View.GONE);
@@ -482,7 +486,7 @@ public class ConfirmationActivity extends AppCompatActivity {
                 break;
             case COMPLETED:
                 if (!logWrittenToFile) {
-                    showWriteToFileDialog();
+                    showWriteToFileDialog(false);
                 } else {
                     super.onBackPressed();
                 }
@@ -490,7 +494,7 @@ public class ConfirmationActivity extends AppCompatActivity {
         }
     }
 
-    private void showWriteToFileDialog() {
+    private void showWriteToFileDialog(boolean goToStartPage) {
 
         new AlertDialog.Builder(ConfirmationActivity.this)
                 .setTitle("Save log")
@@ -498,13 +502,25 @@ public class ConfirmationActivity extends AppCompatActivity {
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         writeLogToFile();
-                        ConfirmationActivity.super.onBackPressed();
+                        if (goToStartPage) {
+                            Intent intent = new Intent(ConfirmationActivity.this, MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                        } else {
+                            ConfirmationActivity.super.onBackPressed();
+                        }
                     }
                 })
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(final DialogInterface dialog, final int which) {
-                        ConfirmationActivity.super.onBackPressed();
+                        if (goToStartPage) {
+                            Intent intent = new Intent(ConfirmationActivity.this, MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                        } else {
+                            ConfirmationActivity.super.onBackPressed();
+                        }
                     }
                 })
                 .show();

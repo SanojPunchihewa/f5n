@@ -4,7 +4,7 @@
     <!--Strings used in standalone-->"
     <string name="btn_use_gui_mode">Use GUI Mode</string>
     <string name="btn_use_terminal_mode">Use Terminal Mode</string>
-    <string name="btn_load_prev_config">Load Previous Config</string>
+    <string name="btn_load_prev_config">Load Previous Pipeline</string>
 
     <!--Strings used in minIT feature-->
     <string name="hint_server_connect">Enter server address</string>
@@ -54,12 +54,14 @@
     <string name="url_faq">https://github.com/SanojPunchihewa/f5n/blob/master/README.md</string>
     <string name="title_terms">Terms &amp; Conditions</string>
     <string name="url_terms">https://github.com/SanojPunchihewa/f5n/blob/master/README.md</string>
+    <string name="key_storage_permission">key_storage_permission</string>
     <string name="key_sdcard_storage_permission">key_sdcard_storage_permission</string>
     <string name="key_write_settings_permission">key_write_settings_permission</string>
     <string name="title_reduce_brightness">Reduce Brightness during Pipeline Execution</string>
     <string name="title_sdcard_write">Download / Extract to SD Card</string>
     <string name="summary_sdcard_write">Choose SD Card from here</string>
-    <string name="summary_reduce_brightness">Brightness will reduce once the pipeline starts. Do not minimize or turn off the display, process may crash</string>
+    <string name="summary_reduce_brightness">Grant System Settings write permission to reduce the brightness once the pipeline starts</string>
+    <string name="title_storage_write">Storage Permission</string>
     <string name="key_min_it_upload_files">key_min_it_upload_files</string>
     <string name="title_min_it_upload">MinIt Output Files Upload</string>
     <string name="dialog_title_min_it_upload_files">Select output files</string>
