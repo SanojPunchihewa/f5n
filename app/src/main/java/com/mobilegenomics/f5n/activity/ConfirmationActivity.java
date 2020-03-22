@@ -404,6 +404,7 @@ public class ConfirmationActivity extends AppCompatActivity {
                             Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_FROM_BACKGROUND);
                     intent.putExtra("PIPELINE_STATUS", resultsSummary);
                     intent.putExtra("FOLDER_PATH", folderPath);
+                    PreferenceUtil.setSharedPreferenceString(R.string.id_results_summary, resultsSummary);
                     startActivity(intent);
                 } else {
                     btnSendResults.setVisibility(View.VISIBLE);

@@ -376,6 +376,7 @@ public class MinITActivity extends AppCompatActivity {
     }
 
     private void sendJobResults() {
+        resultsSummary = PreferenceUtil.getSharedPreferenceString(R.string.id_results_summary);
         ServerConnectionUtils.setResultToWrapperObject(resultsSummary);
         ServerConnectionUtils.connectToServer(State.COMPLETED, new ServerCallback() {
             @Override
