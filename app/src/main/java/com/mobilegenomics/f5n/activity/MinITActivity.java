@@ -172,6 +172,7 @@ public class MinITActivity extends AppCompatActivity {
                     serverIP = serverAddressInput.getText().toString().trim();
 
                     ServerConnectionUtils.setServerAddress(serverIP);
+                    ServerConnectionUtils.clearLogMessage();
                     connectionLogText.setText(null);
                     statusTextView.setText(null);
                     requestJob();
