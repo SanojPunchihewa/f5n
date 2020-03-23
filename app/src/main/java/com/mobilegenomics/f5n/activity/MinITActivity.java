@@ -1,5 +1,6 @@
 package com.mobilegenomics.f5n.activity;
 
+import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -9,6 +10,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -424,7 +426,7 @@ public class MinITActivity extends AppCompatActivity {
                     fileList.add(folderPath.substring(0, folderPath.length() - 4) + "/" + fileName);
                 }
             } else {
-                fileList = getFileList(folderPath.substring(0, folderPath.length() - 4));
+                getFileList(folderPath.substring(0, folderPath.length() - 4));
             }
             fileList.add(folderPath.substring(0, folderPath.length() - 4));
         }
@@ -522,15 +524,14 @@ public class MinITActivity extends AppCompatActivity {
         statusTextView.setText(null);
     }
 
-    private ArrayList<String> getFileList(String path) {
+    private void getFileList(String path) {
         // TODO consider about getting file names inside folders
-        ArrayList<String> fileList = new ArrayList<>();
+        fileList = new ArrayList<>();
         File dir = new File(path);
         for (File f : dir.listFiles()) {
             if (f.isFile())
                 fileList.add(dir + "/" + f.getName());
         }
-        return fileList;
     }
 
     private void openFileManager(boolean dirOnly, boolean toCompress) {
@@ -654,9 +655,19 @@ public class MinITActivity extends AppCompatActivity {
 
     private void automatedSetUpLaunch(String filePath) {
         GUIConfiguration.createPipeline();
-        Intent intent = new Intent(MinITActivity.this, ConfirmationActivity.class);
-        intent.putExtra("FOLDER_PATH", filePath);
-        startActivity(intent);
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Setting up to execute job");
+        System.gc();
+        progressDialog.show();
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                progressDialog.dismiss();
+                finish();
+                Intent intent = new Intent(MinITActivity.this, ConfirmationActivity.class);
+                intent.putExtra("FOLDER_PATH", filePath);
+                startActivity(intent);
+            }
+        }, 2500);
     }
 
     public static boolean isAUTOMATED() {
