@@ -1,6 +1,5 @@
 package com.mobilegenomics.f5n.support;
 
-import android.os.Handler;
 import android.util.Log;
 
 import com.mobilegenomics.f5n.activity.MinITActivity;
@@ -22,8 +21,8 @@ public class ServerConnectionUtils {
 
     private static WrapperObject receivedWrapperObject;
 
-    public static void connectToServer(final State state, final ServerCallback serverCallback) {
-        final Handler handler = new Handler();
+    public static void connectToServer(final State state, final MinITActivity context, final ServerCallback serverCallback) {
+        final LogHandler handler = new LogHandler(context);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -114,6 +113,10 @@ public class ServerConnectionUtils {
 
     public static StringBuilder getLogMessage() {
         return logMessage;
+    }
+
+    public static void clearLogMessage() {
+        logMessage.delete(0, logMessage.length());
     }
 
     public static void setResultToWrapperObject(String resultSummery) {

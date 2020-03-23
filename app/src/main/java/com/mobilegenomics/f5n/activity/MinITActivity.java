@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -34,6 +33,7 @@ import com.mobilegenomics.f5n.dto.State;
 import com.mobilegenomics.f5n.dto.WrapperObject;
 import com.mobilegenomics.f5n.support.DownloadListener;
 import com.mobilegenomics.f5n.support.FTPManager;
+import com.mobilegenomics.f5n.support.LogHandler;
 import com.mobilegenomics.f5n.support.PipelineState;
 import com.mobilegenomics.f5n.support.PreferenceUtil;
 import com.mobilegenomics.f5n.support.ServerCallback;
@@ -55,7 +55,7 @@ public class MinITActivity extends AppCompatActivity {
 
     private static boolean AUTOMATED = false;
 
-    private static TextView connectionLogText;
+    public TextView connectionLogText;
 
     ProgressBar progressBar;
 
@@ -94,13 +94,13 @@ public class MinITActivity extends AppCompatActivity {
 
     private static final String REFERENCE_GNOME = "\\$REF_GNOME/";
 
-    public static void logHandler(Handler handler) {
-        handler.post(new Runnable() {
+    public static void logHandler(LogHandler logHandler) {
+        logHandler.post(new Runnable() {
             @Override
             public void run() {
                 StringBuilder newLogMessage = ServerConnectionUtils.getLogMessage();
                 if (newLogMessage != null && newLogMessage.toString().trim().length() != 0) {
-                    connectionLogText.setText(newLogMessage);
+                    logHandler.getmActivity().get().connectionLogText.setText(newLogMessage);
                     PreferenceUtil.setSharedPreferenceString(R.string.id_prev_conn_log, newLogMessage.toString());
                 }
             }
@@ -227,6 +227,8 @@ public class MinITActivity extends AppCompatActivity {
                     btnRequestJob.setVisibility(View.VISIBLE);
                     trSendResults.setVisibility(View.GONE);
                     trBackToRequestJob.setVisibility(View.GONE);
+                    connectionLogText.setText(null);
+                    statusTextView.setText(null);
                 }
             }
         });
@@ -347,7 +349,7 @@ public class MinITActivity extends AppCompatActivity {
     }
 
     private void requestJob() {
-        ServerConnectionUtils.connectToServer(State.REQUEST, new ServerCallback() {
+        ServerConnectionUtils.connectToServer(State.REQUEST, this, new ServerCallback() {
             @Override
             public void onError(final WrapperObject job) {
 
@@ -377,7 +379,7 @@ public class MinITActivity extends AppCompatActivity {
     private void sendJobResults() {
         resultsSummary = PreferenceUtil.getSharedPreferenceString(R.string.id_results_summary);
         ServerConnectionUtils.setResultToWrapperObject(resultsSummary);
-        ServerConnectionUtils.connectToServer(State.COMPLETED, new ServerCallback() {
+        ServerConnectionUtils.connectToServer(State.COMPLETED, this, new ServerCallback() {
             @Override
             public void onError(final WrapperObject job) {
 
