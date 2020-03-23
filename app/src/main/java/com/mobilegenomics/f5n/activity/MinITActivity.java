@@ -432,7 +432,7 @@ public class MinITActivity extends AppCompatActivity {
         }
         folderPath = fileList.get(fileList.size() - 1);
         String zipFileName = folderPath + "/" + folderPath.substring(folderPath.lastIndexOf("/") + 1)
-                + ".out.zip";
+                + "_output.zip";
 
         ZipManager zipManager = new ZipManager(MinITActivity.this, new ZipListener() {
             @Override
