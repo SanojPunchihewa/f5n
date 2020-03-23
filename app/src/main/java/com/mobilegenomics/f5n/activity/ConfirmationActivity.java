@@ -398,20 +398,52 @@ public class ConfirmationActivity extends AppCompatActivity {
             if (GUIConfiguration.getAppMode() == AppMode.SLAVE) {
                 //mp.start();
                 //mp.setLooping(true);
-                PreferenceUtil.setSharedPreferenceString(R.string.id_results_summary, resultsSummary);
-                GUIConfiguration.setPipelineState(PipelineState.MINIT_COMPRESS);
-                if (MinITActivity.isAUTOMATED()) {
-                    btnSendResults.setVisibility(View.GONE);
-                    writeLogToFile();
-                    Intent intent = new Intent(ConfirmationActivity.this, MinITActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK |
-                            Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_FROM_BACKGROUND);
-                    intent.putExtra("PIPELINE_STATUS", resultsSummary);
-                    intent.putExtra("FOLDER_PATH", folderPath);
+                if (GUIConfiguration.getFailedPipelineStep() == null) {
                     PreferenceUtil.setSharedPreferenceString(R.string.id_results_summary, resultsSummary);
-                    startActivity(intent);
+                    GUIConfiguration.setPipelineState(PipelineState.MINIT_COMPRESS);
+                    if (MinITActivity.isAUTOMATED()) {
+                        btnSendResults.setVisibility(View.GONE);
+                        writeLogToFile();
+                        Intent intent = new Intent(ConfirmationActivity.this, MinITActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK |
+                                Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_FROM_BACKGROUND);
+                        intent.putExtra("PIPELINE_STATUS", resultsSummary);
+                        intent.putExtra("FOLDER_PATH", folderPath);
+                        PreferenceUtil.setSharedPreferenceString(R.string.id_results_summary, resultsSummary);
+                        startActivity(intent);
+                    } else {
+                        btnSendResults.setVisibility(View.VISIBLE);
+                    }
                 } else {
-                    btnSendResults.setVisibility(View.VISIBLE);
+                    new AlertDialog.Builder(ConfirmationActivity.this)
+                            .setTitle("Pipeline Failure")
+                            .setMessage(GUIConfiguration.getFailedPipelineStep().name() + " has failed")
+                            .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    writeLogToFile();
+                                    Intent intent = new Intent(ConfirmationActivity.this, MinITActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK |
+                                            Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_FROM_BACKGROUND);
+                                    intent.putExtra("PIPELINE_STATUS", resultsSummary);
+                                    intent.putExtra("FOLDER_PATH", folderPath);
+                                    PreferenceUtil.setSharedPreferenceString(R.string.id_results_summary, resultsSummary);
+                                    startActivity(intent);
+                                }
+                            })
+                            .setNegativeButton("Reconfigure", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(final DialogInterface dialog, final int which) {
+                                    MinITActivity.setAUTOMATED(false);
+                                    GUIConfiguration
+                                            .setSteps(PreferenceUtil.getSharedPreferenceStepList(R.string.id_step_list));
+                                    Intent intent = new Intent(ConfirmationActivity.this, TerminalActivity.class);
+                                    startActivity(intent);
+                                    GUIConfiguration.setPipelineState(PipelineState.MINIT_CONFIGURE);
+                                }
+                            })
+                            .setCancelable(false)
+                            .show();
                 }
             }
         }

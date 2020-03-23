@@ -681,6 +681,7 @@ public class MinITActivity extends AppCompatActivity {
 
     private void automatedSetUpLaunch(String filePath) {
         GUIConfiguration.createPipeline();
+        PreferenceUtil.setSharedPreferenceStepList(R.string.id_step_list, GUIConfiguration.getSteps());
         ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Setting up to execute job");
         System.gc();
