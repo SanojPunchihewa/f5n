@@ -347,7 +347,11 @@ public class ConfirmationActivity extends AppCompatActivity {
         protected void onPreExecute() {
             super.onPreExecute();
             NativeCommands.getNativeInstance().startPipeline(logPipePath);
-            GUIConfiguration.setPipelineState(PipelineState.RUNNING);
+            if (GUIConfiguration.getAppMode() == AppMode.SLAVE) {
+                GUIConfiguration.setPipelineState(PipelineState.MINIT_CONFIGURE);
+            } else {
+                GUIConfiguration.setPipelineState(PipelineState.RUNNING);
+            }
         }
 
         @Override

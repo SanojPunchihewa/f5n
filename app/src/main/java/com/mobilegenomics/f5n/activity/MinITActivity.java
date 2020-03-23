@@ -254,6 +254,7 @@ public class MinITActivity extends AppCompatActivity {
     }
 
     private void downloadDataSetFTP() {
+        serverIP = ServerConnectionUtils.getServerAddress();
         String url = serverIP + "/" + zipFileName;
         new FTPManager().download(url, STORAGE_PATH, this,
                 new DownloadListener() {

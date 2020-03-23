@@ -2,6 +2,7 @@ package com.mobilegenomics.f5n.support;
 
 import android.util.Log;
 
+import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.activity.MinITActivity;
 import com.mobilegenomics.f5n.dto.State;
 import com.mobilegenomics.f5n.dto.WrapperObject;
@@ -105,10 +106,14 @@ public class ServerConnectionUtils {
 
     public static void setServerAddress(String serverAddress) {
         ServerConnectionUtils.serverAddress = serverAddress;
+        PreferenceUtil.setSharedPreferenceString(R.string.id_server_ip, serverAddress);
     }
 
     public static String getServerAddress() {
-        return serverAddress;
+        if (serverAddress != null)
+            return serverAddress;
+        else
+            return PreferenceUtil.getSharedPreferenceString(R.string.id_server_ip);
     }
 
     public static StringBuilder getLogMessage() {
