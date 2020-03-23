@@ -17,6 +17,8 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RelativeLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,7 +57,7 @@ public class MinITActivity extends AppCompatActivity {
 
     private static final String TAG = MinITActivity.class.getSimpleName();
 
-    private static boolean AUTOMATED = false;
+    private static boolean AUTOMATED = true;
 
     public TextView connectionLogText;
 
@@ -67,6 +69,8 @@ public class MinITActivity extends AppCompatActivity {
 
     private TableRow trBackToRequestJob;
 
+    private RelativeLayout trRadioGroupExecuteMode;
+
     private Button btnProcessJob;
 
     private Button btnRequestJob;
@@ -74,6 +78,7 @@ public class MinITActivity extends AppCompatActivity {
     private Button btnBackToRequestJob;
 
     private Button btnSendResults;
+
 
     private String folderPath;
 
@@ -141,8 +146,10 @@ public class MinITActivity extends AppCompatActivity {
         btnProcessJob = findViewById(R.id.btn_process_job);
         btnBackToRequestJob = findViewById(R.id.btn_back_to_req_job);
         btnSendResults = findViewById(R.id.btn_send_result);
+        trRadioGroupExecuteMode = findViewById(R.id.tr_radio_grp_execute_mode);
 
         if (getIntent().getExtras() != null) {
+            trRadioGroupExecuteMode.setVisibility(View.GONE);
             resultsSummary = getIntent().getExtras().getString("PIPELINE_STATUS");
             folderPath = getIntent().getExtras().getString("FOLDER_PATH");
             if (resultsSummary != null && !TextUtils.isEmpty(resultsSummary)) {
@@ -175,6 +182,7 @@ public class MinITActivity extends AppCompatActivity {
 
                     ServerConnectionUtils.setServerAddress(serverIP);
                     ServerConnectionUtils.clearLogMessage();
+                    trRadioGroupExecuteMode.setVisibility(View.GONE);
                     connectionLogText.setText(null);
                     statusTextView.setText(null);
                     requestJob();
@@ -230,11 +238,26 @@ public class MinITActivity extends AppCompatActivity {
                     btnRequestJob.setVisibility(View.VISIBLE);
                     trSendResults.setVisibility(View.GONE);
                     trBackToRequestJob.setVisibility(View.GONE);
+                    trRadioGroupExecuteMode.setVisibility(View.VISIBLE);
                     connectionLogText.setText(null);
                     statusTextView.setText(null);
                 }
             }
         });
+    }
+
+    public void onSelectExecuteMode(View view) {
+        boolean checked = ((RadioButton) view).isChecked();
+        switch (view.getId()) {
+            case R.id.radio_automate:
+                if (checked)
+                    AUTOMATED = true;
+                break;
+            default:
+                if (checked)
+                    AUTOMATED = false;
+                break;
+        }
     }
 
     private void processJob() {
@@ -367,7 +390,6 @@ public class MinITActivity extends AppCompatActivity {
                         GUIConfiguration.configureSteps(job.getSteps());
                         zipFileName = job.getPrefix() + ".zip";
                         GUIConfiguration.setPipelineState(PipelineState.MINIT_DOWNLOAD);
-                        setAUTOMATED(true);
                         if (isAUTOMATED()) {
                             btnProcessJob.setVisibility(View.GONE);
                             processJob();
@@ -501,6 +523,7 @@ public class MinITActivity extends AppCompatActivity {
                         btnRequestJob.setVisibility(View.GONE);
                         trSendResults.setVisibility(View.VISIBLE);
                         trBackToRequestJob.setVisibility(View.VISIBLE);
+                        trRadioGroupExecuteMode.setVisibility(View.GONE);
                         setAUTOMATED(false);
                     }
                 })
@@ -520,6 +543,7 @@ public class MinITActivity extends AppCompatActivity {
         btnRequestJob.setVisibility(View.VISIBLE);
         trSendResults.setVisibility(View.GONE);
         trBackToRequestJob.setVisibility(View.GONE);
+        trRadioGroupExecuteMode.setVisibility(View.VISIBLE);
         connectionLogText.setText(null);
         statusTextView.setText(null);
     }
@@ -607,6 +631,7 @@ public class MinITActivity extends AppCompatActivity {
                 .setPositiveButton("Resume", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
+                        trRadioGroupExecuteMode.setVisibility(View.GONE);
                         WrapperObject prevJob = (WrapperObject) PreferenceUtil.getSharedPreferenceObject(R.string.id_wrapper_obj);
                         ServerConnectionUtils.setWrapperObject(prevJob);
                         String previousConnectionLog = PreferenceUtil.getSharedPreferenceString(R.string.id_prev_conn_log);
@@ -646,6 +671,7 @@ public class MinITActivity extends AppCompatActivity {
                     @Override
                     public void onClick(final DialogInterface dialog, final int which) {
                         GUIConfiguration.setPipelineState(PipelineState.STATE_ZERO);
+                        trRadioGroupExecuteMode.setVisibility(View.VISIBLE);
                         dialog.dismiss();
                     }
                 })

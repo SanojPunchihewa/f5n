@@ -59,6 +59,50 @@
             android:onClick="pasteIPAddress" />
     </TableRow>
 
+    <RelativeLayout
+        android:id="@+id/tr_radio_grp_execute_mode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tr_copy_paste_ip"
+        android:orientation="vertical">
+
+        <RadioGroup
+            android:id="@+id/radio_grp_execute_mode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radio_automate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/radio_btn_automate"
+                android:checked="true"
+                android:onClick="onSelectExecuteMode"/>
+
+            <RadioButton
+                android:id="@+id/radio_manual"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/radio_btn_manual"
+                android:hint="@string/hint_radio_btn_manual"
+                android:onClick="onSelectExecuteMode"/>
+
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/tv_radio_btn_hint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/hint_radio_btn_manual"
+            android:textColor="@color/gray"
+            android:layout_below="@id/radio_grp_execute_mode"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"/>
+
+    </RelativeLayout>
+
+
     <TableRow
         android:id="@+id/tr_select_files_send"
         android:layout_width="match_parent"
@@ -66,7 +110,7 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:gravity="center"
-        android:layout_below="@id/tr_copy_paste_ip"
+        android:layout_below="@id/tr_radio_grp_execute_mode"
         android:visibility="gone">
 
         <Button
