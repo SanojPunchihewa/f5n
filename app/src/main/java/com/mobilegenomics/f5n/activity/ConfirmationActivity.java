@@ -279,13 +279,14 @@ public class ConfirmationActivity extends AppCompatActivity {
             });
             btnSendResults.setVisibility(View.GONE);
             linearLayout.addView(btnSendResults);
+
+            if (MinITActivity.isAUTOMATED()) {
+                btnProceed.setVisibility(View.GONE);
+                btnSendResults.setVisibility(View.GONE);
+                executePipeline();
+            }
         }
 
-        if (MinITActivity.isAUTOMATED()) {
-            btnProceed.setVisibility(View.GONE);
-            btnSendResults.setVisibility(View.GONE);
-            executePipeline();
-        }
     }
 
     private void executePipeline() {

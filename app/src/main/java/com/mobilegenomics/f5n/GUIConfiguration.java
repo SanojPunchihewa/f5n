@@ -152,6 +152,7 @@ public class GUIConfiguration {
                 setFailedPipelineStep(pipelineComponent.getPipelineStep());
                 break;
             }
+            setFailedPipelineStep(null);
         }
     }
 
