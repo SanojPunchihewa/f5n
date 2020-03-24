@@ -72,6 +72,8 @@ public class ConfirmationActivity extends AppCompatActivity {
 
     Button btnWriteLog;
 
+    Button btnReconfigure;
+
     Button btnGoToStart;
 
     Chronometer txtTimer;
@@ -242,12 +244,36 @@ public class ConfirmationActivity extends AppCompatActivity {
         btnWriteLog.setVisibility(View.GONE);
         linearLayout.addView(btnWriteLog);
 
-        if (GUIConfiguration.getAppMode() == AppMode.STANDALONE || GUIConfiguration.getAppMode() == AppMode.DEMO) {
+        btnReconfigure = new Button(this);
+        btnReconfigure.setText("Reconfigure");
+        btnReconfigure.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                if (GUIConfiguration.getAppMode() == AppMode.SLAVE) {
+                    MinITActivity.setAUTOMATED(false);
+                    GUIConfiguration.setPipelineState(PipelineState.MINIT_CONFIGURE);
+                    GUIConfiguration
+                            .setSteps(PreferenceUtil.getSharedPreferenceStepList(R.string.id_step_list));
+                } else {
+                    GUIConfiguration.setPipelineState(PipelineState.TO_BE_CONFIGURED);
+                }
+                Intent intent = new Intent(ConfirmationActivity.this, TerminalActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+        btnReconfigure.setVisibility(View.GONE);
+        linearLayout.addView(btnReconfigure);
+
+        if (GUIConfiguration.getAppMode() == AppMode.STANDALONE || GUIConfiguration.getAppMode() == AppMode.DEMO || GUIConfiguration.getAppMode() == AppMode.SLAVE) {
             btnGoToStart = new Button(this);
             btnGoToStart.setText("Go to Start Screen");
             btnGoToStart.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(final View v) {
+                    if (GUIConfiguration.getAppMode() == AppMode.SLAVE) {
+                        GUIConfiguration.setPipelineState(PipelineState.MINIT_CONFIGURE);
+                    }
                     if (!logWrittenToFile) {
                         showWriteToFileDialog(true);
                     } else {
@@ -262,28 +288,26 @@ public class ConfirmationActivity extends AppCompatActivity {
         }
 
         if (GUIConfiguration.getAppMode() == AppMode.SLAVE) {
-            btnSendResults = new Button(this);
-            btnSendResults.setText("Send Results");
-            btnSendResults.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(final View v) {
-                    //mp.stop();
-                    generateLog();
-                    Intent intent = new Intent(ConfirmationActivity.this, MinITActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK |
-                            Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_FROM_BACKGROUND);
-                    intent.putExtra("PIPELINE_STATUS", resultsSummary);
-                    intent.putExtra("FOLDER_PATH", folderPath);
-                    startActivity(intent);
-                }
-            });
-            btnSendResults.setVisibility(View.GONE);
-            linearLayout.addView(btnSendResults);
-
             if (MinITActivity.isAUTOMATED()) {
                 btnProceed.setVisibility(View.GONE);
-                btnSendResults.setVisibility(View.GONE);
                 executePipeline();
+            } else {
+                btnSendResults = new Button(this);
+                btnSendResults.setText("Send Results");
+                btnSendResults.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(final View v) {
+                        //mp.stop();
+                        generateLog();
+                        Intent intent = new Intent(ConfirmationActivity.this, MinITActivity.class);
+                        intent.putExtra("PIPELINE_STATUS", resultsSummary);
+                        intent.putExtra("FOLDER_PATH", folderPath);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+                btnSendResults.setVisibility(View.GONE);
+                linearLayout.addView(btnSendResults);
             }
         }
 
@@ -388,7 +412,7 @@ public class ConfirmationActivity extends AppCompatActivity {
             }
             btnWriteLog.setVisibility(View.VISIBLE);
             if (GUIConfiguration.getAppMode() == AppMode.STANDALONE
-                    || GUIConfiguration.getAppMode() == AppMode.DEMO) {
+                    || GUIConfiguration.getAppMode() == AppMode.DEMO || GUIConfiguration.getAppMode() == AppMode.SLAVE) {
                 btnGoToStart.setVisibility(View.VISIBLE);
             }
             btnProceed.setEnabled(true);
@@ -396,10 +420,8 @@ public class ConfirmationActivity extends AppCompatActivity {
             PreferenceUtil
                     .setSharedPreferenceInt(R.string.id_app_mode, GUIConfiguration.getPipelineState().ordinal());
 
-            if (GUIConfiguration.getAppMode() == AppMode.SLAVE) {
-                //mp.start();
-                //mp.setLooping(true);
-                if (GUIConfiguration.getFailedPipelineStep() == null) {
+            if (GUIConfiguration.getFailedPipelineStep() == null) {
+                if (GUIConfiguration.getAppMode() == AppMode.SLAVE) {
                     PreferenceUtil.setSharedPreferenceString(R.string.id_results_summary, resultsSummary);
                     GUIConfiguration.setPipelineState(PipelineState.MINIT_COMPRESS);
                     if (MinITActivity.isAUTOMATED()) {
@@ -410,48 +432,31 @@ public class ConfirmationActivity extends AppCompatActivity {
                                 Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_FROM_BACKGROUND);
                         intent.putExtra("PIPELINE_STATUS", resultsSummary);
                         intent.putExtra("FOLDER_PATH", folderPath);
-                        PreferenceUtil.setSharedPreferenceString(R.string.id_results_summary, resultsSummary);
                         startActivity(intent);
+                        finish();
                     } else {
                         btnSendResults.setVisibility(View.VISIBLE);
                     }
-                } else {
-                    new AlertDialog.Builder(ConfirmationActivity.this)
-                            .setTitle("Pipeline Failure")
-                            .setMessage(GUIConfiguration.getFailedPipelineStep().name() + " has failed")
-                            .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
-                                    writeLogToFile();
-                                    Intent intent = new Intent(ConfirmationActivity.this, MinITActivity.class);
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK |
-                                            Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_FROM_BACKGROUND);
-                                    intent.putExtra("PIPELINE_STATUS", resultsSummary);
-                                    intent.putExtra("FOLDER_PATH", folderPath);
-                                    PreferenceUtil.setSharedPreferenceString(R.string.id_results_summary, resultsSummary);
-                                    startActivity(intent);
-                                }
-                            })
-                            .setNegativeButton("Reconfigure", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(final DialogInterface dialog, final int which) {
-                                    MinITActivity.setAUTOMATED(false);
-                                    GUIConfiguration
-                                            .setSteps(PreferenceUtil.getSharedPreferenceStepList(R.string.id_step_list));
-                                    Intent intent = new Intent(ConfirmationActivity.this, TerminalActivity.class);
-                                    startActivity(intent);
-                                    GUIConfiguration.setPipelineState(PipelineState.MINIT_CONFIGURE);
-                                }
-                            })
-                            .setCancelable(false)
-                            .show();
                 }
+            } else {
+                btnReconfigure.setVisibility(View.VISIBLE);
+                new AlertDialog.Builder(ConfirmationActivity.this)
+                        .setTitle("Pipeline Failure")
+                        .setMessage(GUIConfiguration.getFailedPipelineStep().name() + " has failed. Reconfigure pipeline or proceed forward")
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int i) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .setCancelable(false)
+                        .show();
             }
         }
     }
 
     private void writeLogToFile() {
-        resultsSummary = generateLog();
+        generateLog();
 
         try {
             String dirPath = Environment.getExternalStorageDirectory() + "/mobile-genomics";
@@ -480,7 +485,7 @@ public class ConfirmationActivity extends AppCompatActivity {
 
     }
 
-    private String generateLog() {
+    private void generateLog() {
         StringBuilder stringBuilder = new StringBuilder();
 
         String header = "----------- Log for app session " + TimeFormat.millisToDateTime(System.currentTimeMillis())
@@ -503,7 +508,7 @@ public class ConfirmationActivity extends AppCompatActivity {
 
         String footer = "\n-------------------- End of Log --------------------\n\n";
         stringBuilder.append(footer);
-        return stringBuilder.toString();
+        resultsSummary = stringBuilder.toString();
     }
 
     @Override

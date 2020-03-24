@@ -55,8 +55,6 @@ import java.util.Set;
 
 public class MinITActivity extends AppCompatActivity {
 
-    private static final String TAG = MinITActivity.class.getSimpleName();
-
     private static boolean AUTOMATED = true;
 
     public TextView connectionLogText;
@@ -78,7 +76,6 @@ public class MinITActivity extends AppCompatActivity {
     private Button btnBackToRequestJob;
 
     private Button btnSendResults;
-
 
     private String folderPath;
 
@@ -235,6 +232,7 @@ public class MinITActivity extends AppCompatActivity {
                             .setCancelable(false)
                             .show();
                 } else {
+                    GUIConfiguration.setPipelineState(PipelineState.STATE_ZERO);
                     btnRequestJob.setVisibility(View.VISIBLE);
                     trSendResults.setVisibility(View.GONE);
                     trBackToRequestJob.setVisibility(View.GONE);
@@ -248,15 +246,12 @@ public class MinITActivity extends AppCompatActivity {
 
     public void onSelectExecuteMode(View view) {
         boolean checked = ((RadioButton) view).isChecked();
-        switch (view.getId()) {
-            case R.id.radio_automate:
-                if (checked)
-                    AUTOMATED = true;
-                break;
-            default:
-                if (checked)
-                    AUTOMATED = false;
-                break;
+        if (view.getId() == R.id.radio_automate) {
+            if (checked)
+                AUTOMATED = true;
+        } else {
+            if (checked)
+                AUTOMATED = false;
         }
     }
 
@@ -631,6 +626,7 @@ public class MinITActivity extends AppCompatActivity {
                 .setPositiveButton("Resume", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
+                        setAUTOMATED(false);
                         trRadioGroupExecuteMode.setVisibility(View.GONE);
                         WrapperObject prevJob = (WrapperObject) PreferenceUtil.getSharedPreferenceObject(R.string.id_wrapper_obj);
                         ServerConnectionUtils.setWrapperObject(prevJob);
@@ -672,6 +668,7 @@ public class MinITActivity extends AppCompatActivity {
                     public void onClick(final DialogInterface dialog, final int which) {
                         GUIConfiguration.setPipelineState(PipelineState.STATE_ZERO);
                         trRadioGroupExecuteMode.setVisibility(View.VISIBLE);
+                        setAUTOMATED(true);
                         dialog.dismiss();
                     }
                 })
