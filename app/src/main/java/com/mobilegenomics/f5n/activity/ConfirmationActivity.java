@@ -262,13 +262,13 @@ public class ConfirmationActivity extends AppCompatActivity {
         }
 
         if (GUIConfiguration.getAppMode() == AppMode.SLAVE) {
-
             btnSendResults = new Button(this);
             btnSendResults.setText("Send Results");
             btnSendResults.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(final View v) {
                     //mp.stop();
+                    generateLog();
                     Intent intent = new Intent(ConfirmationActivity.this, MinITActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK |
                             Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_FROM_BACKGROUND);
@@ -451,7 +451,36 @@ public class ConfirmationActivity extends AppCompatActivity {
     }
 
     private void writeLogToFile() {
+        resultsSummary = generateLog();
 
+        try {
+            String dirPath = Environment.getExternalStorageDirectory() + "/mobile-genomics";
+            File dir = new File(dirPath);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+
+            File logFile = new File(dir.getAbsolutePath() + "/" + FileUtil.LOG_FILE_NAME);
+            if (!logFile.exists()) {
+                logFile.createNewFile();
+            }
+            FileOutputStream fOut = new FileOutputStream(logFile, true);
+            OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
+            myOutWriter.append(resultsSummary);
+            myOutWriter.flush();
+            myOutWriter.close();
+            fOut.close();
+            Toast.makeText(getApplicationContext(), "Finished writing to mobile-genomics in home", Toast.LENGTH_LONG)
+                    .show();
+            logWrittenToFile = true;
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), "Write failure", Toast.LENGTH_SHORT).show(); //##6
+            Log.e("TAG", e.toString());
+        }
+
+    }
+
+    private String generateLog() {
         StringBuilder stringBuilder = new StringBuilder();
 
         String header = "----------- Log for app session " + TimeFormat.millisToDateTime(System.currentTimeMillis())
@@ -474,34 +503,7 @@ public class ConfirmationActivity extends AppCompatActivity {
 
         String footer = "\n-------------------- End of Log --------------------\n\n";
         stringBuilder.append(footer);
-
-        resultsSummary = stringBuilder.toString();
-
-        try {
-            String dirPath = Environment.getExternalStorageDirectory() + "/mobile-genomics";
-            File dir = new File(dirPath);
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-
-            File logFile = new File(dir.getAbsolutePath() + "/" + FileUtil.LOG_FILE_NAME);
-            if (!logFile.exists()) {
-                logFile.createNewFile();
-            }
-            FileOutputStream fOut = new FileOutputStream(logFile, true);
-            OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
-            myOutWriter.append(stringBuilder.toString());
-            myOutWriter.flush();
-            myOutWriter.close();
-            fOut.close();
-            Toast.makeText(getApplicationContext(), "Finished writing to mobile-genomics in home", Toast.LENGTH_LONG)
-                    .show();
-            logWrittenToFile = true;
-        } catch (Exception e) {
-            Toast.makeText(getApplicationContext(), "Write failure", Toast.LENGTH_SHORT).show(); //##6
-            Log.e("TAG", e.toString());
-        }
-
+        return stringBuilder.toString();
     }
 
     @Override
