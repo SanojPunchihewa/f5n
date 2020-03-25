@@ -1,6 +1,5 @@
 package com.mobilegenomics.f5n.activity;
 
-import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -150,6 +149,7 @@ public class MinITActivity extends AppCompatActivity {
             resultsSummary = getIntent().getExtras().getString("PIPELINE_STATUS");
             folderPath = getIntent().getExtras().getString("FOLDER_PATH");
             if (resultsSummary != null && !TextUtils.isEmpty(resultsSummary)) {
+                PreferenceUtil.setSharedPreferenceString(R.string.id_results_summary, resultsSummary);
                 if (MinITActivity.isAUTOMATED()) {
                     btnRequestJob.setVisibility(View.GONE);
                     trSendResults.setVisibility(View.GONE);
@@ -232,13 +232,7 @@ public class MinITActivity extends AppCompatActivity {
                             .setCancelable(false)
                             .show();
                 } else {
-                    GUIConfiguration.setPipelineState(PipelineState.STATE_ZERO);
-                    btnRequestJob.setVisibility(View.VISIBLE);
-                    trSendResults.setVisibility(View.GONE);
-                    trBackToRequestJob.setVisibility(View.GONE);
-                    trRadioGroupExecuteMode.setVisibility(View.VISIBLE);
-                    connectionLogText.setText(null);
-                    statusTextView.setText(null);
+                    returnToAnotherRequestJob();
                 }
             }
         });
@@ -535,6 +529,7 @@ public class MinITActivity extends AppCompatActivity {
 
     private void returnToAnotherRequestJob() {
         GUIConfiguration.setPipelineState(PipelineState.STATE_ZERO);
+        setAUTOMATED(true);
         btnRequestJob.setVisibility(View.VISIBLE);
         trSendResults.setVisibility(View.GONE);
         trBackToRequestJob.setVisibility(View.GONE);
@@ -679,17 +674,14 @@ public class MinITActivity extends AppCompatActivity {
     private void automatedSetUpLaunch(String filePath) {
         GUIConfiguration.createPipeline();
         PreferenceUtil.setSharedPreferenceStepList(R.string.id_step_list, GUIConfiguration.getSteps());
-        ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Setting up to execute job");
-        System.gc();
-        progressDialog.show();
+        statusTextView.setText("Setting up to execute job...");
         new Handler().postDelayed(new Runnable() {
             public void run() {
-                progressDialog.dismiss();
-                finish();
                 Intent intent = new Intent(MinITActivity.this, ConfirmationActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra("FOLDER_PATH", filePath);
                 startActivity(intent);
+                finish();
             }
         }, 2500);
     }

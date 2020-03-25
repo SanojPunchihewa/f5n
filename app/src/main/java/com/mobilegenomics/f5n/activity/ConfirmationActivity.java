@@ -207,6 +207,7 @@ public class ConfirmationActivity extends AppCompatActivity {
 
         txtLogs = new TextView(this);
         scrollView.addView(txtLogs);
+        scrollView.fullScroll(View.FOCUS_DOWN);
         LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 700);
         scrollView.setLayoutParams(params);
         View separator2 = new View(this);
@@ -290,7 +291,12 @@ public class ConfirmationActivity extends AppCompatActivity {
         if (GUIConfiguration.getAppMode() == AppMode.SLAVE) {
             if (MinITActivity.isAUTOMATED()) {
                 btnProceed.setVisibility(View.GONE);
-                executePipeline();
+                txtLogs.append("Pipeline execution starting....\n");
+                new Handler().postDelayed(new Runnable() {
+                    public void run() {
+                        executePipeline();
+                    }
+                }, 3000);
             } else {
                 btnSendResults = new Button(this);
                 btnSendResults.setText("Send Results");
@@ -422,18 +428,20 @@ public class ConfirmationActivity extends AppCompatActivity {
 
             if (GUIConfiguration.getFailedPipelineStep() == null) {
                 if (GUIConfiguration.getAppMode() == AppMode.SLAVE) {
-                    PreferenceUtil.setSharedPreferenceString(R.string.id_results_summary, resultsSummary);
                     GUIConfiguration.setPipelineState(PipelineState.MINIT_COMPRESS);
                     if (MinITActivity.isAUTOMATED()) {
-                        btnSendResults.setVisibility(View.GONE);
                         writeLogToFile();
-                        Intent intent = new Intent(ConfirmationActivity.this, MinITActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK |
-                                Intent.FLAG_ACTIVITY_REORDER_TO_FRONT | Intent.FLAG_FROM_BACKGROUND);
-                        intent.putExtra("PIPELINE_STATUS", resultsSummary);
-                        intent.putExtra("FOLDER_PATH", folderPath);
-                        startActivity(intent);
-                        finish();
+                        txtLogs.append("Job execute successfully. Starting to send result back...\n");
+                        new Handler().postDelayed(new Runnable() {
+                            public void run() {
+                                Intent intent = new Intent(ConfirmationActivity.this, MinITActivity.class);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                intent.putExtra("PIPELINE_STATUS", resultsSummary);
+                                intent.putExtra("FOLDER_PATH", folderPath);
+                                startActivity(intent);
+                                finish();
+                            }
+                        }, 4000);
                     } else {
                         btnSendResults.setVisibility(View.VISIBLE);
                     }
