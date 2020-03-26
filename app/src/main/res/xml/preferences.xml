@@ -4,6 +4,13 @@
         android:title="General"
         app:iconSpaceReserved="false">
         <Preference
+            android:key="@string/key_log_file_preference"
+            android:title="@string/title_log_file"
+            app:iconSpaceReserved="false"
+            app:allowDividerBelow="true"
+            app:enableCopying="true"
+            app:persistent="false" />
+        <Preference
             android:key="@string/key_storage_preference"
             android:title="@string/title_default_storage"
             app:iconSpaceReserved="false"
@@ -26,7 +33,7 @@
             android:summary="@string/summery_min_it_upload_files"
             app:iconSpaceReserved="false"
             android:entries="@array/min_it_upload_files"
-            android:entryValues="@array/min_it_upload_files"/>
+            android:entryValues="@array/min_it_upload_files" />
 
     </PreferenceCategory>
 

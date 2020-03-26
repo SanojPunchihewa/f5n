@@ -37,6 +37,8 @@ public class FragmentSettings extends PreferenceFragmentCompat {
 
     private boolean dimScreen;
 
+    private Preference logFileDirectoryPreference;
+
     private Preference storagePreference;
 
     private Preference referenceGnomePreference;
@@ -59,6 +61,7 @@ public class FragmentSettings extends PreferenceFragmentCompat {
 
         storagePermission = (Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
+        logFileDirectoryPreference = findPreference(getResources().getString(R.string.key_log_file_preference));
         storagePreference = findPreference(getResources().getString(R.string.key_storage_preference));
         referenceGnomePreference = findPreference(getResources().getString(R.string.key_reference_gnome));
         versionPreference = findPreference(getResources().getString(R.string.key_version_preference));

@@ -66,6 +66,8 @@
     <string name="title_min_it_upload">MinIt Output Files Upload</string>
     <string name="dialog_title_min_it_upload_files">Select output files</string>
     <string name="summery_min_it_upload_files">Select output files to be uploaded to server</string>
+    <string name="key_log_file_preference">key_log_file_preference</string>
+    <string name="title_log_file">Log file directory\n<font color="#5F5F5F" size="14">Location to save f5n.log and f5n.tmp files\n</font></string>
     <string-array name="min_it_upload_files">
         <item>minimap.sam</item>
         <item>samtool.bam</item>
