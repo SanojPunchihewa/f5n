@@ -19,6 +19,9 @@ add_library( # Sets the name of the library.
         )
 
 # add needed libraries
+add_library(libnanopolish SHARED IMPORTED)
+set_target_properties(libnanopolish PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libnanopolish.so)
+
 add_library(libf5c SHARED IMPORTED)
 set_target_properties(libf5c PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libf5cshared.so)
 
@@ -37,10 +40,10 @@ set_target_properties(libhts PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/..
 # default, you only need to specify the name of the public NDK library
 # you want to add. CMake verifies that the library exists before
 # completing its build.
-find_library( log-lib log)
+find_library(log-lib log)
 
 
 # Specifies libraries CMake should link to your target library. You
 # can link multiple libraries, such as libraries you define in this
 # build script, prebuilt third-party libraries, or system libraries.
-target_link_libraries(native-lib libminimap libsamtool libf5c libhts ${log-lib})
+target_link_libraries(native-lib libminimap libsamtool libf5c libnanopolish libhts ${log-lib})

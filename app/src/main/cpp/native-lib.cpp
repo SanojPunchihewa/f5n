@@ -17,6 +17,7 @@ int fdo;
 #include "interface_minimap.h"
 #include "interface_f5c.h"
 #include "interface_samtool.h"
+#include "interface_nanopolish.h"
 jmp_buf jmpBuf;
 
 // this is the handler for the risky code
@@ -114,16 +115,17 @@ Java_com_mobilegenomics_f5n_core_NativeCommands_init(JNIEnv *env, jobject, jstri
     ///
     if (command_id < 1) {
       // minimap2
-      sprintf(exceptionBuffer,"MINIMAP2_EXCEPTION");
+      sprintf(exceptionBuffer, "MINIMAP2_EXCEPTION");
       result = init_minimap2(argc, argv);
     } else if (command_id < 3) {
       // samtools
-      sprintf(exceptionBuffer,"SAMTOOL_EXCEPTION");
+      sprintf(exceptionBuffer, "SAMTOOL_EXCEPTION");
       result = init_samtools(argc, argv);
     } else {
       // f5c
-      sprintf(exceptionBuffer,"F5C_EXCEPTION");
-      result = init_f5c(argc, argv);
+      sprintf(exceptionBuffer, "F5C_EXCEPTION");
+//      result = init_f5c(argc, argv);
+      result = init_nanopolish(argc, argv);
     }
     ///
 
