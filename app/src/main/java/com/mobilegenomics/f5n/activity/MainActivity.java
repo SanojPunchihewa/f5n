@@ -19,7 +19,6 @@ import androidx.core.app.ActivityCompat;
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.AppMode;
-import com.mobilegenomics.f5n.fragments.FragmentSettings;
 import com.mobilegenomics.f5n.support.PermissionResultCallback;
 import com.mobilegenomics.f5n.support.PermissionUtils;
 import java.util.ArrayList;
@@ -87,8 +86,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void startStandaloneMode(View view) {
-        GUIConfiguration.setAppMode(AppMode.STANDALONE);
-        startActivity(new Intent(MainActivity.this, PipelineActivity.class));
+        startActivity(new Intent(MainActivity.this, ChoosePipelineActivity.class));
     }
 
     public void startMinITMode(View view) {

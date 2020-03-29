@@ -62,6 +62,9 @@
         <activity
             android:name=".activity.DemoActivity"
             android:label="Demo Mode" />
+        <activity
+            android:name=".activity.ChoosePipelineActivity"
+            android:label="Choose a Pipeline" />
     </application>
 
 </manifest>
