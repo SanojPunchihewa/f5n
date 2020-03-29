@@ -24,7 +24,7 @@ public class FragmentHelpRunPipeline extends Fragment {
         linearLayout = view.findViewById(R.id.vertical_linear_layout);
         TextView txt1 = new TextView(getContext());
         txt1.setText(
-                "To run the pipeline configured through the modes STANDALONE, MINIT and DEMO you need to finally click RUN PIPELINE\n"
+                "To run the pipeline configured through the modes STANDALONE_METHYLATION, MINIT and DEMO you need to finally click RUN PIPELINE\n"
                         + "Once it's completed, If you want to save the logcat press WRITE LOG TO FILE. This will create a file called f5n.log in mobile-genomics folder in your main storage\n");
         linearLayout.addView(txt1);
 
