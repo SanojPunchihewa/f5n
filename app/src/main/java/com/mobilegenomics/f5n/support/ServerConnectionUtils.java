@@ -24,6 +24,7 @@ public class ServerConnectionUtils {
 
     public static void connectToServer(final State state, final MinITActivity context, final ServerCallback serverCallback) {
         final LogHandler handler = new LogHandler(context);
+        clearLogMessage();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -64,6 +65,8 @@ public class ServerConnectionUtils {
                             //isConnected = true;
                             Log.d(TAG, connectionLog(ConnectionMessages.NONE,
                                     ConnectionMessages.RECONN_SUCCESS.getMessage()));
+                            Log.d(TAG, connectionLog(ConnectionMessages.NONE,
+                                    ConnectionMessages.RESULT_SEND_SUCCESS.getMessage()));
                             receivedWrapperObject.setState(State.SUCCESS);
                             objectOutStream.writeObject(receivedWrapperObject);
                             Log.d(TAG, connectionLog(ConnectionMessages.TO_SERVER,
@@ -79,7 +82,6 @@ public class ServerConnectionUtils {
                     objectInStream.close();
                     objectOutStream.close();
                     socket.close();
-                    Log.d(TAG, connectionLog(ConnectionMessages.NONE, ConnectionMessages.CONN_CLOSED.getMessage()));
                     MinITActivity.logHandler(handler);
                 } catch (IOException | ClassNotFoundException e) {
                     e.printStackTrace();
@@ -134,6 +136,7 @@ public class ServerConnectionUtils {
         RECONN_SUCCESS("Re-connection to the server is successful"),
         RECONN_FAILED("Re-connection to the server is failed. Try again"),
         JOB_RECV_SUCCESS("Job received successfully"),
+        RESULT_SEND_SUCCESS("Result send successfully"),
         CONN_CLOSED("Server connection closed"),
         TO_SERVER("To server"),
         FROM_SERVER("From server"),

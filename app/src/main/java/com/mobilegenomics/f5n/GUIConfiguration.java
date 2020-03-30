@@ -43,6 +43,8 @@ public class GUIConfiguration {
 
     private static HashMap<String, String> linkedFileArguments = new HashMap<>();
 
+    private static StringBuilder logMessage = new StringBuilder();
+
     public static void setPipelineState(PipelineState state) {
         pipelineState = state;
         PreferenceUtil.setSharedPreferenceInt(R.string.id_app_mode, state.ordinal());
@@ -307,6 +309,18 @@ public class GUIConfiguration {
             argument.setArgValue(folder + "/f5c-methylation-freq.tsv");
         }
 
+    }
+
+    public static void setLogMessage(String log) {
+        logMessage.delete(0, logMessage.length()).append(log);
+        PreferenceUtil.setSharedPreferenceString(R.string.id_prev_conn_log, logMessage.toString());
+    }
+
+    public static String getLogMessage() {
+        if (!logMessage.toString().isEmpty())
+            return logMessage.toString();
+        else
+            return PreferenceUtil.getSharedPreferenceString(R.string.id_prev_conn_log);
     }
 
 }

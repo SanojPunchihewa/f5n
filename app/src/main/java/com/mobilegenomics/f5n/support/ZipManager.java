@@ -1,13 +1,14 @@
 package com.mobilegenomics.f5n.support;
 
-import static net.gotev.uploadservice.UploadService.BUFFER_SIZE;
-
 import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+
 import androidx.documentfile.provider.DocumentFile;
+
 import com.mobilegenomics.f5n.R;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -24,6 +25,8 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import static net.gotev.uploadservice.UploadService.BUFFER_SIZE;
+
 public class ZipManager {
 
     private static final String TAG = ZipManager.class.getSimpleName();
@@ -39,6 +42,8 @@ public class ZipManager {
     private long compressedBytes = 0;
 
     private long totalBytesToCompress = 0;
+
+    private long extractStartTime;
 
     public ZipManager(Context context, ZipListener zipListener) {
         this.context = context;
@@ -74,6 +79,7 @@ public class ZipManager {
                     showExtractPercentage = false;
                     Log.e(TAG, "Error reading Zip File: " + e);
                 }
+                extractStartTime = System.currentTimeMillis();
                 zipListener.onStarted(totalBytes);
                 Log.i(TAG, "Starting to unzip");
             }
@@ -137,7 +143,8 @@ public class ZipManager {
             protected void onPostExecute(final Boolean result) {
                 super.onPostExecute(result);
                 Log.i(TAG, "Finished unzip");
-                zipListener.onComplete(result, null);
+                long extractTime = System.currentTimeMillis() - extractStartTime;
+                zipListener.onComplete(result, extractTime, null);
             }
         }
         new UnzipAysnc().execute();
@@ -151,6 +158,8 @@ public class ZipManager {
 
             private int totalBytes;
 
+            private long extractStartedTime;
+
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
@@ -162,6 +171,7 @@ public class ZipManager {
                     Log.e(TAG, "Error reading Zip File: " + e);
                     showExtractPercentage = false;
                 }
+                extractStartTime = System.currentTimeMillis();
                 zipListener.onStarted(totalBytes);
                 Log.i(TAG, "Starting to unzip");
             }
@@ -276,7 +286,8 @@ public class ZipManager {
             protected void onPostExecute(final Boolean result) {
                 super.onPostExecute(result);
                 Log.i(TAG, "Finished unzip");
-                zipListener.onComplete(result, null);
+                long extractTime = System.currentTimeMillis() - extractStartTime;
+                zipListener.onComplete(result, extractTime, null);
             }
         }
         new UnzipAysnc().execute();
@@ -287,12 +298,14 @@ public class ZipManager {
         class ZipAysnc extends AsyncTask<String, Integer, Boolean> {
 
             int BUFFER = 1024;
+            long compressStartedTime;
 
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
                 totalBytesToCompress = getFileListSize(files);
                 zipListener.onStarted(totalBytesToCompress);
+                compressStartedTime = System.currentTimeMillis();
                 Log.i(TAG, "Starting to zip");
             }
 
@@ -303,7 +316,7 @@ public class ZipManager {
                     BufferedInputStream origin = null;
                     FileOutputStream dest = new FileOutputStream(zipFileName);
                     ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(dest));
-                    byte data[] = new byte[BUFFER];
+                    byte[] data = new byte[BUFFER];
 
                     for (int i = 0; i < files.size(); i++) {
                         Log.v("Compress", "Adding: " + files.get(i));
@@ -339,7 +352,8 @@ public class ZipManager {
             protected void onPostExecute(final Boolean result) {
                 super.onPostExecute(result);
                 Log.i(TAG, "Finished zip");
-                zipListener.onComplete(result, null);
+                long compresssTime = System.currentTimeMillis() - compressStartedTime;
+                zipListener.onComplete(result, compresssTime, null);
             }
         }
         new ZipAysnc().execute();

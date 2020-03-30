@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
 import android.text.Html;
@@ -430,10 +431,14 @@ public class ConfirmationActivity extends AppCompatActivity {
                 if (GUIConfiguration.getAppMode() == AppMode.SLAVE) {
                     GUIConfiguration.setPipelineState(PipelineState.MINIT_COMPRESS);
                     if (MinITActivity.isAUTOMATED()) {
+                        btnWriteLog.setVisibility(View.GONE);
+                        btnGoToStart.setVisibility(View.GONE);
                         writeLogToFile();
-                        txtLogs.append("Job execute successfully. Starting to send result back...\n");
+                        long elapsedMillis = SystemClock.elapsedRealtime() - txtTimer.getBase();
+                        String elapsedTime = TimeFormat.millisToShortDHMS(elapsedMillis);
                         new Handler().postDelayed(new Runnable() {
                             public void run() {
+                                GUIConfiguration.setLogMessage(GUIConfiguration.getLogMessage() + "\n" + resultsSummary + "\nPipeline Execution Time: " + elapsedTime + "\n");
                                 Intent intent = new Intent(ConfirmationActivity.this, MinITActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                 intent.putExtra("PIPELINE_STATUS", resultsSummary);
@@ -443,11 +448,14 @@ public class ConfirmationActivity extends AppCompatActivity {
                             }
                         }, 4000);
                     } else {
+                        GUIConfiguration.setLogMessage(txtLogs.getText().toString());
                         btnSendResults.setVisibility(View.VISIBLE);
                     }
                 }
+                Toast.makeText(ConfirmationActivity.this, "Pipeline executed Successfully", Toast.LENGTH_LONG).show();
             } else {
                 btnReconfigure.setVisibility(View.VISIBLE);
+                GUIConfiguration.setLogMessage(txtLogs.getText().toString());
                 new AlertDialog.Builder(ConfirmationActivity.this)
                         .setTitle("Pipeline Failure")
                         .setMessage(GUIConfiguration.getFailedPipelineStep().name() + " has failed. Reconfigure pipeline or proceed forward")

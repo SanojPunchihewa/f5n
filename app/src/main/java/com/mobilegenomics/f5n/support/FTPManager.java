@@ -113,12 +113,15 @@ public class FTPManager {
             if (activity == null || activity.isFinishing()) return;
 
             TextView statusTextView = activity.findViewById(R.id.txt_status);
+            TextView connLogTextView = activity.findViewById(R.id.text_conn_log);
             if (downloadSuccess) {
                 String time = TimeFormat.millisToShortDHMS(downloadTime);
                 statusTextView.setText(String.format("Download Completed in %s", time));
+                connLogTextView.append(String.format("Download Completed in %s\n", time));
                 cause = EndCause.COMPLETED;
             } else {
                 statusTextView.setText("Download Error");
+                connLogTextView.setText("Download Error");
                 cause = EndCause.ERROR;
             }
             downloadListener.onComplete(cause, null);
@@ -135,7 +138,9 @@ public class FTPManager {
             if (activity == null || activity.isFinishing()) return;
             ProgressBar progressBar = activity.findViewById(R.id.progress_upload_status);
             TextView statusTextView = activity.findViewById(R.id.txt_status);
+            TextView connLogTextView = activity.findViewById(R.id.text_conn_log);
             statusTextView.setText("Download Started");
+            connLogTextView.append("Download Started\n");
             progressBar.setMax(100);
         }
 
@@ -237,13 +242,16 @@ public class FTPManager {
             MinITActivity activity = activityReference.get();
             if (activity == null || activity.isFinishing()) return;
             TextView statusTextView = activity.findViewById(R.id.txt_status);
+            TextView connLogTextView = activity.findViewById(R.id.text_conn_log);
             if (uploadSuccess) {
                 String time = TimeFormat.millisToShortDHMS(uploadTime);
                 cause = EndCause.COMPLETED;
                 statusTextView.setText(String.format("Upload Completed in %s", time));
+                connLogTextView.append(String.format("Upload Completed in %s\n\n", time));
             } else {
                 cause = EndCause.ERROR;
                 statusTextView.setText("Upload Error");
+                connLogTextView.append("Upload Error");
             }
             downloadListener.onComplete(cause, null);
         }
@@ -255,7 +263,9 @@ public class FTPManager {
             MinITActivity activity = activityReference.get();
             if (activity == null || activity.isFinishing()) return;
             TextView statusTextView = activity.findViewById(R.id.txt_status);
+            TextView connLogTextView = activity.findViewById(R.id.text_conn_log);
             statusTextView.setText("Upload started");
+            connLogTextView.append("Upload started\n");
         }
 
         @Override

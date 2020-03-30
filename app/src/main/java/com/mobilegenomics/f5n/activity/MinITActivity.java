@@ -41,6 +41,7 @@ import com.mobilegenomics.f5n.support.PipelineState;
 import com.mobilegenomics.f5n.support.PreferenceUtil;
 import com.mobilegenomics.f5n.support.ServerCallback;
 import com.mobilegenomics.f5n.support.ServerConnectionUtils;
+import com.mobilegenomics.f5n.support.TimeFormat;
 import com.mobilegenomics.f5n.support.ZipListener;
 import com.mobilegenomics.f5n.support.ZipManager;
 import com.obsez.android.lib.filechooser.ChooserDialog;
@@ -103,8 +104,8 @@ public class MinITActivity extends AppCompatActivity {
             public void run() {
                 StringBuilder newLogMessage = ServerConnectionUtils.getLogMessage();
                 if (newLogMessage != null && newLogMessage.toString().trim().length() != 0) {
-                    logHandler.getmActivity().get().connectionLogText.setText(newLogMessage);
-                    PreferenceUtil.setSharedPreferenceString(R.string.id_prev_conn_log, newLogMessage.toString());
+                    logHandler.getmActivity().get().connectionLogText.append(newLogMessage);
+                    GUIConfiguration.setLogMessage(newLogMessage.toString());
                 }
             }
         });
@@ -150,6 +151,7 @@ public class MinITActivity extends AppCompatActivity {
             folderPath = getIntent().getExtras().getString("FOLDER_PATH");
             if (resultsSummary != null && !TextUtils.isEmpty(resultsSummary)) {
                 PreferenceUtil.setSharedPreferenceString(R.string.id_results_summary, resultsSummary);
+                connectionLogText.append(GUIConfiguration.getLogMessage());
                 if (MinITActivity.isAUTOMATED()) {
                     btnRequestJob.setVisibility(View.GONE);
                     trSendResults.setVisibility(View.GONE);
@@ -281,6 +283,7 @@ public class MinITActivity extends AppCompatActivity {
                             statusTextView.setText(
                                     "Unable to start the unzipping process due to an error in the download process");
                         }
+                        //GUIConfiguration.setLogMessage(connectionLogText.getText().toString());
                     }
                 });
     }
@@ -313,13 +316,14 @@ public class MinITActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onComplete(@NonNull final boolean success, @Nullable final Exception exception) {
+            public void onComplete(@NonNull final boolean success, @NonNull final long timeTook, @Nullable final Exception exception) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         if (success) {
                             statusTextView.setText("Unzip Successful");
-                            connectionLogText.append("Extracting data set completed\n");
+                            String completionTime = TimeFormat.millisToShortDHMS(timeTook);
+                            connectionLogText.append(String.format("Extracting data set completed in %s\n", completionTime));
                             configureStepFolderPath();
                             GUIConfiguration.setPipelineState(PipelineState.MINIT_CONFIGURE);
                             if (AUTOMATED) {
@@ -333,6 +337,7 @@ public class MinITActivity extends AppCompatActivity {
                             statusTextView.setText("Unzip Error");
                             connectionLogText.append("Extracting data set error\n");
                         }
+                        GUIConfiguration.setLogMessage(connectionLogText.getText().toString());
                     }
                 });
             }
@@ -381,7 +386,12 @@ public class MinITActivity extends AppCompatActivity {
                         GUIConfiguration.setPipelineState(PipelineState.MINIT_DOWNLOAD);
                         if (isAUTOMATED()) {
                             btnProcessJob.setVisibility(View.GONE);
-                            processJob();
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    processJob();
+                                }
+                            }, 500);
                         } else {
                             btnProcessJob.setVisibility(View.VISIBLE);
                         }
@@ -393,7 +403,7 @@ public class MinITActivity extends AppCompatActivity {
 
     private void sendJobResults() {
         resultsSummary = PreferenceUtil.getSharedPreferenceString(R.string.id_results_summary);
-        ServerConnectionUtils.setResultToWrapperObject(resultsSummary);
+        ServerConnectionUtils.setResultToWrapperObject(GUIConfiguration.getLogMessage());
         ServerConnectionUtils.connectToServer(State.COMPLETED, this, new ServerCallback() {
             @Override
             public void onError(final WrapperObject job) {
@@ -419,10 +429,16 @@ public class MinITActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull EndCause cause, @Nullable Exception realCause) {
                 if (cause == EndCause.COMPLETED) {
-                    sendJobResults();
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            sendJobResults();
+                        }
+                    }, 500);
                 } else {
                     showManualCompressUploadMessage();
                 }
+                GUIConfiguration.setLogMessage(connectionLogText.getText().toString());
             }
         });
     }
@@ -453,6 +469,7 @@ public class MinITActivity extends AppCompatActivity {
                     public void run() {
                         progressBar.setMax(100);
                         statusTextView.setText("Zip started");
+                        connectionLogText.append("Compressing Started\n");
                     }
                 });
             }
@@ -470,12 +487,14 @@ public class MinITActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onComplete(@NonNull final boolean success, @Nullable final Exception exception) {
+            public void onComplete(@NonNull final boolean success, @NonNull long timeTook, @Nullable final Exception exception) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         if (success) {
                             statusTextView.setText("Zip Successful");
+                            String completionTime = TimeFormat.millisToShortDHMS(timeTook);
+                            connectionLogText.append(String.format("Compressing completed in %s\n", completionTime));
                             GUIConfiguration.setPipelineState(PipelineState.MINIT_UPLOAD);
                             PreferenceUtil.setSharedPreferenceString(R.string.id_compressed_file, zipFileName);
                             uploadDataSetFTP(zipFileName);
@@ -483,6 +502,7 @@ public class MinITActivity extends AppCompatActivity {
                             statusTextView.setText("Zip Error");
                             showManualCompressUploadMessage();
                         }
+                        GUIConfiguration.setLogMessage(connectionLogText.getText().toString());
                     }
                 });
             }
@@ -625,15 +645,14 @@ public class MinITActivity extends AppCompatActivity {
                         trRadioGroupExecuteMode.setVisibility(View.GONE);
                         WrapperObject prevJob = (WrapperObject) PreferenceUtil.getSharedPreferenceObject(R.string.id_wrapper_obj);
                         ServerConnectionUtils.setWrapperObject(prevJob);
-                        String previousConnectionLog = PreferenceUtil.getSharedPreferenceString(R.string.id_prev_conn_log);
+                        String previousConnectionLog = GUIConfiguration.getLogMessage();
+                        connectionLogText.setText(previousConnectionLog);
                         if (state == PipelineState.MINIT_DOWNLOAD && prevJob != null) {
                             GUIConfiguration.configureSteps(prevJob.getSteps());
                             zipFileName = prevJob.getPrefix() + ".zip";
-                            connectionLogText.setText(previousConnectionLog);
                             btnProcessJob.setVisibility(View.VISIBLE);
                             GUIConfiguration.setPipelineState(PipelineState.MINIT_DOWNLOAD);
                         } else if (state == PipelineState.MINIT_EXTRACT) {
-                            connectionLogText.setText(previousConnectionLog);
                             GUIConfiguration.configureSteps(prevJob.getSteps());
                             zipFileName = prevJob.getPrefix() + ".zip";
                             extractZip(STORAGE_PATH + zipFileName);
@@ -675,6 +694,8 @@ public class MinITActivity extends AppCompatActivity {
         GUIConfiguration.createPipeline();
         PreferenceUtil.setSharedPreferenceStepList(R.string.id_step_list, GUIConfiguration.getSteps());
         statusTextView.setText("Setting up to execute job...");
+        connectionLogText.append("Setting up to execute job...\n");
+        GUIConfiguration.setLogMessage(connectionLogText.getText().toString());
         new Handler().postDelayed(new Runnable() {
             public void run() {
                 Intent intent = new Intent(MinITActivity.this, ConfirmationActivity.class);
@@ -683,7 +704,7 @@ public class MinITActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             }
-        }, 2500);
+        }, 2000);
     }
 
     public static boolean isAUTOMATED() {

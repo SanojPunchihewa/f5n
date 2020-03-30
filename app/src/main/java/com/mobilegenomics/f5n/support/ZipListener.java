@@ -9,6 +9,6 @@ public interface ZipListener {
 
     void onProgress(@NonNull final long bytesDone, @NonNull final long totalBytes);
 
-    void onComplete(@NonNull final boolean success, @Nullable final Exception exception);
+    void onComplete(@NonNull final boolean success, @NonNull final long timeTook, @Nullable final Exception exception);
 
 }
