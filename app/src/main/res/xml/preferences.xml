@@ -21,9 +21,9 @@
 
         <MultiSelectListPreference
             android:key="@string/key_min_it_upload_files"
-            android:title="@string/title_min_it_upload"
+            android:title="@string/title_Select_files_upload"
             android:dialogTitle="@string/dialog_title_min_it_upload_files"
-            android:summary="@string/summery_min_it_upload_files"
+            android:summary="@string/summery_select_upload_files"
             app:iconSpaceReserved="false"
             android:entries="@array/min_it_upload_files"
             android:entryValues="@array/min_it_upload_files"/>

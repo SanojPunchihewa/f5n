@@ -64,9 +64,9 @@
     <string name="summary_reduce_brightness">Grant System Settings write permission to reduce the brightness once the pipeline starts</string>
     <string name="title_storage_write">Storage Permission</string>
     <string name="key_min_it_upload_files">key_min_it_upload_files</string>
-    <string name="title_min_it_upload">MinIt Output Files Upload</string>
+    <string name="title_Select_files_upload">Select files to upload</string>
     <string name="dialog_title_min_it_upload_files">Select output files</string>
-    <string name="summery_min_it_upload_files">Select output files to be uploaded to server</string>
+    <string name="summery_select_upload_files">Select files that should be uploaded to F5N Server(default output file names are used)</string>
     <string name="radio_btn_automate">Automated</string>
     <string name="radio_btn_manual">Manual</string>
     <string name="hint_radio_btn_manual">(Try manual mode for better support, when on low memory)</string>
