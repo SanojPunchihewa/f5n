@@ -81,7 +81,9 @@ public class HelpActivity extends AppCompatActivity {
                         +
                         "- Samtools v1.10, commit <a href=\"https://github.com/samtools/samtools/compare/5ca6ee2...develop\">5ca6ee2</a><br><br>"
                         +
-                        "- F5C v0.3-beta, commit <a href=\"https://github.com/hasindu2008/f5c/compare/cea05f7...master\">cea05f7</a>"));
+                        "- F5C v0.3-beta, commit <a href=\"https://github.com/hasindu2008/f5c/compare/cea05f7...master\">cea05f7</a><br><br>"
+                        +
+                        "- Nanopolish v0.11.3, commit <a href=\"https://github.com/jts/nanopolish/compare/v0.11.3...master\">ae341d6</a>"));
         linearLayout.addView(txtToolVersions);
 
         TextView txtContribute = new TextView(this);
