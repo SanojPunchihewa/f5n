@@ -10,12 +10,15 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.Settings;
+import androidx.preference.ListPreference;
 import androidx.preference.Preference;
+import androidx.preference.Preference.OnPreferenceChangeListener;
 import androidx.preference.Preference.OnPreferenceClickListener;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreference;
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.activity.MainActivity;
+import com.mobilegenomics.f5n.core.AppMode;
 import com.mobilegenomics.f5n.support.FileUtil;
 import com.mobilegenomics.f5n.support.PreferenceUtil;
 import com.obsez.android.lib.filechooser.ChooserDialog;
@@ -44,6 +47,8 @@ public class FragmentSettings extends PreferenceFragmentCompat {
 
     private SwitchPreference permissionSystemSettingsWritePreference;
 
+    private ListPreference pipelineTypePreference;
+
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.preferences, rootKey);
@@ -56,6 +61,21 @@ public class FragmentSettings extends PreferenceFragmentCompat {
                 getResources().getString(R.string.key_sdcard_storage_permission));
         permissionSystemSettingsWritePreference = findPreference(
                 getResources().getString(R.string.key_write_settings_permission));
+        pipelineTypePreference = findPreference(getResources().getString(R.string.key_pipeline_type));
+
+        int pipelineType = PreferenceUtil.getSharedPreferenceInt(R.string.key_pipeline_type_preference);
+
+        if (pipelineType == -1) {
+            pipelineType = 0;
+        }
+
+        pipelineTypePreference.setValueIndex(pipelineType);
+
+        if (pipelineType == AppMode.STANDALONE_METHYLATION.ordinal()) {
+            pipelineTypePreference.setSummary("Methylation");
+        } else {
+            pipelineTypePreference.setSummary("Variant Calling");
+        }
 
         if (PreferenceUtil.getSharedPreferenceUri(R.string.sdcard_uri) != null) {
             permissionSDCardWritePreference.setChecked(true);
@@ -119,6 +139,15 @@ public class FragmentSettings extends PreferenceFragmentCompat {
             public boolean onPreferenceClick(Preference preference) {
                 setReferenceGnome();
                 return true;
+            }
+        });
+
+        pipelineTypePreference.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(final Preference preference, final Object newValue) {
+                PreferenceUtil.setSharedPreferenceInt(R.string.key_pipeline_type_preference,
+                        Integer.valueOf(newValue.toString()));
+                return false;
             }
         });
 
