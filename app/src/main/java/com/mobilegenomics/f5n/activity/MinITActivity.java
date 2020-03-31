@@ -57,6 +57,8 @@ public class MinITActivity extends AppCompatActivity {
 
     private static boolean AUTOMATED = true;
 
+    private static boolean BURST = false;
+
     public TextView connectionLogText;
 
     ProgressBar progressBar;
@@ -255,11 +257,20 @@ public class MinITActivity extends AppCompatActivity {
     public void onSelectExecuteMode(View view) {
         boolean checked = ((RadioButton) view).isChecked();
         if (view.getId() == R.id.radio_automate) {
-            if (checked)
+            if (checked) {
                 AUTOMATED = true;
-        } else {
-            if (checked)
+                BURST = false;
+            }
+        } else if (view.getId() == R.id.radio_manual) {
+            if (checked) {
                 AUTOMATED = false;
+                BURST = false;
+            }
+        } else {
+            if (checked) {
+                AUTOMATED = true;
+                BURST = true;
+            }
         }
     }
 
@@ -429,6 +440,21 @@ public class MinITActivity extends AppCompatActivity {
                     public void run() {
                         GUIConfiguration.setPipelineState(PipelineState.STATE_ZERO);
                         Toast.makeText(MinITActivity.this, "Success", Toast.LENGTH_SHORT).show();
+                        if (isAUTOMATED() && isBURST()) {
+                            int interval = PreferenceUtil.getSharedPreferenceInt(R.string.key_time_preference);
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    returnToAnotherRequestJob();
+                                    serverIP = ServerConnectionUtils.getServerAddress();
+                                    ServerConnectionUtils.clearLogMessage();
+                                    trRadioGroupExecuteMode.setVisibility(View.GONE);
+                                    connectionLogText.setText(null);
+                                    statusTextView.setText(null);
+                                    requestJob();
+                                }
+                            }, interval * 1000);
+                        }
                     }
                 });
             }
@@ -725,6 +751,14 @@ public class MinITActivity extends AppCompatActivity {
 
     public static void setAUTOMATED(boolean AUTOMATED) {
         MinITActivity.AUTOMATED = AUTOMATED;
+    }
+
+    public static boolean isBURST() {
+        return BURST;
+    }
+
+    public static void setBURST(boolean BURST) {
+        MinITActivity.BURST = BURST;
     }
 
     private boolean validateIPAddress(final String ip) {

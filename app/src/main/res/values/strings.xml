@@ -44,6 +44,8 @@
     <string name="key_storage_preference">key_storage_preference</string>
     <string name="key_reference_gnome">key_reference_gnome</string>
     <string name="title_reference_gnome">Reference Genome Storage Path\n<font color="#5F5F5F" size="14">X.fa and X.idx files should be stored in this directory to automatically generate pipeline commands in CONNECT TO MINIT mode\n</font></string>
+    <string name="key_time_preference">key_time_preference</string>
+    <string name="title_time_preference">Time interval between jobs\n<font color="#5F5F5F" size="14">Set the time interval to wait between consecutive jobs on MinIt Burst mode\n</font></string>
     <string name="pref_header_about">About</string>
     <string name="key_version_preference">key_version_preference</string>
     <string name="summary_about">F5N is a Mobile application for Reference Guided Sequence Alignment and Analysis using Nanopore Data. You can find out more from https://github.com/SanojPunchihewa/f5n</string>
@@ -71,6 +73,7 @@
     <string name="radio_btn_automate">Automated</string>
     <string name="radio_btn_manual">Manual</string>
     <string name="hint_radio_btn_manual">(Try manual mode for better support, when on low memory)</string>
+    <string name="radio_btn_burst_consecutive_jobs">Burst</string>
     <string-array name="min_it_upload_files">
         <item>minimap.sam</item>
         <item>samtool.bam</item>

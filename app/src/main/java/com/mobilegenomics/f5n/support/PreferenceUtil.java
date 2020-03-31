@@ -146,6 +146,16 @@ public class PreferenceUtil {
     }
 
     /**
+     * Retrieve app state shared preference.
+     *
+     * @param preferenceId the id of the shared preference.
+     * @return the corresponding preference value if not the default
+     */
+    public static int getSharedPreferenceInt(final int preferenceId, int defaultValue) {
+        return getSharedPreferences().getInt(Application.getAppContext().getString(preferenceId), defaultValue);
+    }
+
+    /**
      * Set a shared preference for app state
      *
      * @param preferenceId the id of the shared preference.

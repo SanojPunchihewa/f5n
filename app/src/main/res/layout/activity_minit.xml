@@ -85,9 +85,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/radio_btn_manual"
-                android:hint="@string/hint_radio_btn_manual"
                 android:onClick="onSelectExecuteMode"/>
 
+            <RadioButton
+                android:id="@+id/radio_burst"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/radio_btn_burst_consecutive_jobs"
+                android:onClick="onSelectExecuteMode"/>
         </RadioGroup>
 
         <TextView

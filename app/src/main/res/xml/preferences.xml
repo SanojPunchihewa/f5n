@@ -28,6 +28,13 @@
             android:entries="@array/min_it_upload_files"
             android:entryValues="@array/min_it_upload_files"/>
 
+        <Preference
+            android:key="@string/key_time_preference"
+            android:title="@string/title_time_preference"
+            android:summary="Time value"
+            app:iconSpaceReserved="false"
+            app:persistent="false"/>
+
     </PreferenceCategory>
 
     <PreferenceCategory
