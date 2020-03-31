@@ -83,7 +83,7 @@
         <item>reads.fastq.index</item>
         <item>meth.tsv</item>
         <item>event-align.txt</item>
-        <item>meth.freq</item>
+        <item>freq.tsv</item>
     </string-array>
 
 </resources>
