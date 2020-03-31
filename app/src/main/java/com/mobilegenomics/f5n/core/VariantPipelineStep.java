@@ -8,7 +8,7 @@ public class VariantPipelineStep extends PipelineStep {
             "nanopolish index");
 
     private static final PipelineStep nanopolishVariant = new PipelineStep(NANOPOLISH_VARIANT, "NANOPOLISH_VARIANT",
-            "nanopolish variant");
+            "nanopolish variants");
 
     public VariantPipelineStep() {
 
