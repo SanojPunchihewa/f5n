@@ -162,26 +162,26 @@ public class GUIConfiguration {
     private static ArrayList<Argument> configureArguments(Context context, PipelineStep pipelineStep,
             String folderPath) {
         int rawFile = 0;
-        switch (pipelineStep) {
-            case MINIMAP2_SEQUENCE_ALIGNMENT:
+        switch (pipelineStep.getValue()) {
+            case PipelineStep.MINIMAP2_SEQUENCE_ALIGNMENT:
                 rawFile = R.raw.minimap2;
                 break;
-            case SAMTOOLS_SORT:
+            case PipelineStep.SAMTOOLS_SORT:
                 rawFile = R.raw.samtool_sort_arguments;
                 break;
-            case SAMTOOLS_INDEX:
+            case PipelineStep.SAMTOOLS_INDEX:
                 rawFile = R.raw.samtool_index_arguments;
                 break;
-            case F5C_INDEX:
+            case PipelineStep.F5C_INDEX:
                 rawFile = R.raw.f5c_index_arguments;
                 break;
-            case F5C_CALL_METHYLATION:
+            case PipelineStep.F5C_CALL_METHYLATION:
                 rawFile = R.raw.f5c_call_methylation_arguments;
                 break;
-            case F5C_EVENT_ALIGNMENT:
+            case PipelineStep.F5C_EVENT_ALIGNMENT:
                 rawFile = R.raw.f5c_event_align_arguments;
                 break;
-            case F5C_METH_FREQ:
+            case PipelineStep.F5C_METH_FREQ:
                 rawFile = R.raw.f5c_meth_freq_arguments;
                 break;
             case PipelineStep.NANOPOLISH_INDEX:
