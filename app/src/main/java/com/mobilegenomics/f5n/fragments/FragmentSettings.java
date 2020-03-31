@@ -18,7 +18,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreference;
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.activity.MainActivity;
-import com.mobilegenomics.f5n.core.AppMode;
+import com.mobilegenomics.f5n.core.PipelineType;
 import com.mobilegenomics.f5n.support.FileUtil;
 import com.mobilegenomics.f5n.support.PreferenceUtil;
 import com.obsez.android.lib.filechooser.ChooserDialog;
@@ -71,7 +71,7 @@ public class FragmentSettings extends PreferenceFragmentCompat {
 
         pipelineTypePreference.setValueIndex(pipelineType);
 
-        if (pipelineType == AppMode.STANDALONE_METHYLATION.ordinal()) {
+        if (pipelineType == PipelineType.PIPELINE_METHYLATION.ordinal()) {
             pipelineTypePreference.setSummary("Methylation");
         } else {
             pipelineTypePreference.setSummary("Variant Calling");
@@ -145,8 +145,14 @@ public class FragmentSettings extends PreferenceFragmentCompat {
         pipelineTypePreference.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(final Preference preference, final Object newValue) {
-                PreferenceUtil.setSharedPreferenceInt(R.string.key_pipeline_type_preference,
-                        Integer.valueOf(newValue.toString()));
+                int value = Integer.valueOf(newValue.toString());
+                PreferenceUtil.setSharedPreferenceInt(R.string.key_pipeline_type_preference, value);
+                if (value == PipelineType.PIPELINE_METHYLATION.ordinal()) {
+                    pipelineTypePreference.setSummary("Methylation");
+                } else {
+                    pipelineTypePreference.setSummary("Variant Calling");
+                }
+                pipelineTypePreference.setValueIndex(value);
                 return false;
             }
         });

@@ -1,14 +1,18 @@
 package com.mobilegenomics.f5n.core;
 
-import com.mobilegenomics.f5n.GUIConfiguration;
+import com.mobilegenomics.f5n.R;
+import com.mobilegenomics.f5n.support.PreferenceUtil;
 
 public class NativeCommands {
 
     // Used to load the 'native-lib' library on application startup.
     static {
-        if (GUIConfiguration.getAppMode() == AppMode.STANDALONE_METHYLATION) {
+
+        int pipelineType = PreferenceUtil.getSharedPreferenceInt(R.string.key_pipeline_type_preference);
+
+        if (pipelineType == PipelineType.PIPELINE_METHYLATION.ordinal()) {
             System.loadLibrary("methylation-native-lib");
-        } else if (GUIConfiguration.getAppMode() == AppMode.STANDALONE_VARIANT) {
+        } else if (pipelineType == PipelineType.PIPELINE_VARIANT.ordinal()) {
             System.loadLibrary("variant-native-lib");
         }
     }

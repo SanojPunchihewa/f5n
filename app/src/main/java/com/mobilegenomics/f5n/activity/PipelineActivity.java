@@ -8,16 +8,16 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
+import com.mobilegenomics.f5n.core.MethylationPipelineStep;
 import com.mobilegenomics.f5n.core.PipelineStep;
+import com.mobilegenomics.f5n.core.PipelineType;
+import com.mobilegenomics.f5n.core.VariantPipelineStep;
 import com.mobilegenomics.f5n.support.PipelineState;
 import com.mobilegenomics.f5n.support.PreferenceUtil;
-
 import java.util.ArrayList;
 
 public class PipelineActivity extends AppCompatActivity {
@@ -30,6 +30,8 @@ public class PipelineActivity extends AppCompatActivity {
 
     private static final int MODE_PREV_CONFIG = 2;
 
+    private PipelineStep pipelineStep;
+
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,10 +39,18 @@ public class PipelineActivity extends AppCompatActivity {
 
         LinearLayout linearLayout = findViewById(R.id.vertical_linear_layout);
 
-        for (PipelineStep step : PipelineStep.values()) {
+        int pipelineType = PreferenceUtil.getSharedPreferenceInt(R.string.key_pipeline_type_preference);
+
+        if (pipelineType == PipelineType.PIPELINE_METHYLATION.ordinal()) {
+            pipelineStep = new MethylationPipelineStep();
+        } else {
+            pipelineStep = new VariantPipelineStep();
+        }
+
+        for (PipelineStep step : pipelineStep.values()) {
             CheckBox checkBox = new CheckBox(PipelineActivity.this);
             checkBox.setId(step.getValue());
-            checkBox.setText(step.toString());
+            checkBox.setText(step.getName());
             pipelineSteps.add(checkBox);
             linearLayout.addView(checkBox);
         }
@@ -80,7 +90,7 @@ public class PipelineActivity extends AppCompatActivity {
         GUIConfiguration.eraseSelectedPipeline();
         GUIConfiguration.resetSteps();
         boolean clickedNone = true;
-        for (PipelineStep step : PipelineStep.values()) {
+        for (PipelineStep step : pipelineStep.values()) {
             CheckBox checkBox = findViewById(step.getValue());
             if (checkBox.isChecked()) {
                 GUIConfiguration.addPipelineStep(step);

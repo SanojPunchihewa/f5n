@@ -13,17 +13,15 @@
         android:gravity="center_horizontal">
 
         <Button
-            android:id="@+id/btn_mode_standalone"
+            android:id="@+id/btn_pipeline_type_methylation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="startStandaloneMethylationMode"
             android:text="Methylation / Event Alignment Pipeline" />
 
         <Button
-            android:id="@+id/btn_mode_master"
+            android:id="@+id/btn_pipeline_type_variant"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="startStandaloneVariantMode"
             android:text="Variant Pipeline"
             android:layout_marginTop="100dp" />
 
