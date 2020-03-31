@@ -163,7 +163,7 @@ public class TerminalActivity extends AppCompatActivity {
                     for (Step step : steps) {
                         EditText editText = findViewById(stepId + 125);
                         if (editText.getText() != null && !TextUtils.isEmpty(editText.getText().toString())) {
-                            step.setCommandString(editText.getText().toString());
+                            step.setCommandString(editText.getText().toString().replaceAll("\"", "")); //^"|"$
                         }
                         stepId++;
                     }
