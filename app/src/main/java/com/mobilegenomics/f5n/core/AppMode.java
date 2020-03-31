@@ -1,8 +1,7 @@
 package com.mobilegenomics.f5n.core;
 
 public enum AppMode {
-    STANDALONE_METHYLATION,
-    STANDALONE_VARIANT,
+    STANDALONE,
     SLAVE,
     DOWNLOAD_DATA,
     DEMO

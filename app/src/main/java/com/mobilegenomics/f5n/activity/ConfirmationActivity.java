@@ -261,8 +261,7 @@ public class ConfirmationActivity extends AppCompatActivity {
         separator2.setBackgroundColor(Color.parseColor("#000000"));
         linearLayout.addView(separator2);
 
-        if (GUIConfiguration.getAppMode() == AppMode.STANDALONE_METHYLATION ||
-                GUIConfiguration.getAppMode() == AppMode.STANDALONE_VARIANT) {
+        if (GUIConfiguration.getAppMode() == AppMode.STANDALONE) {
             TextView txtOuputFolderInfo = new TextView(this);
             txtOuputFolderInfo.setText(
                     "By default, output files are written to the mobile-genomics folder in your main storage. If you have updated the output paths please check the respective folders\n");
@@ -289,9 +288,7 @@ public class ConfirmationActivity extends AppCompatActivity {
         btnWriteLog.setVisibility(View.GONE);
         linearLayout.addView(btnWriteLog);
 
-        if (GUIConfiguration.getAppMode() == AppMode.STANDALONE_METHYLATION
-                || GUIConfiguration.getAppMode() == AppMode.STANDALONE_VARIANT
-                || GUIConfiguration.getAppMode() == AppMode.DEMO) {
+        if (GUIConfiguration.getAppMode() == AppMode.STANDALONE || GUIConfiguration.getAppMode() == AppMode.DEMO) {
             btnGoToStart = new Button(this);
             btnGoToStart.setText("Go to Start Screen");
             btnGoToStart.setOnClickListener(new OnClickListener() {
@@ -366,8 +363,7 @@ public class ConfirmationActivity extends AppCompatActivity {
                 linearLayout.addView(txtRuntime);
             }
             btnWriteLog.setVisibility(View.VISIBLE);
-            if (GUIConfiguration.getAppMode() == AppMode.STANDALONE_METHYLATION
-                    || GUIConfiguration.getAppMode() == AppMode.STANDALONE_VARIANT
+            if (GUIConfiguration.getAppMode() == AppMode.STANDALONE
                     || GUIConfiguration.getAppMode() == AppMode.DEMO) {
                 btnGoToStart.setVisibility(View.VISIBLE);
             }

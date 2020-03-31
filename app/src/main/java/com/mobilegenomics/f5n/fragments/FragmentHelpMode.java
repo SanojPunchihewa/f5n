@@ -26,7 +26,7 @@ public class FragmentHelpMode extends Fragment {
                 "This app has 4 modes,\n\n"
                         + "DOWNLOAD DATASET\n"
                         + "Download and Extract a data set\n\n"
-                        + "STANDALONE_METHYLATION\n"
+                        + "STANDALONE\n"
                         + "Run a pipeline in a single(this) device\n\n"
                         + "CONNECT TO MINIT\n"
                         + "Use f5n server to get a Job and do it in this device\n\n"
