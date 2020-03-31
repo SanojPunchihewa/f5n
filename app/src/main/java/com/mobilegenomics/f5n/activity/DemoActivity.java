@@ -20,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.liulishuo.okdownload.core.cause.EndCause;
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
+import com.mobilegenomics.f5n.core.MethylationPipelineStep;
 import com.mobilegenomics.f5n.core.PipelineStep;
 import com.mobilegenomics.f5n.support.DownloadListener;
 import com.mobilegenomics.f5n.support.FileUtil;
@@ -136,7 +137,8 @@ public class DemoActivity extends AppCompatActivity {
             @Override
             public void onClick(final View v) {
                 GUIConfiguration.eraseSelectedPipeline();
-                for (PipelineStep step : PipelineStep.values()) {
+                PipelineStep pipelineStep = new MethylationPipelineStep();
+                for (PipelineStep step : pipelineStep.values()) {
                     GUIConfiguration.addPipelineStep(step);
                 }
                 GUIConfiguration.printList();
