@@ -77,6 +77,8 @@ public class MinITActivity extends AppCompatActivity {
 
     private Button btnSendResults;
 
+    private Button btnGoToStart;
+
     private String folderPath;
 
     private String resultsSummary;
@@ -143,6 +145,7 @@ public class MinITActivity extends AppCompatActivity {
         btnProcessJob = findViewById(R.id.btn_process_job);
         btnBackToRequestJob = findViewById(R.id.btn_back_to_req_job);
         btnSendResults = findViewById(R.id.btn_send_result);
+        btnGoToStart = findViewById(R.id.btn_go_to_start);
         trRadioGroupExecuteMode = findViewById(R.id.tr_radio_grp_execute_mode);
 
         if (getIntent().getExtras() != null) {
@@ -236,6 +239,15 @@ public class MinITActivity extends AppCompatActivity {
                 } else {
                     returnToAnotherRequestJob();
                 }
+            }
+        });
+
+        btnGoToStart.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MinITActivity.this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
             }
         });
     }

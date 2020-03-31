@@ -11,6 +11,7 @@
     <string name="btn_request_job">Request Job</string>
     <string name="btn_process_job">Process Job</string>
     <string name="btn_request_another_job">Request Another Job</string>
+    <string name="btn_go_to_start_screen">Go to start screen</string>
 
     <!--Strings used in Demo-->
     <string name="pipeline_description">This will run all the 5 pipeline steps on Ecoli dataset(10MB)\n\nYou can find all the files downloaded, created and the logcat in the <b>mobile-genomics</b> folder in your main storage</string>
