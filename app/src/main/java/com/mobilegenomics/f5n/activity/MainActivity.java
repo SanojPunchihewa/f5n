@@ -21,6 +21,7 @@ import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.AppMode;
 import com.mobilegenomics.f5n.support.PermissionResultCallback;
 import com.mobilegenomics.f5n.support.PermissionUtils;
+import com.mobilegenomics.f5n.support.PreferenceUtil;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements
@@ -56,6 +57,10 @@ public class MainActivity extends AppCompatActivity implements
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
+
+        // Set Pipeline type to Methylation by default
+        PreferenceUtil.setSharedPreferenceInt(R.string.key_pipeline_type_preference,
+                AppMode.STANDALONE_METHYLATION.ordinal());
 
     }
 
