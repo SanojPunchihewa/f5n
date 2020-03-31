@@ -19,8 +19,10 @@ import androidx.core.app.ActivityCompat;
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.AppMode;
+import com.mobilegenomics.f5n.core.PipelineType;
 import com.mobilegenomics.f5n.support.PermissionResultCallback;
 import com.mobilegenomics.f5n.support.PermissionUtils;
+import com.mobilegenomics.f5n.support.PreferenceUtil;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements
@@ -45,6 +47,9 @@ public class MainActivity extends AppCompatActivity implements
         permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
         if (firstOpen) {
+            // Set Pipeline type to Methylation by default
+            PreferenceUtil.setSharedPreferenceInt(R.string.key_pipeline_type_preference,
+                    PipelineType.PIPELINE_METHYLATION.ordinal());
             showAlert();
         }
 
