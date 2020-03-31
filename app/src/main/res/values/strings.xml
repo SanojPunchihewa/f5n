@@ -38,6 +38,7 @@
     <string name="key_storage_preference">key_storage_preference</string>
     <string name="key_reference_gnome">key_reference_gnome</string>
     <string name="key_pipeline_type_preference">key_pipeline_type_preference</string>
+    <string name="key_pipeline_type_temp_preference">key_pipeline_type_temp_preference</string>
     <string name="title_reference_gnome">Reference Genome Storage Path\n<font color="#5F5F5F" size="14">X.fa and X.idx files should be stored in this directory to automatically generate pipeline commands in CONNECT TO MINIT mode\n</font>
 </string>
     <string name="pref_header_about">About</string>

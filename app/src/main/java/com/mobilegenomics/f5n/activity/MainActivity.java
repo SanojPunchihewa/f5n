@@ -51,6 +51,10 @@ public class MainActivity extends AppCompatActivity implements
             PreferenceUtil.setSharedPreferenceInt(R.string.key_pipeline_type_preference,
                     PipelineType.PIPELINE_METHYLATION.ordinal());
             showAlert();
+        } else {
+            int tempPipelineType = PreferenceUtil.getSharedPreferenceInt(R.string.key_pipeline_type_temp_preference);
+            PreferenceUtil.setSharedPreferenceInt(R.string.key_pipeline_type_preference,
+                    tempPipelineType);
         }
 
         try {

@@ -1,6 +1,7 @@
 package com.mobilegenomics.f5n.fragments;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.Settings;
+import androidx.appcompat.app.AlertDialog;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceChangeListener;
@@ -146,13 +148,7 @@ public class FragmentSettings extends PreferenceFragmentCompat {
             @Override
             public boolean onPreferenceChange(final Preference preference, final Object newValue) {
                 int value = Integer.valueOf(newValue.toString());
-                PreferenceUtil.setSharedPreferenceInt(R.string.key_pipeline_type_preference, value);
-                if (value == PipelineType.PIPELINE_METHYLATION.ordinal()) {
-                    pipelineTypePreference.setSummary("Methylation");
-                } else {
-                    pipelineTypePreference.setSummary("Variant Calling");
-                }
-                pipelineTypePreference.setValueIndex(value);
+                showSettingsApplyDialog(value);
                 return false;
             }
         });
@@ -256,6 +252,36 @@ public class FragmentSettings extends PreferenceFragmentCompat {
         startActivity(intent);
         handler.postDelayed(checkSettings, 1000);
     }
+
+    private void showSettingsApplyDialog(int type) {
+
+        String strType;
+
+        if (type == PipelineType.PIPELINE_METHYLATION.ordinal()) {
+            strType = "METHYLATION";
+        } else {
+            strType = "VARIANT";
+        }
+
+        String message = "Pipeline type will be changed to " + strType + " in the next start of the app";
+
+        new AlertDialog.Builder(getActivity())
+                .setTitle("Change Pipeline Type")
+                .setMessage(message)
+                .setPositiveButton("Apply", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        PreferenceUtil.setSharedPreferenceInt(R.string.key_pipeline_type_temp_preference, type);
+                    }
+                })
+                .setNegativeButton("Discard", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(final DialogInterface dialog, final int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
+    }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

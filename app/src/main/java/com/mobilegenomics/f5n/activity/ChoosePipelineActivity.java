@@ -74,7 +74,6 @@ public class ChoosePipelineActivity extends AppCompatActivity {
                 .setPositiveButton("Go to settings", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent = new Intent(ChoosePipelineActivity.this, SettingsActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
                     }
                 })
