@@ -184,6 +184,9 @@ public class GUIConfiguration {
             case PipelineStep.F5C_METH_FREQ:
                 rawFile = R.raw.f5c_meth_freq_arguments;
                 break;
+            case PipelineStep.NANOPOLISH_INDEX:
+                rawFile = R.raw.nanopolish_index_arguments;
+                break;
             default:
                 Log.e(TAG, "Invalid Pipeline Step");
                 break;
