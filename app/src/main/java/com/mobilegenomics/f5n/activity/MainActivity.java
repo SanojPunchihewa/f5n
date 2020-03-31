@@ -19,6 +19,7 @@ import androidx.core.app.ActivityCompat;
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.AppMode;
+import com.mobilegenomics.f5n.core.PipelineType;
 import com.mobilegenomics.f5n.support.PermissionResultCallback;
 import com.mobilegenomics.f5n.support.PermissionUtils;
 import com.mobilegenomics.f5n.support.PreferenceUtil;
@@ -60,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements
 
         // Set Pipeline type to Methylation by default
         PreferenceUtil.setSharedPreferenceInt(R.string.key_pipeline_type_preference,
-                AppMode.STANDALONE_METHYLATION.ordinal());
+                PipelineType.PIPELINE_METHYLATION.ordinal());
 
     }
 
