@@ -99,8 +99,13 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void startMinITMode(View view) {
-        GUIConfiguration.setAppMode(AppMode.SLAVE);
-        startActivity(new Intent(MainActivity.this, MinITActivity.class));
+        if (PreferenceUtil.getSharedPreferenceInt(R.string.key_pipeline_type_preference)
+                == PipelineType.PIPELINE_METHYLATION.ordinal()) {
+            GUIConfiguration.setAppMode(AppMode.SLAVE);
+            startActivity(new Intent(MainActivity.this, MinITActivity.class));
+        } else {
+            showSettingsDialog();
+        }
     }
 
     public void startDemoMode(View view) {
@@ -163,4 +168,27 @@ public class MainActivity extends AppCompatActivity implements
         }
         return super.onOptionsItemSelected(item);
     }
+
+    private void showSettingsDialog() {
+
+        String message = "Please go to settings and change the pipeline type to METHYLATION to connect to F5N Server";
+
+        new AlertDialog.Builder(MainActivity.this)
+                .setTitle("Change Pipeline Type")
+                .setMessage(message)
+                .setPositiveButton("Go to settings", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                        startActivity(intent);
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(final DialogInterface dialog, final int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
+    }
+
 }
