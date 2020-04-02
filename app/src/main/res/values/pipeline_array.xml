@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="pipelineListArray">
-        <item>Methylation</item>
-        <item>Variant Calling</item>
+        <item>Methylation\n<font color="#5F5F5F" size="14">(Minimap2, Samtools and F5C)</font></item>
+        <item>Variant Calling\n<font color="#5F5F5F" size="14">(Minimap2, Samtools and Nanopolish)</font></item>
     </string-array>
 
     <string-array name="pipelineListValues">

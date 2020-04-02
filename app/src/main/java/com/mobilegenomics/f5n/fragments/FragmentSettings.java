@@ -74,9 +74,9 @@ public class FragmentSettings extends PreferenceFragmentCompat {
         pipelineTypePreference.setValueIndex(pipelineType);
 
         if (pipelineType == PipelineType.PIPELINE_METHYLATION.ordinal()) {
-            pipelineTypePreference.setSummary("Methylation");
+            pipelineTypePreference.setSummary(getResources().getStringArray(R.array.pipelineListArray)[0]);
         } else {
-            pipelineTypePreference.setSummary("Variant Calling");
+            pipelineTypePreference.setSummary(getResources().getStringArray(R.array.pipelineListArray)[1]);
         }
 
         if (PreferenceUtil.getSharedPreferenceUri(R.string.sdcard_uri) != null) {
