@@ -258,12 +258,13 @@ public class FragmentSettings extends PreferenceFragmentCompat {
         String strType;
 
         if (type == PipelineType.PIPELINE_METHYLATION.ordinal()) {
-            strType = "METHYLATION";
+            strType = "METHYLATION CALLING";
         } else {
-            strType = "VARIANT";
+            strType = "VARIANT CALLING";
         }
 
-        String message = "Pipeline type will be changed to " + strType + " in the next start of the app";
+        String message = "Pipeline type will be changed to " + strType
+                + " the next time you start F5N. To immediately change the pipeline type, please restart F5N manually";
 
         new AlertDialog.Builder(getActivity())
                 .setTitle("Change Pipeline Type")
