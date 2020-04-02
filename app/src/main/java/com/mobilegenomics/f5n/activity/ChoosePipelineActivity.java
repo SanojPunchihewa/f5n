@@ -9,7 +9,9 @@ import android.widget.Button;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
+import com.mobilegenomics.f5n.core.AppMode;
 import com.mobilegenomics.f5n.core.PipelineType;
 import com.mobilegenomics.f5n.support.PreferenceUtil;
 
@@ -51,13 +53,21 @@ public class ChoosePipelineActivity extends AppCompatActivity {
 
         if (type == PipelineType.PIPELINE_METHYLATION) {
             if (pipelineType == PipelineType.PIPELINE_METHYLATION.ordinal()) {
-                startActivity(new Intent(ChoosePipelineActivity.this, PipelineActivity.class));
+                if (GUIConfiguration.getAppMode() == AppMode.DEMO) {
+                    startActivity(new Intent(ChoosePipelineActivity.this, DemoActivity.class));
+                } else {
+                    startActivity(new Intent(ChoosePipelineActivity.this, PipelineActivity.class));
+                }
             } else {
                 showSettingsDialog("METHYLATION");
             }
         } else {
             if (pipelineType == PipelineType.PIPELINE_VARIANT.ordinal()) {
-                startActivity(new Intent(ChoosePipelineActivity.this, PipelineActivity.class));
+                if (GUIConfiguration.getAppMode() == AppMode.DEMO) {
+                    startActivity(new Intent(ChoosePipelineActivity.this, DemoActivity.class));
+                } else {
+                    startActivity(new Intent(ChoosePipelineActivity.this, PipelineActivity.class));
+                }
             } else {
                 showSettingsDialog("VARIANT");
             }

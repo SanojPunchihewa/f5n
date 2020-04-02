@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements
 
     public void startDemoMode(View view) {
         GUIConfiguration.setAppMode(AppMode.DEMO);
-        startActivity(new Intent(MainActivity.this, DemoActivity.class));
+        startActivity(new Intent(MainActivity.this, ChoosePipelineActivity.class));
     }
 
     /////////////////////////////
