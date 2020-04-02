@@ -65,7 +65,7 @@
       "argValue": "1",
       "argDescription": "number of threads [1]",
       "flag": "-t",
-      "argID": "tobedecided",
+      "argID": "NANOPOLISH_VARIANT_THREADS",
       "isDependentOn": "argIDofanotherArg",
       "hasFlag": true,
       "flagOnly": false,
@@ -77,7 +77,7 @@
       "argValue": null,
       "argDescription": "Find variants in window (format: <chromsome_name>:<start>-<end>)",
       "flag": "-w",
-      "argID": "tobedecided",
+      "argID": "NANOPOLISH_VARIANT_WINDOW",
       "isDependentOn": "argIDofanotherArg",
       "hasFlag": true,
       "flagOnly": false,
@@ -173,11 +173,11 @@
       "argValue": null,
       "argDescription": "The ploidy level of the sequenced genome",
       "flag": "-p",
-      "argID": "tobedecided",
+      "argID": "NANOPOLISH_VARIANT_PLOIDY_LEVEL",
       "isDependentOn": "argIDofanotherArg",
       "hasFlag": true,
       "flagOnly": false,
-      "required": false,
+      "required": true,
       "isFile": false
     }
   ]

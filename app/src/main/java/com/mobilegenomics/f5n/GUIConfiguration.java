@@ -296,6 +296,41 @@ public class GUIConfiguration {
             argument.setArgValue(folder + "/f5c-methylation-freq.tsv");
         }
 
+        // nanopolish index input/output files
+        if (argument.getArgID().equals("NANOPOLISH_INDEX_FAST5_FILE")) {
+            argument.setArgValue(folder + "/fast5_files");
+        }
+        if (argument.getArgID().equals("NANOPOLISH_INDEX_FASTA_FILE")) {
+            argument.setArgValue(folder + "/reads.fasta");
+        }
+
+        // nanopolish variant input/output files
+        if (argument.getArgID().equals("NANOPOLISH_VARIANT_FASTA_FILE")) {
+            argument.setArgValue(folder + "/reads.fasta");
+        }
+        if (argument.getArgID().equals("NANOPOLISH_VARIANT_READ_SORTED_FILE")) {
+            argument.setArgValue(folder + "/reads.sorted.bam");
+        }
+        if (argument.getArgID().equals("NANOPOLISH_VARIANT_REF_FILE")) {
+            argument.setArgValue(folder + "/draft.fa");
+        }
+        if (argument.getArgID().equals("NANOPOLISH_VARIANT_OUTPUT_FILE")) {
+            argument.setArgValue(folder + "/nanopolish-variant.vcf");
+        }
+        // For the Demo set threads, window size and ploidy
+        if (argument.getArgID().equals("NANOPOLISH_VARIANT_THREADS")) {
+            argument.setSetByUser(true);
+            argument.setArgValue("4");
+        }
+        if (argument.getArgID().equals("NANOPOLISH_VARIANT_WINDOW")) {
+            argument.setSetByUser(true);
+            argument.setArgValue("tig00000001:200000-202000");
+        }
+        if (argument.getArgID().equals("NANOPOLISH_VARIANT_PLOIDY_LEVEL")) {
+            argument.setSetByUser(true);
+            argument.setArgValue("1");
+        }
+
     }
 
 }
