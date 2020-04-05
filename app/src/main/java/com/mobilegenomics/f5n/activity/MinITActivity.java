@@ -21,12 +21,10 @@ import android.widget.RelativeLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.liulishuo.okdownload.core.cause.EndCause;
 import com.mobilegenomics.f5n.BuildConfig;
 import com.mobilegenomics.f5n.GUIConfiguration;
@@ -36,6 +34,7 @@ import com.mobilegenomics.f5n.dto.State;
 import com.mobilegenomics.f5n.dto.WrapperObject;
 import com.mobilegenomics.f5n.support.DownloadListener;
 import com.mobilegenomics.f5n.support.FTPManager;
+import com.mobilegenomics.f5n.support.FileUtil;
 import com.mobilegenomics.f5n.support.LogHandler;
 import com.mobilegenomics.f5n.support.PipelineState;
 import com.mobilegenomics.f5n.support.PreferenceUtil;
@@ -45,13 +44,11 @@ import com.mobilegenomics.f5n.support.TimeFormat;
 import com.mobilegenomics.f5n.support.ZipListener;
 import com.mobilegenomics.f5n.support.ZipManager;
 import com.obsez.android.lib.filechooser.ChooserDialog;
-
-import net.gotev.uploadservice.UploadService;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Set;
+import net.gotev.uploadservice.UploadService;
 
 public class MinITActivity extends AppCompatActivity {
 
@@ -123,11 +120,15 @@ public class MinITActivity extends AppCompatActivity {
         if (PreferenceUtil.getSharedPreferenceInt(R.string.id_app_mode) == PipelineState.MINIT_DOWNLOAD.ordinal() &&
                 PreferenceUtil.getSharedPreferenceObject(R.string.id_wrapper_obj) != null) {
             showResumeMessage(PipelineState.MINIT_DOWNLOAD);
-        } else if (PreferenceUtil.getSharedPreferenceInt(R.string.id_app_mode) == PipelineState.MINIT_EXTRACT.ordinal() &&
-                PreferenceUtil.getSharedPreferenceObject(R.string.id_wrapper_obj) != null) {
+        } else if (
+                PreferenceUtil.getSharedPreferenceInt(R.string.id_app_mode) == PipelineState.MINIT_EXTRACT.ordinal()
+                        &&
+                        PreferenceUtil.getSharedPreferenceObject(R.string.id_wrapper_obj) != null) {
             showResumeMessage(PipelineState.MINIT_EXTRACT);
-        } else if (PreferenceUtil.getSharedPreferenceInt(R.string.id_app_mode) == PipelineState.MINIT_CONFIGURE.ordinal() &&
-                PreferenceUtil.getSharedPreferenceObject(R.string.id_wrapper_obj) != null) {
+        } else if (
+                PreferenceUtil.getSharedPreferenceInt(R.string.id_app_mode) == PipelineState.MINIT_CONFIGURE.ordinal()
+                        &&
+                        PreferenceUtil.getSharedPreferenceObject(R.string.id_wrapper_obj) != null) {
             showResumeMessage(PipelineState.MINIT_CONFIGURE);
         }
 
@@ -169,9 +170,11 @@ public class MinITActivity extends AppCompatActivity {
                 }
             }
         } else {
-            if (PreferenceUtil.getSharedPreferenceInt(R.string.id_app_mode) == PipelineState.MINIT_COMPRESS.ordinal()) {
+            if (PreferenceUtil.getSharedPreferenceInt(R.string.id_app_mode) == PipelineState.MINIT_COMPRESS
+                    .ordinal()) {
                 showResumeMessage(PipelineState.MINIT_COMPRESS);
-            } else if (PreferenceUtil.getSharedPreferenceInt(R.string.id_app_mode) == PipelineState.MINIT_UPLOAD.ordinal()) {
+            } else if (PreferenceUtil.getSharedPreferenceInt(R.string.id_app_mode) == PipelineState.MINIT_UPLOAD
+                    .ordinal()) {
                 showResumeMessage(PipelineState.MINIT_UPLOAD);
             }
         }
@@ -339,14 +342,16 @@ public class MinITActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onComplete(@NonNull final boolean success, @NonNull final long timeTook, @Nullable final Exception exception) {
+            public void onComplete(@NonNull final boolean success, @NonNull final long timeTook,
+                    @Nullable final Exception exception) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         if (success) {
                             statusTextView.setText("Unzip Successful");
                             String completionTime = TimeFormat.millisToShortDHMS(timeTook);
-                            connectionLogText.append(String.format("Extracting data set completed in %s\n", completionTime));
+                            connectionLogText
+                                    .append(String.format("Extracting data set completed in %s\n", completionTime));
                             configureStepFolderPath();
                             GUIConfiguration.setPipelineState(PipelineState.MINIT_CONFIGURE);
                             if (AUTOMATED) {
@@ -439,6 +444,8 @@ public class MinITActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         GUIConfiguration.setPipelineState(PipelineState.STATE_ZERO);
+                        FileUtil.deleteFolder(new File(folderPath));
+                        FileUtil.deleteFolder(new File(folderPath + ".zip"));
                         Toast.makeText(MinITActivity.this, "Success", Toast.LENGTH_SHORT).show();
                         if (isAUTOMATED() && isBURST()) {
                             int interval = PreferenceUtil.getSharedPreferenceInt(R.string.key_time_preference);
@@ -525,7 +532,8 @@ public class MinITActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onComplete(@NonNull final boolean success, @NonNull long timeTook, @Nullable final Exception exception) {
+            public void onComplete(@NonNull final boolean success, @NonNull long timeTook,
+                    @Nullable final Exception exception) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -554,7 +562,8 @@ public class MinITActivity extends AppCompatActivity {
         String title, msg;
         if (GUIConfiguration.getPipelineState() == PipelineState.MINIT_COMPRESS) {
             title = "Compress files manually";
-            msg = "One or more files selected to upload does not exists. Please select files manually and compress to upload";
+            msg
+                    = "One or more files selected to upload does not exists. Please select files manually and compress to upload";
         } else {
             title = "Upload files manually";
             msg = "File upload failed. Please try manual upload";
@@ -565,7 +574,8 @@ public class MinITActivity extends AppCompatActivity {
                 .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
-                        WrapperObject prevJob = (WrapperObject) PreferenceUtil.getSharedPreferenceObject(R.string.id_wrapper_obj);
+                        WrapperObject prevJob = (WrapperObject) PreferenceUtil
+                                .getSharedPreferenceObject(R.string.id_wrapper_obj);
                         ServerConnectionUtils.setWrapperObject(prevJob);
                         btnRequestJob.setVisibility(View.GONE);
                         trSendResults.setVisibility(View.VISIBLE);
@@ -601,8 +611,9 @@ public class MinITActivity extends AppCompatActivity {
         fileList = new ArrayList<>();
         File dir = new File(path);
         for (File f : dir.listFiles()) {
-            if (f.isFile())
+            if (f.isFile()) {
                 fileList.add(dir + "/" + f.getName());
+            }
         }
     }
 
@@ -681,7 +692,8 @@ public class MinITActivity extends AppCompatActivity {
                         dialog.dismiss();
                         setAUTOMATED(false);
                         trRadioGroupExecuteMode.setVisibility(View.GONE);
-                        WrapperObject prevJob = (WrapperObject) PreferenceUtil.getSharedPreferenceObject(R.string.id_wrapper_obj);
+                        WrapperObject prevJob = (WrapperObject) PreferenceUtil
+                                .getSharedPreferenceObject(R.string.id_wrapper_obj);
                         ServerConnectionUtils.setWrapperObject(prevJob);
                         String previousConnectionLog = GUIConfiguration.getLogMessage();
                         connectionLogText.setText(previousConnectionLog);
@@ -737,7 +749,8 @@ public class MinITActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             public void run() {
                 Intent intent = new Intent(MinITActivity.this, ConfirmationActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        | Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra("FOLDER_PATH", filePath);
                 startActivity(intent);
                 finish();
