@@ -24,6 +24,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
+import com.mobilegenomics.f5n.core.AppMode;
 import com.mobilegenomics.f5n.core.Step;
 import com.mobilegenomics.f5n.support.PipelineState;
 import com.mobilegenomics.f5n.support.PreferenceUtil;
@@ -174,7 +175,7 @@ public class TerminalActivity extends AppCompatActivity {
 
                     PreferenceUtil.setSharedPreferenceStepList(R.string.id_step_list, steps);
                     PreferenceUtil.setSharedPreferenceString(R.string.id_folder_path, folderPath);
-                    if (GUIConfiguration.getPipelineState() != PipelineState.MINIT_CONFIGURE)
+                    if (GUIConfiguration.getAppMode() != AppMode.SLAVE)
                         GUIConfiguration.setPipelineState(PipelineState.CONFIGURED);
 
                     Intent intent = new Intent(TerminalActivity.this, ConfirmationActivity.class);

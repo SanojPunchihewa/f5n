@@ -2,6 +2,7 @@ package com.mobilegenomics.f5n.fragments;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -11,17 +12,24 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.Settings;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.NumberPicker;
+
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceClickListener;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreference;
+
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.activity.MainActivity;
 import com.mobilegenomics.f5n.support.FileUtil;
 import com.mobilegenomics.f5n.support.PreferenceUtil;
 import com.obsez.android.lib.filechooser.ChooserDialog;
+
 import java.io.File;
 
 public class FragmentSettings extends PreferenceFragmentCompat {
@@ -33,7 +41,11 @@ public class FragmentSettings extends PreferenceFragmentCompat {
     private final String MOBILE_GENOMICS_FOLDER_PATH = Environment.getExternalStorageDirectory() + "/"
             + "mobile-genomics/";
 
+    private final int DEFAULT_TIME_INTERVAL = 3;
+
     private String folderPath;
+
+    private String[] timeUnits = {"Seconds", "Minutes"};
 
     private boolean dimScreen;
 
@@ -42,6 +54,8 @@ public class FragmentSettings extends PreferenceFragmentCompat {
     private Preference storagePreference;
 
     private Preference referenceGnomePreference;
+
+    private Preference timePreference;
 
     private Preference versionPreference;
 
@@ -64,6 +78,7 @@ public class FragmentSettings extends PreferenceFragmentCompat {
         logFileDirectoryPreference = findPreference(getResources().getString(R.string.key_log_file_preference));
         storagePreference = findPreference(getResources().getString(R.string.key_storage_preference));
         referenceGnomePreference = findPreference(getResources().getString(R.string.key_reference_gnome));
+        timePreference = findPreference(getResources().getString(R.string.key_time_preference));
         versionPreference = findPreference(getResources().getString(R.string.key_version_preference));
         feedbackPreference = findPreference(getResources().getString(R.string.key_feedback_preference));
         permissionSDCardWritePreference = findPreference(
@@ -161,6 +176,18 @@ public class FragmentSettings extends PreferenceFragmentCompat {
             }
         });
 
+        int timeInterval = PreferenceUtil
+                .getSharedPreferenceInt(R.string.key_time_preference, DEFAULT_TIME_INTERVAL);
+        timePreference.setDefaultValue(timeInterval);
+        timePreference.setSummary(timeInterval + " " + timeUnits[0]);
+        timePreference.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                setTimeInterval();
+                return false;
+            }
+        });
+
         PackageInfo pInfo = null;
         try {
             pInfo = getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0);
@@ -208,6 +235,36 @@ public class FragmentSettings extends PreferenceFragmentCompat {
                     }
                 })
                 .build()
+                .show();
+    }
+
+    private void setTimeInterval() {
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.time_preference, null, false);
+        NumberPicker valuePicker = view.findViewById(R.id.picker_value);
+        NumberPicker unitPicker = view.findViewById(R.id.picker_unit);
+        valuePicker.setMaxValue(120);
+        valuePicker.setMinValue(0);
+        unitPicker.setDisplayedValues(timeUnits);
+        unitPicker.setMinValue(0);
+        unitPicker.setMaxValue(1);
+        new AlertDialog.Builder(getActivity())
+                .setTitle("Set Time Interval")
+                .setView(view)
+                .setPositiveButton("Set", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int i) {
+                        int value = valuePicker.getValue();
+                        int unit = unitPicker.getValue();
+                        timePreference.setSummary(value + " " + timeUnits[unit]);
+                        if (unit == 1) {
+                            value = value * 60;
+                        }
+                        timePreference.setDefaultValue(value);
+                        PreferenceUtil.setSharedPreferenceInt(R.string.key_time_preference, value);
+                        dialog.dismiss();
+                    }
+                })
+                .setCancelable(false)
                 .show();
     }
 
@@ -278,15 +335,12 @@ public class FragmentSettings extends PreferenceFragmentCompat {
 
     public boolean checkPermission(String permission) {
 
-        if (ContextCompat.checkSelfPermission(getContext(), permission) == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        }
-        return false;
+        return ContextCompat.checkSelfPermission(getContext(), permission) == PackageManager.PERMISSION_GRANTED;
     }
 
     @Override
     public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions,
-            @NonNull final int[] grantResults) {
+                                           @NonNull final int[] grantResults) {
         if (requestCode == REQUEST_PERMISSION_STORAGE && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             permissionStoragePreference.setChecked(true);
         } else {

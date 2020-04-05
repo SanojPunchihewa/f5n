@@ -16,6 +16,8 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RelativeLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,10 +36,12 @@ import com.mobilegenomics.f5n.dto.State;
 import com.mobilegenomics.f5n.dto.WrapperObject;
 import com.mobilegenomics.f5n.support.DownloadListener;
 import com.mobilegenomics.f5n.support.FTPManager;
+import com.mobilegenomics.f5n.support.LogHandler;
 import com.mobilegenomics.f5n.support.PipelineState;
 import com.mobilegenomics.f5n.support.PreferenceUtil;
 import com.mobilegenomics.f5n.support.ServerCallback;
 import com.mobilegenomics.f5n.support.ServerConnectionUtils;
+import com.mobilegenomics.f5n.support.TimeFormat;
 import com.mobilegenomics.f5n.support.ZipListener;
 import com.mobilegenomics.f5n.support.ZipManager;
 import com.obsez.android.lib.filechooser.ChooserDialog;
@@ -51,11 +55,11 @@ import java.util.Set;
 
 public class MinITActivity extends AppCompatActivity {
 
-    private static final String TAG = MinITActivity.class.getSimpleName();
+    private static boolean AUTOMATED = true;
 
-    private static boolean AUTOMATED = false;
+    private static boolean BURST = false;
 
-    private static TextView connectionLogText;
+    public TextView connectionLogText;
 
     ProgressBar progressBar;
 
@@ -65,6 +69,8 @@ public class MinITActivity extends AppCompatActivity {
 
     private TableRow trBackToRequestJob;
 
+    private RelativeLayout trRadioGroupExecuteMode;
+
     private Button btnProcessJob;
 
     private Button btnRequestJob;
@@ -72,6 +78,8 @@ public class MinITActivity extends AppCompatActivity {
     private Button btnBackToRequestJob;
 
     private Button btnSendResults;
+
+    private Button btnGoToStart;
 
     private String folderPath;
 
@@ -94,14 +102,14 @@ public class MinITActivity extends AppCompatActivity {
 
     private static final String REFERENCE_GNOME = "\\$REF_GNOME/";
 
-    public static void logHandler(Handler handler) {
-        handler.post(new Runnable() {
+    public static void logHandler(LogHandler logHandler) {
+        logHandler.post(new Runnable() {
             @Override
             public void run() {
                 StringBuilder newLogMessage = ServerConnectionUtils.getLogMessage();
                 if (newLogMessage != null && newLogMessage.toString().trim().length() != 0) {
-                    connectionLogText.setText(newLogMessage);
-                    PreferenceUtil.setSharedPreferenceString(R.string.id_prev_conn_log, newLogMessage.toString());
+                    logHandler.getmActivity().get().connectionLogText.append(newLogMessage);
+                    GUIConfiguration.setLogMessage(newLogMessage.toString());
                 }
             }
         });
@@ -139,11 +147,16 @@ public class MinITActivity extends AppCompatActivity {
         btnProcessJob = findViewById(R.id.btn_process_job);
         btnBackToRequestJob = findViewById(R.id.btn_back_to_req_job);
         btnSendResults = findViewById(R.id.btn_send_result);
+        btnGoToStart = findViewById(R.id.btn_go_to_start);
+        trRadioGroupExecuteMode = findViewById(R.id.tr_radio_grp_execute_mode);
 
         if (getIntent().getExtras() != null) {
+            trRadioGroupExecuteMode.setVisibility(View.GONE);
             resultsSummary = getIntent().getExtras().getString("PIPELINE_STATUS");
             folderPath = getIntent().getExtras().getString("FOLDER_PATH");
             if (resultsSummary != null && !TextUtils.isEmpty(resultsSummary)) {
+                PreferenceUtil.setSharedPreferenceString(R.string.id_results_summary, resultsSummary);
+                connectionLogText.append(GUIConfiguration.getLogMessage());
                 if (MinITActivity.isAUTOMATED()) {
                     btnRequestJob.setVisibility(View.GONE);
                     trSendResults.setVisibility(View.GONE);
@@ -172,6 +185,10 @@ public class MinITActivity extends AppCompatActivity {
                     serverIP = serverAddressInput.getText().toString().trim();
 
                     ServerConnectionUtils.setServerAddress(serverIP);
+                    ServerConnectionUtils.clearLogMessage();
+                    trRadioGroupExecuteMode.setVisibility(View.GONE);
+                    connectionLogText.setText(null);
+                    statusTextView.setText(null);
                     requestJob();
                 } else {
                     Toast.makeText(MinITActivity.this, "Please input a server IP", Toast.LENGTH_SHORT).show();
@@ -210,10 +227,7 @@ public class MinITActivity extends AppCompatActivity {
                             .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     dialog.dismiss();
-                                    GUIConfiguration.setPipelineState(PipelineState.STATE_ZERO);
-                                    btnRequestJob.setVisibility(View.VISIBLE);
-                                    trSendResults.setVisibility(View.GONE);
-                                    trBackToRequestJob.setVisibility(View.GONE);
+                                    returnToAnotherRequestJob();
                                 }
                             })
                             .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -225,12 +239,39 @@ public class MinITActivity extends AppCompatActivity {
                             .setCancelable(false)
                             .show();
                 } else {
-                    btnRequestJob.setVisibility(View.VISIBLE);
-                    trSendResults.setVisibility(View.GONE);
-                    trBackToRequestJob.setVisibility(View.GONE);
+                    returnToAnotherRequestJob();
                 }
             }
         });
+
+        btnGoToStart.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MinITActivity.this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+            }
+        });
+    }
+
+    public void onSelectExecuteMode(View view) {
+        boolean checked = ((RadioButton) view).isChecked();
+        if (view.getId() == R.id.radio_automate) {
+            if (checked) {
+                AUTOMATED = true;
+                BURST = false;
+            }
+        } else if (view.getId() == R.id.radio_manual) {
+            if (checked) {
+                AUTOMATED = false;
+                BURST = false;
+            }
+        } else {
+            if (checked) {
+                AUTOMATED = true;
+                BURST = true;
+            }
+        }
     }
 
     private void processJob() {
@@ -252,6 +293,7 @@ public class MinITActivity extends AppCompatActivity {
     }
 
     private void downloadDataSetFTP() {
+        serverIP = ServerConnectionUtils.getServerAddress();
         String url = serverIP + "/" + zipFileName;
         new FTPManager().download(url, STORAGE_PATH, this,
                 new DownloadListener() {
@@ -264,6 +306,7 @@ public class MinITActivity extends AppCompatActivity {
                             statusTextView.setText(
                                     "Unable to start the unzipping process due to an error in the download process");
                         }
+                        //GUIConfiguration.setLogMessage(connectionLogText.getText().toString());
                     }
                 });
     }
@@ -296,13 +339,14 @@ public class MinITActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onComplete(@NonNull final boolean success, @Nullable final Exception exception) {
+            public void onComplete(@NonNull final boolean success, @NonNull final long timeTook, @Nullable final Exception exception) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         if (success) {
                             statusTextView.setText("Unzip Successful");
-                            connectionLogText.append("Extracting data set completed\n");
+                            String completionTime = TimeFormat.millisToShortDHMS(timeTook);
+                            connectionLogText.append(String.format("Extracting data set completed in %s\n", completionTime));
                             configureStepFolderPath();
                             GUIConfiguration.setPipelineState(PipelineState.MINIT_CONFIGURE);
                             if (AUTOMATED) {
@@ -316,6 +360,7 @@ public class MinITActivity extends AppCompatActivity {
                             statusTextView.setText("Unzip Error");
                             connectionLogText.append("Extracting data set error\n");
                         }
+                        GUIConfiguration.setLogMessage(connectionLogText.getText().toString());
                     }
                 });
             }
@@ -348,7 +393,7 @@ public class MinITActivity extends AppCompatActivity {
     }
 
     private void requestJob() {
-        ServerConnectionUtils.connectToServer(State.REQUEST, new ServerCallback() {
+        ServerConnectionUtils.connectToServer(State.REQUEST, this, new ServerCallback() {
             @Override
             public void onError(final WrapperObject job) {
 
@@ -362,10 +407,14 @@ public class MinITActivity extends AppCompatActivity {
                         GUIConfiguration.configureSteps(job.getSteps());
                         zipFileName = job.getPrefix() + ".zip";
                         GUIConfiguration.setPipelineState(PipelineState.MINIT_DOWNLOAD);
-                        setAUTOMATED(true);
                         if (isAUTOMATED()) {
                             btnProcessJob.setVisibility(View.GONE);
-                            processJob();
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    processJob();
+                                }
+                            }, 500);
                         } else {
                             btnProcessJob.setVisibility(View.VISIBLE);
                         }
@@ -376,8 +425,9 @@ public class MinITActivity extends AppCompatActivity {
     }
 
     private void sendJobResults() {
-        ServerConnectionUtils.setResultToWrapperObject(resultsSummary);
-        ServerConnectionUtils.connectToServer(State.COMPLETED, new ServerCallback() {
+        resultsSummary = PreferenceUtil.getSharedPreferenceString(R.string.id_results_summary);
+        ServerConnectionUtils.setResultToWrapperObject(GUIConfiguration.getLogMessage());
+        ServerConnectionUtils.connectToServer(State.COMPLETED, this, new ServerCallback() {
             @Override
             public void onError(final WrapperObject job) {
 
@@ -390,6 +440,21 @@ public class MinITActivity extends AppCompatActivity {
                     public void run() {
                         GUIConfiguration.setPipelineState(PipelineState.STATE_ZERO);
                         Toast.makeText(MinITActivity.this, "Success", Toast.LENGTH_SHORT).show();
+                        if (isAUTOMATED() && isBURST()) {
+                            int interval = PreferenceUtil.getSharedPreferenceInt(R.string.key_time_preference);
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    returnToAnotherRequestJob();
+                                    serverIP = ServerConnectionUtils.getServerAddress();
+                                    ServerConnectionUtils.clearLogMessage();
+                                    trRadioGroupExecuteMode.setVisibility(View.GONE);
+                                    connectionLogText.setText(null);
+                                    statusTextView.setText(null);
+                                    requestJob();
+                                }
+                            }, interval * 1000);
+                        }
                     }
                 });
             }
@@ -402,8 +467,16 @@ public class MinITActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull EndCause cause, @Nullable Exception realCause) {
                 if (cause == EndCause.COMPLETED) {
-                    sendJobResults();
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            sendJobResults();
+                        }
+                    }, 500);
+                } else {
+                    showManualCompressUploadMessage();
                 }
+                GUIConfiguration.setLogMessage(connectionLogText.getText().toString());
             }
         });
     }
@@ -418,13 +491,13 @@ public class MinITActivity extends AppCompatActivity {
                     fileList.add(folderPath.substring(0, folderPath.length() - 4) + "/" + fileName);
                 }
             } else {
-                fileList = getFileList(folderPath.substring(0, folderPath.length() - 4));
+                getFileList(folderPath.substring(0, folderPath.length() - 4));
             }
             fileList.add(folderPath.substring(0, folderPath.length() - 4));
         }
         folderPath = fileList.get(fileList.size() - 1);
         String zipFileName = folderPath + "/" + folderPath.substring(folderPath.lastIndexOf("/") + 1)
-                + ".out.zip";
+                + "_output.zip";
 
         ZipManager zipManager = new ZipManager(MinITActivity.this, new ZipListener() {
             @Override
@@ -434,6 +507,7 @@ public class MinITActivity extends AppCompatActivity {
                     public void run() {
                         progressBar.setMax(100);
                         statusTextView.setText("Zip started");
+                        connectionLogText.append("Compressing Started\n");
                     }
                 });
             }
@@ -451,19 +525,22 @@ public class MinITActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onComplete(@NonNull final boolean success, @Nullable final Exception exception) {
+            public void onComplete(@NonNull final boolean success, @NonNull long timeTook, @Nullable final Exception exception) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         if (success) {
                             statusTextView.setText("Zip Successful");
+                            String completionTime = TimeFormat.millisToShortDHMS(timeTook);
+                            connectionLogText.append(String.format("Compressing completed in %s\n", completionTime));
                             GUIConfiguration.setPipelineState(PipelineState.MINIT_UPLOAD);
                             PreferenceUtil.setSharedPreferenceString(R.string.id_compressed_file, zipFileName);
                             uploadDataSetFTP(zipFileName);
                         } else {
                             statusTextView.setText("Zip Error");
-                            showManualCompressMessage();
+                            showManualCompressUploadMessage();
                         }
+                        GUIConfiguration.setLogMessage(connectionLogText.getText().toString());
                     }
                 });
             }
@@ -473,11 +550,19 @@ public class MinITActivity extends AppCompatActivity {
         zipManager.zip(fileList, zipFileName);
     }
 
-    private void showManualCompressMessage() {
+    private void showManualCompressUploadMessage() {
+        String title, msg;
+        if (GUIConfiguration.getPipelineState() == PipelineState.MINIT_COMPRESS) {
+            title = "Compress files manually";
+            msg = "One or more files selected to upload does not exists. Please select files manually and compress to upload";
+        } else {
+            title = "Upload files manually";
+            msg = "File upload failed. Please try manual upload";
+        }
         new AlertDialog.Builder(this)
-                .setTitle("Compress files manually")
-                .setMessage("One or more files selected to upload does not exists. Please select files manually and compress to upload")
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                .setTitle(title)
+                .setMessage(msg)
+                .setPositiveButton("Continue", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                         WrapperObject prevJob = (WrapperObject) PreferenceUtil.getSharedPreferenceObject(R.string.id_wrapper_obj);
@@ -485,13 +570,14 @@ public class MinITActivity extends AppCompatActivity {
                         btnRequestJob.setVisibility(View.GONE);
                         trSendResults.setVisibility(View.VISIBLE);
                         trBackToRequestJob.setVisibility(View.VISIBLE);
+                        trRadioGroupExecuteMode.setVisibility(View.GONE);
                         setAUTOMATED(false);
                     }
                 })
                 .setNegativeButton("Get new Job", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(final DialogInterface dialog, final int which) {
-                        GUIConfiguration.setPipelineState(PipelineState.STATE_ZERO);
+                        returnToAnotherRequestJob();
                         dialog.dismiss();
                     }
                 })
@@ -499,14 +585,25 @@ public class MinITActivity extends AppCompatActivity {
                 .show();
     }
 
-    private ArrayList<String> getFileList(String path) {
-        ArrayList<String> fileList = new ArrayList<>();
+    private void returnToAnotherRequestJob() {
+        GUIConfiguration.setPipelineState(PipelineState.STATE_ZERO);
+        setAUTOMATED(true);
+        btnRequestJob.setVisibility(View.VISIBLE);
+        trSendResults.setVisibility(View.GONE);
+        trBackToRequestJob.setVisibility(View.GONE);
+        trRadioGroupExecuteMode.setVisibility(View.VISIBLE);
+        connectionLogText.setText(null);
+        statusTextView.setText(null);
+    }
+
+    private void getFileList(String path) {
+        // TODO consider about getting file names inside folders
+        fileList = new ArrayList<>();
         File dir = new File(path);
         for (File f : dir.listFiles()) {
             if (f.isFile())
                 fileList.add(dir + "/" + f.getName());
         }
-        return fileList;
     }
 
     private void openFileManager(boolean dirOnly, boolean toCompress) {
@@ -582,17 +679,18 @@ public class MinITActivity extends AppCompatActivity {
                 .setPositiveButton("Resume", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
+                        setAUTOMATED(false);
+                        trRadioGroupExecuteMode.setVisibility(View.GONE);
                         WrapperObject prevJob = (WrapperObject) PreferenceUtil.getSharedPreferenceObject(R.string.id_wrapper_obj);
                         ServerConnectionUtils.setWrapperObject(prevJob);
-                        String previousConnectionLog = PreferenceUtil.getSharedPreferenceString(R.string.id_prev_conn_log);
+                        String previousConnectionLog = GUIConfiguration.getLogMessage();
+                        connectionLogText.setText(previousConnectionLog);
                         if (state == PipelineState.MINIT_DOWNLOAD && prevJob != null) {
                             GUIConfiguration.configureSteps(prevJob.getSteps());
                             zipFileName = prevJob.getPrefix() + ".zip";
-                            connectionLogText.setText(previousConnectionLog);
                             btnProcessJob.setVisibility(View.VISIBLE);
                             GUIConfiguration.setPipelineState(PipelineState.MINIT_DOWNLOAD);
                         } else if (state == PipelineState.MINIT_EXTRACT) {
-                            connectionLogText.setText(previousConnectionLog);
                             GUIConfiguration.configureSteps(prevJob.getSteps());
                             zipFileName = prevJob.getPrefix() + ".zip";
                             extractZip(STORAGE_PATH + zipFileName);
@@ -621,6 +719,8 @@ public class MinITActivity extends AppCompatActivity {
                     @Override
                     public void onClick(final DialogInterface dialog, final int which) {
                         GUIConfiguration.setPipelineState(PipelineState.STATE_ZERO);
+                        trRadioGroupExecuteMode.setVisibility(View.VISIBLE);
+                        setAUTOMATED(true);
                         dialog.dismiss();
                     }
                 })
@@ -630,9 +730,19 @@ public class MinITActivity extends AppCompatActivity {
 
     private void automatedSetUpLaunch(String filePath) {
         GUIConfiguration.createPipeline();
-        Intent intent = new Intent(MinITActivity.this, ConfirmationActivity.class);
-        intent.putExtra("FOLDER_PATH", filePath);
-        startActivity(intent);
+        PreferenceUtil.setSharedPreferenceStepList(R.string.id_step_list, GUIConfiguration.getSteps());
+        statusTextView.setText("Setting up to execute job...");
+        connectionLogText.append("Setting up to execute job...\n");
+        GUIConfiguration.setLogMessage(connectionLogText.getText().toString());
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                Intent intent = new Intent(MinITActivity.this, ConfirmationActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.putExtra("FOLDER_PATH", filePath);
+                startActivity(intent);
+                finish();
+            }
+        }, 2000);
     }
 
     public static boolean isAUTOMATED() {
@@ -641,6 +751,14 @@ public class MinITActivity extends AppCompatActivity {
 
     public static void setAUTOMATED(boolean AUTOMATED) {
         MinITActivity.AUTOMATED = AUTOMATED;
+    }
+
+    public static boolean isBURST() {
+        return BURST;
+    }
+
+    public static void setBURST(boolean BURST) {
+        MinITActivity.BURST = BURST;
     }
 
     private boolean validateIPAddress(final String ip) {

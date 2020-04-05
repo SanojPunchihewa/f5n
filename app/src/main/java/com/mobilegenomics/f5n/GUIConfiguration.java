@@ -33,6 +33,8 @@ public class GUIConfiguration {
 
     private static ArrayList<PipelineStep> selectedPipelineSteps = new ArrayList<>();
 
+    private static PipelineStep failedPipelineStep;
+
     private static ArrayList<Step> steps = new ArrayList<>();
 
     private static int current = 0;
@@ -40,6 +42,8 @@ public class GUIConfiguration {
     private static ArrayList<PipelineComponent> pipelineComponents;
 
     private static HashMap<String, String> linkedFileArguments = new HashMap<>();
+
+    private static StringBuilder logMessage = new StringBuilder();
 
     public static void setPipelineState(PipelineState state) {
         pipelineState = state;
@@ -52,6 +56,14 @@ public class GUIConfiguration {
 
     public static void addPipelineStep(PipelineStep step) {
         selectedPipelineSteps.add(step);
+    }
+
+    public static PipelineStep getFailedPipelineStep() {
+        return failedPipelineStep;
+    }
+
+    public static void setFailedPipelineStep(PipelineStep failedPipelineStep) {
+        GUIConfiguration.failedPipelineStep = failedPipelineStep;
     }
 
     public static void eraseSelectedPipeline() {
@@ -139,8 +151,10 @@ public class GUIConfiguration {
             String status = returnCode == 0 ? "Success" : "Error";
             pipelineComponent.setRuntime(TimeFormat.millisToShortDHMS(time) + " status = " + status);
             if (returnCode != 0) {
+                setFailedPipelineStep(pipelineComponent.getPipelineStep());
                 break;
             }
+            setFailedPipelineStep(null);
         }
     }
 
@@ -295,6 +309,18 @@ public class GUIConfiguration {
             argument.setArgValue(folder + "/f5c-methylation-freq.tsv");
         }
 
+    }
+
+    public static void setLogMessage(String log) {
+        logMessage.delete(0, logMessage.length()).append(log);
+        PreferenceUtil.setSharedPreferenceString(R.string.id_prev_conn_log, logMessage.toString());
+    }
+
+    public static String getLogMessage() {
+        if (!logMessage.toString().isEmpty())
+            return logMessage.toString();
+        else
+            return PreferenceUtil.getSharedPreferenceString(R.string.id_prev_conn_log);
     }
 
 }

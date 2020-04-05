@@ -1,6 +1,7 @@
 package com.mobilegenomics.f5n;
 
 import android.content.Context;
+import android.util.Log;
 
 public class Application extends android.app.Application {
 
@@ -16,4 +17,9 @@ public class Application extends android.app.Application {
         return Application.mContext;
     }
 
+    @Override
+    public void onTrimMemory(int level) {
+        Log.d("Application", "onTrimMemory");
+        super.onTrimMemory(level);
+    }
 }

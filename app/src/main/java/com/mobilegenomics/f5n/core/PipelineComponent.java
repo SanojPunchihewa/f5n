@@ -1,5 +1,7 @@
 package com.mobilegenomics.f5n.core;
 
+import android.util.Log;
+
 interface runNative {
 
     int run();
@@ -35,7 +37,11 @@ public class PipelineComponent implements runNative {
     @Override
     public int run() {
         int status;
-        status = NativeCommands.getNativeInstance().init(command,this.pipelineStep.getValue());
+        try{
+            status = NativeCommands.getNativeInstance().init(command,this.pipelineStep.getValue());
+        }catch (Exception e){
+            status =1;
+        }
         return status;
     }
 }
