@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,9 +20,9 @@ import androidx.core.app.ActivityCompat;
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.AppMode;
-import com.mobilegenomics.f5n.fragments.FragmentSettings;
 import com.mobilegenomics.f5n.support.PermissionResultCallback;
 import com.mobilegenomics.f5n.support.PermissionUtils;
+import com.mobilegenomics.f5n.support.PreferenceUtil;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements
@@ -46,6 +47,9 @@ public class MainActivity extends AppCompatActivity implements
         permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
         if (firstOpen) {
+            String logFileDirectory = Environment.getExternalStorageDirectory() + "/"
+                    + "mobile-genomics/";
+            PreferenceUtil.setSharedPreferenceString(R.string.key_log_file_preference, logFileDirectory);
             showAlert();
         }
 
