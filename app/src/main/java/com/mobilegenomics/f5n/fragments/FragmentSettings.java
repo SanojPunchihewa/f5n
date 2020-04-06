@@ -9,13 +9,11 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.NumberPicker;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
@@ -23,13 +21,11 @@ import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceClickListener;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreference;
-
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.activity.MainActivity;
 import com.mobilegenomics.f5n.support.FileUtil;
 import com.mobilegenomics.f5n.support.PreferenceUtil;
 import com.obsez.android.lib.filechooser.ChooserDialog;
-
 import java.io.File;
 
 public class FragmentSettings extends PreferenceFragmentCompat {
@@ -37,9 +33,6 @@ public class FragmentSettings extends PreferenceFragmentCompat {
     private static final int REQUEST_CODE_DOCUMENT_TREE = 148;
 
     private static final int REQUEST_PERMISSION_STORAGE = 158;
-
-    private final String MOBILE_GENOMICS_FOLDER_PATH = Environment.getExternalStorageDirectory() + "/"
-            + "mobile-genomics/";
 
     private final int DEFAULT_TIME_INTERVAL = 3;
 
@@ -152,26 +145,62 @@ public class FragmentSettings extends PreferenceFragmentCompat {
             }
         });
 
+        String logFilePath = PreferenceUtil
+                .getSharedPreferenceString(R.string.key_log_file_preference, FileUtil.MOBILE_GENOMICS_FOLDER_PATH);
+        logFileDirectoryPreference.setDefaultValue(logFilePath);
+        logFileDirectoryPreference.setSummary(logFilePath);
+        logFileDirectoryPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                openFileChooser(new FileSelectListener() {
+                    @Override
+                    public void onSelected(final String path) {
+                        folderPath = path + "/";
+                        logFileDirectoryPreference.setDefaultValue(folderPath);
+                        logFileDirectoryPreference.setSummary(folderPath);
+                        PreferenceUtil.setSharedPreferenceString(R.string.key_log_file_preference, folderPath);
+                    }
+                });
+                return true;
+            }
+        });
+
         String storagePath = PreferenceUtil
-                .getSharedPreferenceString(R.string.key_storage_preference, MOBILE_GENOMICS_FOLDER_PATH);
+                .getSharedPreferenceString(R.string.key_storage_preference, FileUtil.MOBILE_GENOMICS_FOLDER_PATH);
         storagePreference.setDefaultValue(storagePath);
         storagePreference.setSummary(storagePath);
         storagePreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                setDataStorage();
+                openFileChooser(new FileSelectListener() {
+                    @Override
+                    public void onSelected(final String path) {
+                        folderPath = path + "/";
+                        storagePreference.setDefaultValue(folderPath);
+                        storagePreference.setSummary(folderPath);
+                        PreferenceUtil.setSharedPreferenceString(R.string.key_storage_preference, folderPath);
+                    }
+                });
                 return true;
             }
         });
 
         String referenceGnomePath = PreferenceUtil
-                .getSharedPreferenceString(R.string.key_reference_gnome, MOBILE_GENOMICS_FOLDER_PATH);
+                .getSharedPreferenceString(R.string.key_reference_gnome, FileUtil.MOBILE_GENOMICS_FOLDER_PATH);
         referenceGnomePreference.setDefaultValue(referenceGnomePath);
         referenceGnomePreference.setSummary(referenceGnomePath);
         referenceGnomePreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                setReferenceGnome();
+                openFileChooser(new FileSelectListener() {
+                    @Override
+                    public void onSelected(final String path) {
+                        folderPath = path + "/";
+                        referenceGnomePreference.setDefaultValue(folderPath);
+                        referenceGnomePreference.setSummary(folderPath);
+                        PreferenceUtil.setSharedPreferenceString(R.string.key_reference_gnome, folderPath);
+                    }
+                });
                 return true;
             }
         });
@@ -206,32 +235,13 @@ public class FragmentSettings extends PreferenceFragmentCompat {
         });
     }
 
-    private void setDataStorage() {
+    private void openFileChooser(FileSelectListener listener) {
         new ChooserDialog(getActivity())
                 .withFilter(true, false)
                 .withChosenListener(new ChooserDialog.Result() {
                     @Override
                     public void onChoosePath(String path, File pathFile) {
-                        folderPath = path + "/";
-                        storagePreference.setDefaultValue(folderPath);
-                        storagePreference.setSummary(folderPath);
-                        PreferenceUtil.setSharedPreferenceString(R.string.key_storage_preference, folderPath);
-                    }
-                })
-                .build()
-                .show();
-    }
-
-    private void setReferenceGnome() {
-        new ChooserDialog(getActivity())
-                .withFilter(true, false)
-                .withChosenListener(new ChooserDialog.Result() {
-                    @Override
-                    public void onChoosePath(String path, File pathFile) {
-                        folderPath = path + "/";
-                        referenceGnomePreference.setDefaultValue(folderPath);
-                        referenceGnomePreference.setSummary(folderPath);
-                        PreferenceUtil.setSharedPreferenceString(R.string.key_reference_gnome, folderPath);
+                        listener.onSelected(path);
                     }
                 })
                 .build()
@@ -340,7 +350,7 @@ public class FragmentSettings extends PreferenceFragmentCompat {
 
     @Override
     public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions,
-                                           @NonNull final int[] grantResults) {
+            @NonNull final int[] grantResults) {
         if (requestCode == REQUEST_PERMISSION_STORAGE && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             permissionStoragePreference.setChecked(true);
         } else {
@@ -348,4 +358,10 @@ public class FragmentSettings extends PreferenceFragmentCompat {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
+
+    interface FileSelectListener {
+
+        void onSelected(String path);
+    }
+
 }

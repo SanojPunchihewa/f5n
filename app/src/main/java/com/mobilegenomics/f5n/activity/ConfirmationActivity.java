@@ -27,12 +27,10 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.NestedScrollView;
-
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.AppMode;
@@ -43,7 +41,6 @@ import com.mobilegenomics.f5n.support.PipelineState;
 import com.mobilegenomics.f5n.support.PreferenceUtil;
 import com.mobilegenomics.f5n.support.ScreenDimUtil;
 import com.mobilegenomics.f5n.support.TimeFormat;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -267,7 +264,8 @@ public class ConfirmationActivity extends AppCompatActivity {
         btnReconfigure.setVisibility(View.GONE);
         linearLayout.addView(btnReconfigure);
 
-        if (GUIConfiguration.getAppMode() == AppMode.STANDALONE || GUIConfiguration.getAppMode() == AppMode.DEMO || GUIConfiguration.getAppMode() == AppMode.SLAVE) {
+        if (GUIConfiguration.getAppMode() == AppMode.STANDALONE || GUIConfiguration.getAppMode() == AppMode.DEMO
+                || GUIConfiguration.getAppMode() == AppMode.SLAVE) {
             btnGoToStart = new Button(this);
             btnGoToStart.setText("Go to Start Screen");
             btnGoToStart.setOnClickListener(new OnClickListener() {
@@ -419,7 +417,8 @@ public class ConfirmationActivity extends AppCompatActivity {
             }
             btnWriteLog.setVisibility(View.VISIBLE);
             if (GUIConfiguration.getAppMode() == AppMode.STANDALONE
-                    || GUIConfiguration.getAppMode() == AppMode.DEMO || GUIConfiguration.getAppMode() == AppMode.SLAVE) {
+                    || GUIConfiguration.getAppMode() == AppMode.DEMO
+                    || GUIConfiguration.getAppMode() == AppMode.SLAVE) {
                 btnGoToStart.setVisibility(View.VISIBLE);
             }
             btnProceed.setEnabled(true);
@@ -438,7 +437,9 @@ public class ConfirmationActivity extends AppCompatActivity {
                         String elapsedTime = TimeFormat.millisToShortDHMS(elapsedMillis);
                         new Handler().postDelayed(new Runnable() {
                             public void run() {
-                                GUIConfiguration.setLogMessage(GUIConfiguration.getLogMessage() + "\n" + resultsSummary + "\nPipeline Execution Time: " + elapsedTime + "\n");
+                                GUIConfiguration.setLogMessage(
+                                        GUIConfiguration.getLogMessage() + "\n" + resultsSummary
+                                                + "\nPipeline Execution Time: " + elapsedTime + "\n");
                                 Intent intent = new Intent(ConfirmationActivity.this, MinITActivity.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                 intent.putExtra("PIPELINE_STATUS", resultsSummary);
@@ -458,7 +459,8 @@ public class ConfirmationActivity extends AppCompatActivity {
                 GUIConfiguration.setLogMessage(txtLogs.getText().toString());
                 new AlertDialog.Builder(ConfirmationActivity.this)
                         .setTitle("Pipeline Failure")
-                        .setMessage(GUIConfiguration.getFailedPipelineStep().name() + " has failed. Reconfigure pipeline or proceed forward")
+                        .setMessage(GUIConfiguration.getFailedPipelineStep().name()
+                                + " has failed. Reconfigure pipeline or proceed forward")
                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int i) {
@@ -475,7 +477,9 @@ public class ConfirmationActivity extends AppCompatActivity {
         generateLog();
 
         try {
-            String dirPath = Environment.getExternalStorageDirectory() + "/mobile-genomics";
+            String dirPath = PreferenceUtil
+                    .getSharedPreferenceString(R.string.key_log_file_preference,
+                            FileUtil.MOBILE_GENOMICS_FOLDER_PATH);
             File dir = new File(dirPath);
             if (!dir.exists()) {
                 dir.mkdirs();
@@ -491,7 +495,7 @@ public class ConfirmationActivity extends AppCompatActivity {
             myOutWriter.flush();
             myOutWriter.close();
             fOut.close();
-            Toast.makeText(getApplicationContext(), "Finished writing to mobile-genomics in home", Toast.LENGTH_LONG)
+            Toast.makeText(getApplicationContext(), "Finished writing to log file directory", Toast.LENGTH_LONG)
                     .show();
             logWrittenToFile = true;
         } catch (Exception e) {

@@ -21,14 +21,20 @@ import java.net.URLConnection;
 public class FileUtil {
 
     /**
+     * Default directory for F5N app
+     */
+    public static final String MOBILE_GENOMICS_FOLDER_PATH = Environment.getExternalStorageDirectory() + "/"
+            + "mobile-genomics/";
+
+    /**
      * The name of the temp file created by the pipe
      */
-    public static final String TMP_LOG_FILE_NAME = "tmp.log";
+    public static final String TMP_LOG_FILE_NAME = "tmp.log.txt";
 
     /**
      * The name of the log file created by f5n
      */
-    public static final String LOG_FILE_NAME = "f5n.log";
+    public static final String LOG_FILE_NAME = "f5n.log.txt";
 
     /**
      * The name of the primary volume (LOLLIPOP).
