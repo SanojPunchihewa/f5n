@@ -95,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void startStandaloneMode(View view) {
+        GUIConfiguration.setAppMode(AppMode.STANDALONE);
         startActivity(new Intent(MainActivity.this, ChoosePipelineActivity.class));
     }
 
