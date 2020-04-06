@@ -59,8 +59,8 @@ public class HelpActivity extends AppCompatActivity {
 
         TextView txtIntro7 = new TextView(this);
         txtIntro7.setText(
-                Html.fromHtml("Refer <b>f5n.log</b> in main_storage/mobile-genomics folder to read the log.<br>"
-                        + "Refer <b>tmp.log</b> in main_storage/mobile-genomics folder in cases where the app fails in the middle of a process.<br>"));
+                Html.fromHtml("Refer <b>f5n.log.txt</b> in main_storage/mobile-genomics folder to read the log.<br>"
+                        + "Refer <b>tmp.log.txt</b> in main_storage/mobile-genomics folder in cases where the app fails in the middle of a process.<br>"));
         linearLayout.addView(txtIntro7);
 
         Button btnTutorial = new Button(this);
