@@ -41,6 +41,9 @@ set_target_properties(libminimap PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR
 add_library(libsamtool SHARED IMPORTED)
 set_target_properties(libsamtool PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libsamtoolshared.so)
 
+add_library(libartic SHARED IMPORTED)
+set_target_properties(libartic PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libartic_c.so)
+
 add_library(libhts SHARED IMPORTED)
 set_target_properties(libhts PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libhts.so)
 
@@ -58,4 +61,4 @@ find_library(log-lib log)
 # build script, prebuilt third-party libraries, or system libraries.
 target_link_libraries(methylation-native-lib libminimap libsamtool libf5c libhts ${log-lib})
 
-target_link_libraries(variant-native-lib libminimap libsamtool libnanopolish libhts ${log-lib})
+target_link_libraries(variant-native-lib libminimap libsamtool libnanopolish libartic libhts ${log-lib})

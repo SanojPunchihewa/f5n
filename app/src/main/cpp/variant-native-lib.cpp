@@ -17,6 +17,7 @@ int fdo;
 #include "interface_minimap.h"
 #include "interface_samtool.h"
 #include "interface_nanopolish.h"
+#include "interface_artic.h"
 
 jmp_buf jmpBuf;
 
@@ -121,10 +122,14 @@ Java_com_mobilegenomics_f5n_core_NativeCommands_init(JNIEnv *env, jobject, jstri
       // samtools
       sprintf(exceptionBuffer, "SAMTOOL_EXCEPTION");
       result = init_samtools(argc, argv);
-    } else {
+    } else if (command_id < 9) {
       // nanopolish
       sprintf(exceptionBuffer, "NANOPOLISH_EXCEPTION");
       result = init_nanopolish(argc, argv);
+    } else {
+      // artic
+      sprintf(exceptionBuffer, "ARTIC_EXCEPTION");
+      result = init_artic(argc, argv);
     }
     ///
 

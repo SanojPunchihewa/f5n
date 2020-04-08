@@ -190,6 +190,9 @@ public class GUIConfiguration {
             case PipelineStep.NANOPOLISH_VARIANT:
                 rawFile = R.raw.nanopolish_variant_arguments;
                 break;
+            case PipelineStep.ARTIC_TRIM:
+                rawFile = R.raw.nanopolish_index_arguments;
+                break;
             default:
                 Log.e(TAG, "Invalid Pipeline Step");
                 break;

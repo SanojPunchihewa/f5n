@@ -32,6 +32,8 @@ public class PipelineStep implements EnumHelper {
 
     public static final int NANOPOLISH_VARIANT = 8;
 
+    public static final int ARTIC_TRIM = 9;
+
     private final int value;
 
     private final String name;
