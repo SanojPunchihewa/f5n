@@ -162,27 +162,33 @@ public class GUIConfiguration {
     private static ArrayList<Argument> configureArguments(Context context, PipelineStep pipelineStep,
             String folderPath) {
         int rawFile = 0;
-        switch (pipelineStep) {
-            case MINIMAP2_SEQUENCE_ALIGNMENT:
+        switch (pipelineStep.getValue()) {
+            case PipelineStep.MINIMAP2_SEQUENCE_ALIGNMENT:
                 rawFile = R.raw.minimap2;
                 break;
-            case SAMTOOLS_SORT:
+            case PipelineStep.SAMTOOLS_SORT:
                 rawFile = R.raw.samtool_sort_arguments;
                 break;
-            case SAMTOOLS_INDEX:
+            case PipelineStep.SAMTOOLS_INDEX:
                 rawFile = R.raw.samtool_index_arguments;
                 break;
-            case F5C_INDEX:
+            case PipelineStep.F5C_INDEX:
                 rawFile = R.raw.f5c_index_arguments;
                 break;
-            case F5C_CALL_METHYLATION:
+            case PipelineStep.F5C_CALL_METHYLATION:
                 rawFile = R.raw.f5c_call_methylation_arguments;
                 break;
-            case F5C_EVENT_ALIGNMENT:
+            case PipelineStep.F5C_EVENT_ALIGNMENT:
                 rawFile = R.raw.f5c_event_align_arguments;
                 break;
-            case F5C_METH_FREQ:
+            case PipelineStep.F5C_METH_FREQ:
                 rawFile = R.raw.f5c_meth_freq_arguments;
+                break;
+            case PipelineStep.NANOPOLISH_INDEX:
+                rawFile = R.raw.nanopolish_index_arguments;
+                break;
+            case PipelineStep.NANOPOLISH_VARIANT:
+                rawFile = R.raw.nanopolish_variant_arguments;
                 break;
             default:
                 Log.e(TAG, "Invalid Pipeline Step");
@@ -288,6 +294,41 @@ public class GUIConfiguration {
         }
         if (argument.getArgID().equals("F5C_METH_FREQ_FILE")) {
             argument.setArgValue(folder + "/f5c-methylation-freq.tsv");
+        }
+
+        // nanopolish index input/output files
+        if (argument.getArgID().equals("NANOPOLISH_INDEX_FAST5_FILE")) {
+            argument.setArgValue(folder + "/fast5_files");
+        }
+        if (argument.getArgID().equals("NANOPOLISH_INDEX_FASTA_FILE")) {
+            argument.setArgValue(folder + "/reads.fasta");
+        }
+
+        // nanopolish variant input/output files
+        if (argument.getArgID().equals("NANOPOLISH_VARIANT_FASTA_FILE")) {
+            argument.setArgValue(folder + "/reads.fasta");
+        }
+        if (argument.getArgID().equals("NANOPOLISH_VARIANT_READ_SORTED_FILE")) {
+            argument.setArgValue(folder + "/reads.sorted.bam");
+        }
+        if (argument.getArgID().equals("NANOPOLISH_VARIANT_REF_FILE")) {
+            argument.setArgValue(folder + "/draft.fa");
+        }
+        if (argument.getArgID().equals("NANOPOLISH_VARIANT_OUTPUT_FILE")) {
+            argument.setArgValue(folder + "/nanopolish-variant.vcf");
+        }
+        // For the Demo set threads, window size and ploidy
+        if (argument.getArgID().equals("NANOPOLISH_VARIANT_THREADS")) {
+            argument.setSetByUser(true);
+            argument.setArgValue("4");
+        }
+        if (argument.getArgID().equals("NANOPOLISH_VARIANT_WINDOW")) {
+            argument.setSetByUser(true);
+            argument.setArgValue("tig00000001:200000-202000");
+        }
+        if (argument.getArgID().equals("NANOPOLISH_VARIANT_PLOIDY_LEVEL")) {
+            argument.setSetByUser(true);
+            argument.setArgValue("1");
         }
 
     }

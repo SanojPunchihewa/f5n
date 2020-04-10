@@ -37,6 +37,8 @@
     <string name="title_default_storage">Default Storage Path\n<font color="#5F5F5F" size="14">Default download and file extraction location\n</font></string>
     <string name="key_storage_preference">key_storage_preference</string>
     <string name="key_reference_gnome">key_reference_gnome</string>
+    <string name="key_pipeline_type_preference">key_pipeline_type_preference</string>
+    <string name="key_pipeline_type_temp_preference">key_pipeline_type_temp_preference</string>
     <string name="title_reference_gnome">Reference Genome Storage Path\n<font color="#5F5F5F" size="14">X.fa and X.idx files should be stored in this directory to automatically generate pipeline commands in CONNECT TO MINIT mode\n</font>
 </string>
     <string name="pref_header_about">About</string>
@@ -53,9 +55,11 @@
     <string name="url_terms">https://github.com/SanojPunchihewa/f5n/blob/master/README.md</string>
     <string name="key_sdcard_storage_permission">key_sdcard_storage_permission</string>
     <string name="key_write_settings_permission">key_write_settings_permission</string>
+    <string name="key_pipeline_type">key_pipeline_type</string>
     <string name="title_reduce_brightness">Reduce Brightness during Pipeline Execution</string>
     <string name="title_sdcard_write">Download / Extract to SD Card</string>
     <string name="summary_sdcard_write">Choose SD Card from here</string>
     <string name="summary_reduce_brightness">Brightness will reduce once the pipeline starts. Do not minimize or turn off the display, process may crash</string>
+    <string name="title_default_pipeline_type">Pipeline Type</string>
 
 </resources>

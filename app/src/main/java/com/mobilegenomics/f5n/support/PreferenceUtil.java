@@ -150,7 +150,7 @@ public class PreferenceUtil {
     public static void setSharedPreferenceInt(final int preferenceId, @Nullable final int value) {
         Editor editor = getSharedPreferences().edit();
         editor.putInt(Application.getAppContext().getString(preferenceId), value);
-        editor.apply();
+        editor.commit();
     }
 
     /**
