@@ -47,9 +47,11 @@ public class PipelineActivity extends AppCompatActivity {
             pipelineStep = new VariantPipelineStep();
         }
 
+        int i = 0;
+
         for (PipelineStep step : pipelineStep.values()) {
             CheckBox checkBox = new CheckBox(PipelineActivity.this);
-            checkBox.setId(step.getValue());
+            checkBox.setId(i++);
             checkBox.setText(step.getName());
             pipelineSteps.add(checkBox);
             linearLayout.addView(checkBox);
@@ -90,8 +92,9 @@ public class PipelineActivity extends AppCompatActivity {
         GUIConfiguration.eraseSelectedPipeline();
         GUIConfiguration.resetSteps();
         boolean clickedNone = true;
+        int i = 0;
         for (PipelineStep step : pipelineStep.values()) {
-            CheckBox checkBox = findViewById(step.getValue());
+            CheckBox checkBox = findViewById(i++);
             if (checkBox.isChecked()) {
                 GUIConfiguration.addPipelineStep(step);
                 clickedNone = false;
