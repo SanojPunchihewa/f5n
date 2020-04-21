@@ -34,6 +34,16 @@ public class PipelineStep implements EnumHelper {
 
     public static final int ARTIC_TRIM = 9;
 
+    public static final int BCFTOOLS_CONSENSUS = 10;
+
+    public static final int BCFTOOLS_CONCAT = 11;
+
+    public static final int BCFTOOLS_REHEADER = 12;
+
+    public static final int BCFTOOLS_VIEW = 13;
+
+    public static final int BCFTOOLS_INDEX = 14;
+
     private final int value;
 
     private final String name;
