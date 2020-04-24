@@ -193,6 +193,21 @@ public class GUIConfiguration {
             case PipelineStep.ARTIC_TRIM:
                 rawFile = R.raw.artic_arguments;
                 break;
+            case PipelineStep.BCFTOOLS_CONCAT:
+                rawFile = R.raw.bcftools_concat_arguments;
+                break;
+            case PipelineStep.BCFTOOLS_CONSENSUS:
+                rawFile = R.raw.bcftools_consensus_arguments;
+                break;
+            case PipelineStep.BCFTOOLS_INDEX:
+                rawFile = R.raw.bcftools_index_arguments;
+                break;
+            case PipelineStep.BCFTOOLS_REHEADER:
+                rawFile = R.raw.bcftools_reheader_arguments;
+                break;
+            case PipelineStep.BCFTOOLS_VIEW:
+                rawFile = R.raw.bcftools_view_arguments;
+                break;
             default:
                 Log.e(TAG, "Invalid Pipeline Step");
                 break;

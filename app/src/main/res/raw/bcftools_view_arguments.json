@@ -1,0 +1,40 @@
+{
+  "args": [
+    {
+      "argName": "Output type",
+      "argValue": null,
+      "argDescription": "Output type b|u|z|v",
+      "flag": "-O",
+      "argID": "",
+      "isDependentOn": "null",
+      "hasFlag": true,
+      "flagOnly": false,
+      "required": true,
+      "isFile": true
+    },
+    {
+      "argName": "VCF/BCF file",
+      "argValue": null,
+      "argDescription": "VCF/BCF file",
+      "flag": "",
+      "argID": "",
+      "isDependentOn": "null",
+      "hasFlag": false,
+      "flagOnly": false,
+      "required": true,
+      "isFile": true
+    },
+    {
+      "argName": "output file",
+      "argValue": null,
+      "argDescription": "View, subset or filtered output file",
+      "flag": "-o",
+      "argID": "",
+      "isDependentOn": "null",
+      "hasFlag": true,
+      "flagOnly": false,
+      "required": true,
+      "isFile": true
+    }
+  ]
+}
