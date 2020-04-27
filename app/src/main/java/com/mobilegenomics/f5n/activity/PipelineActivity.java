@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
+import com.mobilegenomics.f5n.core.ArticPipelineStep;
 import com.mobilegenomics.f5n.core.MethylationPipelineStep;
 import com.mobilegenomics.f5n.core.PipelineStep;
 import com.mobilegenomics.f5n.core.PipelineType;
@@ -43,13 +44,17 @@ public class PipelineActivity extends AppCompatActivity {
 
         if (pipelineType == PipelineType.PIPELINE_METHYLATION.ordinal()) {
             pipelineStep = new MethylationPipelineStep();
-        } else {
+        } else if (pipelineType == PipelineType.PIPELINE_VARIANT.ordinal()) {
             pipelineStep = new VariantPipelineStep();
+        } else {
+            pipelineStep = new ArticPipelineStep();
         }
+
+        int i = 0;
 
         for (PipelineStep step : pipelineStep.values()) {
             CheckBox checkBox = new CheckBox(PipelineActivity.this);
-            checkBox.setId(step.getValue());
+            checkBox.setId(i++);
             checkBox.setText(step.getName());
             pipelineSteps.add(checkBox);
             linearLayout.addView(checkBox);
@@ -90,8 +95,9 @@ public class PipelineActivity extends AppCompatActivity {
         GUIConfiguration.eraseSelectedPipeline();
         GUIConfiguration.resetSteps();
         boolean clickedNone = true;
+        int i = 0;
         for (PipelineStep step : pipelineStep.values()) {
-            CheckBox checkBox = findViewById(step.getValue());
+            CheckBox checkBox = findViewById(i++);
             if (checkBox.isChecked()) {
                 GUIConfiguration.addPipelineStep(step);
                 clickedNone = false;

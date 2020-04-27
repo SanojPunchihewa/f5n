@@ -10,7 +10,9 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_centerInParent="true"
-        android:gravity="center_horizontal">
+        android:gravity="center_horizontal"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp">
 
         <Button
             android:id="@+id/btn_pipeline_type_methylation"
@@ -23,6 +25,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Minimap2, Samtools and Nanopolish"
+            android:layout_marginTop="100dp" />
+
+        <Button
+            android:id="@+id/btn_pipeline_type_artic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Minimap2, Samtools, Artic, Nanopolish and Bcftools"
             android:layout_marginTop="100dp" />
 
     </LinearLayout>

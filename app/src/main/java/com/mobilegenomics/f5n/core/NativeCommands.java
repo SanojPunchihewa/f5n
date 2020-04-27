@@ -14,6 +14,8 @@ public class NativeCommands {
             System.loadLibrary("methylation-native-lib");
         } else if (pipelineType == PipelineType.PIPELINE_VARIANT.ordinal()) {
             System.loadLibrary("variant-native-lib");
+        } else if (pipelineType == PipelineType.PIPELINE_ARTIC.ordinal()) {
+            System.loadLibrary("artic-native-lib");
         }
     }
 

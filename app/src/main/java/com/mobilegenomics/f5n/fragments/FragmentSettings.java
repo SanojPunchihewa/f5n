@@ -75,8 +75,10 @@ public class FragmentSettings extends PreferenceFragmentCompat {
 
         if (pipelineType == PipelineType.PIPELINE_METHYLATION.ordinal()) {
             pipelineTypePreference.setSummary(getResources().getStringArray(R.array.pipelineListArray)[0]);
-        } else {
+        } else if (pipelineType == PipelineType.PIPELINE_VARIANT.ordinal()) {
             pipelineTypePreference.setSummary(getResources().getStringArray(R.array.pipelineListArray)[1]);
+        } else {
+            pipelineTypePreference.setSummary(getResources().getStringArray(R.array.pipelineListArray)[2]);
         }
 
         if (PreferenceUtil.getSharedPreferenceUri(R.string.sdcard_uri) != null) {
@@ -259,8 +261,10 @@ public class FragmentSettings extends PreferenceFragmentCompat {
 
         if (type == PipelineType.PIPELINE_METHYLATION.ordinal()) {
             strType = "METHYLATION CALLING";
-        } else {
+        } else if (type == PipelineType.PIPELINE_VARIANT.ordinal()) {
             strType = "VARIANT CALLING";
+        } else {
+            strType = "ARTIC";
         }
 
         String message = "Pipeline type will be changed to " + strType
