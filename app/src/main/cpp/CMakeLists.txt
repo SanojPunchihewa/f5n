@@ -28,6 +28,16 @@ add_library( # Sets the name of the library.
         variant-native-lib.cpp
         )
 
+add_library( # Sets the name of the library.
+        artic-native-lib
+
+        # Sets the library as a shared library.
+        SHARED
+
+        # Provides a relative path to your source file(s).
+        artic-native-lib.cpp
+        )
+
 # add needed libraries
 add_library(libnanopolish SHARED IMPORTED)
 set_target_properties(libnanopolish PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libnanopolish.so)
@@ -64,4 +74,6 @@ find_library(log-lib log)
 # build script, prebuilt third-party libraries, or system libraries.
 target_link_libraries(methylation-native-lib libminimap libsamtool libf5c libhts ${log-lib})
 
-target_link_libraries(variant-native-lib libminimap libsamtool libnanopolish libartic libbcftool libhts ${log-lib})
+target_link_libraries(variant-native-lib libminimap libsamtool libnanopolish libhts ${log-lib})
+
+target_link_libraries(artic-native-lib libminimap libsamtool libnanopolish libartic libbcftool libhts ${log-lib})
