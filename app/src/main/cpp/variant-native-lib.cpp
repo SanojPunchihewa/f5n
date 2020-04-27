@@ -122,14 +122,10 @@ Java_com_mobilegenomics_f5n_core_NativeCommands_init(JNIEnv *env, jobject, jstri
       // samtools
       sprintf(exceptionBuffer, "SAMTOOL_EXCEPTION");
       result = init_samtools(argc, argv);
-    } else if (command_id < 9) {
+    } else {
       // nanopolish
       sprintf(exceptionBuffer, "NANOPOLISH_EXCEPTION");
       result = init_nanopolish(argc, argv);
-    } else {
-      // artic
-      sprintf(exceptionBuffer, "ARTIC_EXCEPTION");
-      result = init_artic(argc, argv);
     }
     ///
 
