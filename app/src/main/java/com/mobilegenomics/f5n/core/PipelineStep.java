@@ -50,15 +50,6 @@ public class PipelineStep implements EnumHelper {
     private static final PipelineStep samotoolsIndex = new PipelineStep(SAMTOOLS_INDEX, "SAMTOOLS_INDEX",
             "samtools index");
 
-    private static final PipelineStep articTrim = new PipelineStep(ARTIC_TRIM, "ARTIC_TRIM",
-            "artic");
-
-    private static final PipelineStep samtoolsSort2 = new PipelineStep(SAMTOOLS_SORT, "SAMTOOLS_SORT",
-            "samtools sort");
-
-    private static final PipelineStep samotoolsIndex2 = new PipelineStep(SAMTOOLS_INDEX, "SAMTOOLS_INDEX",
-            "samtools index");
-
     PipelineStep() {
         value = -1;
         name = "";
@@ -88,8 +79,7 @@ public class PipelineStep implements EnumHelper {
 
     @Override
     public PipelineStep[] values() {
-        return new PipelineStep[]{minimap2Align, samtoolsSort, samotoolsIndex, articTrim, samtoolsSort2,
-                samotoolsIndex2};
+        return new PipelineStep[]{minimap2Align, samtoolsSort, samotoolsIndex};
     }
 
     @Override
