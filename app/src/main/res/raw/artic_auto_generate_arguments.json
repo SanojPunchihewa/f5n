@@ -1,0 +1,43 @@
+{
+  "user_filled_args": [
+    {
+      "argID": "[WORKING_DIRECTORY]",
+      "argDescription": "Path to the Working Directory",
+      "flagOnly": false,
+      "isFile": false,
+      "value": null
+    },
+    {
+      "argID": "[REFERENCE_GENOME]",
+      "argDescription": "Path to the Reference Genome",
+      "flagOnly": false,
+      "isFile": true,
+      "value": null
+    },
+    {
+      "argID": "[FAST_A_Q_FILE]",
+      "argDescription": "Path to the Fast(a|q) file",
+      "flagOnly": false,
+      "isFile": true,
+      "value": null
+    }
+  ],
+  "commands": [
+    {
+      "pipelineStep": {
+        "value": 0,
+        "name": "MINIMAP2_SEQUENCE_ALIGNMENT",
+        "command": "minimap2 -x map-ont"
+      },
+      "commandString": "minimap2 -ax map-ont [REFERENCE_GENOME] [FAST_A_Q_FILE] -o [WORKING_DIRECTORY]/min-align.sam"
+    },
+    {
+      "pipelineStep": {
+        "value": 1,
+        "name": "SAMTOOLS_SORT",
+        "command": "samtools sort"
+      },
+      "commandString": "samtools sort [WORKING_DIRECTORY]/min-align.sam -o [WORKING_DIRECTORY]/sorted.bam"
+    }
+  ]
+}
