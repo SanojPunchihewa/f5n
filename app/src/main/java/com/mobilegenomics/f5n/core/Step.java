@@ -13,6 +13,11 @@ public class Step implements Serializable {
 
     private String command;
 
+    public Step(final PipelineStep stepName, final String command) {
+        this.stepName = stepName;
+        this.command = command;
+    }
+
     public Step(final PipelineStep stepName, final ArrayList<Argument> arguments) {
         this.stepName = stepName;
         this.arguments = arguments;
