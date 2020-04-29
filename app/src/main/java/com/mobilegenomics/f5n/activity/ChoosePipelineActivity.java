@@ -86,7 +86,7 @@ public class ChoosePipelineActivity extends AppCompatActivity {
                 if (GUIConfiguration.getAppMode() == AppMode.DEMO) {
                     startActivity(new Intent(ChoosePipelineActivity.this, DemoActivity.class));
                 } else {
-                    startActivity(new Intent(ChoosePipelineActivity.this, PipelineActivity.class));
+                    startActivity(new Intent(ChoosePipelineActivity.this, ArticPipelineActivity.class));
                 }
             } else {
                 showSettingsDialog("ARTIC");
