@@ -14,6 +14,7 @@
 const char *outfile;
 int fdo;
 
+#include "tools.h"
 #include "interface_minimap.h"
 #include "interface_samtool.h"
 #include "interface_nanopolish.h"
@@ -114,27 +115,28 @@ Java_com_mobilegenomics_f5n_core_NativeCommands_init(JNIEnv *env, jobject, jstri
   if (sigsetjmp(jmpBuf, 1) == 0) {
     resetOptInd();
 
-    ///
-    if (command_id < 1) {
-      // minimap2
-      sprintf(exceptionBuffer, "MINIMAP2_EXCEPTION");
-      result = init_minimap2(argc, argv);
-    } else if (command_id < 3) {
-      // samtools
-      sprintf(exceptionBuffer, "SAMTOOL_EXCEPTION");
-      result = init_samtools(argc, argv);
-    } else if (command_id < 9) {
-      // nanopolish
-      sprintf(exceptionBuffer, "NANOPOLISH_EXCEPTION");
-      result = init_nanopolish(argc, argv);
-    } else if (command_id == 9) {
-      // artic
-      sprintf(exceptionBuffer, "ARTIC_EXCEPTION");
-      result = init_artic(argc, argv);
-    } else {
-      // bcftools
-      sprintf(exceptionBuffer, "BCFTOOLS_EXCEPTION");
-      result = init_bcftools(argc, argv);
+    int tool = command_id / 10;
+    switch (tool) {
+      case MINIMAP2:
+        sprintf(exceptionBuffer, "MINIMAP2_EXCEPTION");
+        result = init_minimap2(argc, argv);
+        break;
+      case SAMTOOLS:
+        sprintf(exceptionBuffer, "SAMTOOL_EXCEPTION");
+        result = init_samtools(argc, argv);
+        break;
+      case NANOPOLISH:
+        sprintf(exceptionBuffer, "NANOPOLISH_EXCEPTION");
+        result = init_nanopolish(argc, argv);
+        break;
+      case ARTIC:
+        sprintf(exceptionBuffer, "ARTIC_EXCEPTION");
+        result = init_artic(argc, argv);
+        break;
+      case BCFTOOLS:
+        sprintf(exceptionBuffer, "BCFTOOLS_EXCEPTION");
+        result = init_bcftools(argc, argv);
+        break;
     }
     ///
 

@@ -14,35 +14,41 @@ interface EnumHelper {
 
 public class PipelineStep implements EnumHelper {
 
+    // Use 0-9 for minimap2 subcommands
     public static final int MINIMAP2_SEQUENCE_ALIGNMENT = 0;
 
-    public static final int SAMTOOLS_SORT = 1;
+    // Use 10-19 for samtools subcommands
+    public static final int SAMTOOLS_SORT = 10;
 
-    public static final int SAMTOOLS_INDEX = 2;
+    public static final int SAMTOOLS_INDEX = 11;
 
-    public static final int F5C_INDEX = 3;
+    // Use 20-29 for f5c subcommands
+    public static final int F5C_INDEX = 20;
 
-    public static final int F5C_CALL_METHYLATION = 4;
+    public static final int F5C_CALL_METHYLATION = 21;
 
-    public static final int F5C_EVENT_ALIGNMENT = 5;
+    public static final int F5C_EVENT_ALIGNMENT = 22;
 
-    public static final int F5C_METH_FREQ = 6;
+    public static final int F5C_METH_FREQ = 23;
 
-    public static final int NANOPOLISH_INDEX = 7;
+    // Use 30-39 for nanopolish subcommands
+    public static final int NANOPOLISH_INDEX = 30;
 
-    public static final int NANOPOLISH_VARIANT = 8;
+    public static final int NANOPOLISH_VARIANT = 31;
 
-    public static final int ARTIC_TRIM = 9;
+    // Use 40-49 for artic subcommands
+    public static final int ARTIC_TRIM = 40;
 
-    public static final int BCFTOOLS_CONSENSUS = 10;
+    // Use 50-59 for bcftools subcommands
+    public static final int BCFTOOLS_CONSENSUS = 50;
 
-    public static final int BCFTOOLS_CONCAT = 11;
+    public static final int BCFTOOLS_CONCAT = 51;
 
-    public static final int BCFTOOLS_REHEADER = 12;
+    public static final int BCFTOOLS_REHEADER = 52;
 
-    public static final int BCFTOOLS_VIEW = 13;
+    public static final int BCFTOOLS_VIEW = 53;
 
-    public static final int BCFTOOLS_INDEX = 14;
+    public static final int BCFTOOLS_INDEX = 54;
 
     private final int value;
 

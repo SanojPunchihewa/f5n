@@ -14,6 +14,7 @@
 const char *outfile;
 int fdo;
 
+#include "tools.h"
 #include "interface_minimap.h"
 #include "interface_f5c.h"
 #include "interface_samtool.h"
@@ -113,18 +114,20 @@ Java_com_mobilegenomics_f5n_core_NativeCommands_init(JNIEnv *env, jobject, jstri
     resetOptInd();
 
     ///
-    if (command_id < 1) {
-      // minimap2
-      sprintf(exceptionBuffer, "MINIMAP2_EXCEPTION");
-      result = init_minimap2(argc, argv);
-    } else if (command_id < 3) {
-      // samtools
-      sprintf(exceptionBuffer, "SAMTOOL_EXCEPTION");
-      result = init_samtools(argc, argv);
-    } else {
-      // f5c
-      sprintf(exceptionBuffer, "F5C_EXCEPTION");
-      result = init_f5c(argc, argv);
+    int tool = command_id / 10;
+    switch (tool) {
+      case MINIMAP2:
+        sprintf(exceptionBuffer, "MINIMAP2_EXCEPTION");
+        result = init_minimap2(argc, argv);
+        break;
+      case SAMTOOLS:
+        sprintf(exceptionBuffer, "SAMTOOL_EXCEPTION");
+        result = init_samtools(argc, argv);
+        break;
+      case F5C:
+        sprintf(exceptionBuffer, "F5C_EXCEPTION");
+        result = init_f5c(argc, argv);
+        break;
     }
     ///
 
