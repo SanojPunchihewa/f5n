@@ -1,0 +1,28 @@
+{
+  "args": [
+    {
+      "argName": "List of input files separated by an space",
+      "argValue": null,
+      "argDescription": "List of input files separated by an space",
+      "flag": "",
+      "argID": "BCFTOOLS_CONCAT_INPUT_FILES",
+      "isDependentOn": "null",
+      "hasFlag": false,
+      "flagOnly": false,
+      "required": true,
+      "isFile": true
+    },
+    {
+      "argName": "output file",
+      "argValue": null,
+      "argDescription": "Concatenated output file",
+      "flag": "-o",
+      "argID": "BCFTOOLS_CONCATENATED_OUTPUT_FILE",
+      "isDependentOn": "null",
+      "hasFlag": true,
+      "flagOnly": false,
+      "required": true,
+      "isFile": true
+    }
+  ]
+}

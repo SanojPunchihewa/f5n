@@ -5,6 +5,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -12,6 +13,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
@@ -29,7 +31,6 @@ import com.mobilegenomics.f5n.support.PreferenceUtil;
 import com.mobilegenomics.f5n.support.ScreenDimUtil;
 import com.obsez.android.lib.filechooser.ChooserDialog;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class TerminalActivity extends AppCompatActivity {
@@ -40,7 +41,7 @@ public class TerminalActivity extends AppCompatActivity {
 
     private int stepId = 0;
 
-    private List<Step> steps;
+    private ArrayList<Step> steps;
 
     private String folderPath;
 
@@ -132,7 +133,7 @@ public class TerminalActivity extends AppCompatActivity {
             if (GUIConfiguration.getPipelineState() == PipelineState.PREV_CONFIG_LOAD) {
                 folderPath = PreferenceUtil.getSharedPreferenceString(R.string.id_folder_path);
                 steps = PreferenceUtil.getSharedPreferenceStepList(R.string.id_step_list);
-                GUIConfiguration.setSteps((ArrayList<Step>) steps);
+                GUIConfiguration.setSteps(steps);
             }
 
             stepId = 0;
@@ -141,9 +142,15 @@ public class TerminalActivity extends AppCompatActivity {
                     LayoutParams.MATCH_PARENT,
                     LayoutParams.WRAP_CONTENT
             );
-            params.setMargins(0, 10, 0, 10);
+            params.setMargins(0, 0, 0, 30);
 
             for (Step step : steps) {
+                CheckBox checkBox = new CheckBox(this);
+                checkBox.setId(stepId + 1250);
+                checkBox.setText(step.getStep().getName());
+                checkBox.setChecked(step.isSelected());
+                linearLayout.addView(checkBox);
+
                 EditText editText = new EditText(this);
                 editText.setText(step.getCommandString());
                 editText.setBackgroundColor(0xFFE5E7E9);
@@ -151,6 +158,15 @@ public class TerminalActivity extends AppCompatActivity {
                 editText.setId(stepId + 125);
                 editText.requestFocus();
                 linearLayout.addView(editText);
+
+                View separator = new View(this);
+                separator.setLayoutParams(new LinearLayout.LayoutParams(
+                        LayoutParams.MATCH_PARENT,
+                        3
+                ));
+                separator.setBackgroundColor(Color.parseColor("#949494"));
+                linearLayout.addView(separator);
+
                 stepId++;
             }
 
@@ -164,12 +180,13 @@ public class TerminalActivity extends AppCompatActivity {
                     for (Step step : steps) {
                         EditText editText = findViewById(stepId + 125);
                         if (editText.getText() != null && !TextUtils.isEmpty(editText.getText().toString())) {
-                            step.setCommandString(editText.getText().toString());
+                            step.setCommandString(editText.getText().toString().replaceAll("\"", "")); //^"|"$
                         }
+                        CheckBox checkBox = findViewById(stepId + 1250);
+                        step.setSelected(checkBox.isChecked());
                         stepId++;
                     }
-
-                    GUIConfiguration.createPipeline();
+                    GUIConfiguration.setSteps(steps);
 
                     PreferenceUtil.setSharedPreferenceStepList(R.string.id_step_list, steps);
                     PreferenceUtil.setSharedPreferenceString(R.string.id_folder_path, folderPath);

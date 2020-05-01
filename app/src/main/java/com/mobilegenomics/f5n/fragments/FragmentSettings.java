@@ -17,12 +17,15 @@ import android.widget.NumberPicker;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
+import androidx.preference.ListPreference;
 import androidx.preference.Preference;
+import androidx.preference.Preference.OnPreferenceChangeListener;
 import androidx.preference.Preference.OnPreferenceClickListener;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreference;
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.activity.MainActivity;
+import com.mobilegenomics.f5n.core.PipelineType;
 import com.mobilegenomics.f5n.support.FileUtil;
 import com.mobilegenomics.f5n.support.PreferenceUtil;
 import com.obsez.android.lib.filechooser.ChooserDialog;
@@ -62,7 +65,10 @@ public class FragmentSettings extends PreferenceFragmentCompat {
 
     private String storagePermission;
 
+    private ListPreference pipelineTypePreference;
+
     @Override
+
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         setPreferencesFromResource(R.xml.preferences, rootKey);
 
@@ -78,7 +84,8 @@ public class FragmentSettings extends PreferenceFragmentCompat {
                 getResources().getString(R.string.key_sdcard_storage_permission));
         permissionSystemSettingsWritePreference = findPreference(
                 getResources().getString(R.string.key_write_settings_permission));
-        permissionStoragePreference = findPreference(getResources().getString(R.string.key_storage_permission));
+        permissionStoragePreference = findPreference(
+                getResources().getString(R.string.key_storage_permission));
 
         if (checkPermission(storagePermission)) {
             permissionStoragePreference.setChecked(true);
@@ -103,6 +110,24 @@ public class FragmentSettings extends PreferenceFragmentCompat {
                 return false;
             }
         });
+
+        pipelineTypePreference = findPreference(getResources().getString(R.string.key_pipeline_type));
+
+        int pipelineType = PreferenceUtil.getSharedPreferenceInt(R.string.key_pipeline_type_preference);
+
+        if (pipelineType == -1) {
+            pipelineType = 0;
+        }
+
+        pipelineTypePreference.setValueIndex(pipelineType);
+
+        if (pipelineType == PipelineType.PIPELINE_METHYLATION.ordinal()) {
+            pipelineTypePreference.setSummary(getResources().getStringArray(R.array.pipelineListArray)[0]);
+        } else if (pipelineType == PipelineType.PIPELINE_VARIANT.ordinal()) {
+            pipelineTypePreference.setSummary(getResources().getStringArray(R.array.pipelineListArray)[1]);
+        } else {
+            pipelineTypePreference.setSummary(getResources().getStringArray(R.array.pipelineListArray)[2]);
+        }
 
         if (PreferenceUtil.getSharedPreferenceUri(R.string.sdcard_uri) != null) {
             permissionSDCardWritePreference.setChecked(true);
@@ -202,6 +227,15 @@ public class FragmentSettings extends PreferenceFragmentCompat {
                     }
                 });
                 return true;
+            }
+        });
+
+        pipelineTypePreference.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(final Preference preference, final Object newValue) {
+                int value = Integer.valueOf(newValue.toString());
+                showSettingsApplyDialog(value);
+                return false;
             }
         });
 
@@ -328,6 +362,39 @@ public class FragmentSettings extends PreferenceFragmentCompat {
         handler.postDelayed(checkSettings, 1000);
     }
 
+    private void showSettingsApplyDialog(int type) {
+
+        String strType;
+
+        if (type == PipelineType.PIPELINE_METHYLATION.ordinal()) {
+            strType = "METHYLATION CALLING";
+        } else if (type == PipelineType.PIPELINE_VARIANT.ordinal()) {
+            strType = "VARIANT CALLING";
+        } else {
+            strType = "ARTIC";
+        }
+
+        String message = "Pipeline type will be changed to " + strType
+                + " the next time you start F5N. To immediately change the pipeline type, please restart F5N manually";
+
+        new AlertDialog.Builder(getActivity())
+                .setTitle("Change Pipeline Type")
+                .setMessage(message)
+                .setPositiveButton("Apply", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        PreferenceUtil
+                                .setSharedPreferenceInt(R.string.key_pipeline_type_temp_preference, type);
+                    }
+                })
+                .setNegativeButton("Discard", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(final DialogInterface dialog, final int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -345,13 +412,15 @@ public class FragmentSettings extends PreferenceFragmentCompat {
 
     public boolean checkPermission(String permission) {
 
-        return ContextCompat.checkSelfPermission(getContext(), permission) == PackageManager.PERMISSION_GRANTED;
+        return ContextCompat.checkSelfPermission(getContext(), permission)
+                == PackageManager.PERMISSION_GRANTED;
     }
 
     @Override
     public void onRequestPermissionsResult(final int requestCode, @NonNull final String[] permissions,
             @NonNull final int[] grantResults) {
-        if (requestCode == REQUEST_PERMISSION_STORAGE && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (requestCode == REQUEST_PERMISSION_STORAGE
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             permissionStoragePreference.setChecked(true);
         } else {
             // We were not granted permission this time, so don't try to show the contact picker

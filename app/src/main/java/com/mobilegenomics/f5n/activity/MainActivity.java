@@ -20,6 +20,7 @@ import androidx.core.app.ActivityCompat;
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.AppMode;
+import com.mobilegenomics.f5n.core.PipelineType;
 import com.mobilegenomics.f5n.support.PermissionResultCallback;
 import com.mobilegenomics.f5n.support.PermissionUtils;
 import com.mobilegenomics.f5n.support.PreferenceUtil;
@@ -47,10 +48,20 @@ public class MainActivity extends AppCompatActivity implements
         permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
         if (firstOpen) {
+
             String logFileDirectory = Environment.getExternalStorageDirectory() + "/"
                     + "mobile-genomics/";
             PreferenceUtil.setSharedPreferenceString(R.string.key_log_file_preference, logFileDirectory);
+
+            // Set Pipeline type to Methylation by default
+            PreferenceUtil.setSharedPreferenceInt(R.string.key_pipeline_type_preference,
+                    PipelineType.PIPELINE_METHYLATION.ordinal());
+
             showAlert();
+        } else {
+            int tempPipelineType = PreferenceUtil.getSharedPreferenceInt(R.string.key_pipeline_type_temp_preference);
+            PreferenceUtil.setSharedPreferenceInt(R.string.key_pipeline_type_preference,
+                    tempPipelineType);
         }
 
         try {
@@ -92,17 +103,22 @@ public class MainActivity extends AppCompatActivity implements
 
     public void startStandaloneMode(View view) {
         GUIConfiguration.setAppMode(AppMode.STANDALONE);
-        startActivity(new Intent(MainActivity.this, PipelineActivity.class));
+        startActivity(new Intent(MainActivity.this, ChoosePipelineActivity.class));
     }
 
     public void startMinITMode(View view) {
-        GUIConfiguration.setAppMode(AppMode.SLAVE);
-        startActivity(new Intent(MainActivity.this, MinITActivity.class));
+        if (PreferenceUtil.getSharedPreferenceInt(R.string.key_pipeline_type_preference)
+                == PipelineType.PIPELINE_METHYLATION.ordinal()) {
+            GUIConfiguration.setAppMode(AppMode.SLAVE);
+            startActivity(new Intent(MainActivity.this, MinITActivity.class));
+        } else {
+            showSettingsDialog();
+        }
     }
 
     public void startDemoMode(View view) {
         GUIConfiguration.setAppMode(AppMode.DEMO);
-        startActivity(new Intent(MainActivity.this, DemoActivity.class));
+        startActivity(new Intent(MainActivity.this, ChoosePipelineActivity.class));
     }
 
     /////////////////////////////
@@ -160,4 +176,27 @@ public class MainActivity extends AppCompatActivity implements
         }
         return super.onOptionsItemSelected(item);
     }
+
+    private void showSettingsDialog() {
+
+        String message = "Please go to settings and change the pipeline type to METHYLATION to connect to F5N Server";
+
+        new AlertDialog.Builder(MainActivity.this)
+                .setTitle("Change Pipeline Type")
+                .setMessage(message)
+                .setPositiveButton("Go to settings", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                        startActivity(intent);
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(final DialogInterface dialog, final int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
+    }
+
 }

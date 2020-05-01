@@ -1,10 +1,22 @@
 package com.mobilegenomics.f5n.core;
 
+import com.mobilegenomics.f5n.R;
+import com.mobilegenomics.f5n.support.PreferenceUtil;
+
 public class NativeCommands {
 
     // Used to load the 'native-lib' library on application startup.
     static {
-        System.loadLibrary("native-lib");
+
+        int pipelineType = PreferenceUtil.getSharedPreferenceInt(R.string.key_pipeline_type_preference);
+
+        if (pipelineType == PipelineType.PIPELINE_METHYLATION.ordinal()) {
+            System.loadLibrary("methylation-native-lib");
+        } else if (pipelineType == PipelineType.PIPELINE_VARIANT.ordinal()) {
+            System.loadLibrary("variant-native-lib");
+        } else if (pipelineType == PipelineType.PIPELINE_ARTIC.ordinal()) {
+            System.loadLibrary("artic-native-lib");
+        }
     }
 
     private static NativeCommands nativeCommands;

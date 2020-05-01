@@ -459,7 +459,7 @@ public class ConfirmationActivity extends AppCompatActivity {
                 GUIConfiguration.setLogMessage(txtLogs.getText().toString());
                 new AlertDialog.Builder(ConfirmationActivity.this)
                         .setTitle("Pipeline Failure")
-                        .setMessage(GUIConfiguration.getFailedPipelineStep().name()
+                        .setMessage(GUIConfiguration.getFailedPipelineStep().getName()
                                 + " has failed. Reconfigure pipeline or proceed forward")
                         .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             @Override

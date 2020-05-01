@@ -43,9 +43,14 @@
     <string name="title_default_storage">Default Storage Path\n<font color="#5F5F5F" size="14">Default download and file extraction location\n</font></string>
     <string name="key_storage_preference">key_storage_preference</string>
     <string name="key_reference_gnome">key_reference_gnome</string>
+
     <string name="title_reference_gnome">Reference Genome Storage Path\n<font color="#5F5F5F" size="14">X.fa and X.idx files should be stored in this directory to automatically generate pipeline commands in CONNECT TO MINIT mode\n</font></string>
     <string name="key_time_preference">key_time_preference</string>
     <string name="title_time_preference">Time interval between jobs\n<font color="#5F5F5F" size="14">Set the time interval to wait between consecutive jobs on MinIt Burst mode\n</font></string>
+
+    <string name="key_pipeline_type_preference">key_pipeline_type_preference</string>
+    <string name="key_pipeline_type_temp_preference">key_pipeline_type_temp_preference</string>
+
     <string name="pref_header_about">About</string>
     <string name="key_version_preference">key_version_preference</string>
     <string name="summary_about">F5N is a Mobile application for Reference Guided Sequence Alignment and Analysis using Nanopore Data. You can find out more from https://github.com/SanojPunchihewa/f5n</string>
@@ -61,10 +66,10 @@
     <string name="key_storage_permission">key_storage_permission</string>
     <string name="key_sdcard_storage_permission">key_sdcard_storage_permission</string>
     <string name="key_write_settings_permission">key_write_settings_permission</string>
+    <string name="key_pipeline_type">key_pipeline_type</string>
     <string name="title_reduce_brightness">Reduce Brightness during Pipeline Execution</string>
     <string name="title_sdcard_write">Download / Extract to SD Card</string>
     <string name="summary_sdcard_write">Choose SD Card from here</string>
-    <string name="summary_reduce_brightness">Grant System Settings write permission to reduce the brightness once the pipeline starts</string>
     <string name="title_storage_write">Storage Permission</string>
     <string name="key_min_it_upload_files">key_min_it_upload_files</string>
     <string name="title_Select_files_upload">Select files to upload</string>
@@ -91,5 +96,6 @@
         <item>event-align.txt</item>
         <item>freq.tsv</item>
     </string-array>
-
+    <string name="summary_reduce_brightness">Brightness will reduce once the pipeline starts. Do not minimize or turn off the display, process may crash</string>
+    <string name="title_default_pipeline_type">Pipeline Type</string>
 </resources>

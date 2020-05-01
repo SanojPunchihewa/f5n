@@ -11,6 +11,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mobilegenomics.f5n.core.AppMode;
 import com.mobilegenomics.f5n.core.Argument;
+import com.mobilegenomics.f5n.core.ArticPipelineArgument;
 import com.mobilegenomics.f5n.core.PipelineComponent;
 import com.mobilegenomics.f5n.core.PipelineStep;
 import com.mobilegenomics.f5n.core.Step;
@@ -22,6 +23,8 @@ import com.mobilegenomics.f5n.support.TimeFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class GUIConfiguration {
 
@@ -127,10 +130,12 @@ public class GUIConfiguration {
     }
 
     public static String[] getSelectedCommandStrings() {
-        String[] commandArray = new String[steps.size()];
+        String[] commandArray = new String[getSelectedStepCount()];
         int stepId = 0;
         for (Step step : steps) {
-            commandArray[stepId++] = step.getCommandString();
+            if (step.isSelected()) {
+                commandArray[stepId++] = step.getCommandString();
+            }
         }
         return commandArray;
     }
@@ -138,8 +143,10 @@ public class GUIConfiguration {
     public static void createPipeline() {
         pipelineComponents = new ArrayList<>();
         for (Step step : steps) {
-            PipelineComponent pipelineComponent = new PipelineComponent(step.getStep(), step.getCommandString());
-            pipelineComponents.add(pipelineComponent);
+            if (step.isSelected()) {
+                PipelineComponent pipelineComponent = new PipelineComponent(step.getStep(), step.getCommandString());
+                pipelineComponents.add(pipelineComponent);
+            }
         }
     }
 
@@ -181,27 +188,51 @@ public class GUIConfiguration {
     private static ArrayList<Argument> configureArguments(Context context, PipelineStep pipelineStep,
                                                           String folderPath) {
         int rawFile = 0;
-        switch (pipelineStep) {
-            case MINIMAP2_SEQUENCE_ALIGNMENT:
+        switch (pipelineStep.getValue()) {
+            case PipelineStep.MINIMAP2_SEQUENCE_ALIGNMENT:
                 rawFile = R.raw.minimap2;
                 break;
-            case SAMTOOLS_SORT:
+            case PipelineStep.SAMTOOLS_SORT:
                 rawFile = R.raw.samtool_sort_arguments;
                 break;
-            case SAMTOOLS_INDEX:
+            case PipelineStep.SAMTOOLS_INDEX:
                 rawFile = R.raw.samtool_index_arguments;
                 break;
-            case F5C_INDEX:
+            case PipelineStep.F5C_INDEX:
                 rawFile = R.raw.f5c_index_arguments;
                 break;
-            case F5C_CALL_METHYLATION:
+            case PipelineStep.F5C_CALL_METHYLATION:
                 rawFile = R.raw.f5c_call_methylation_arguments;
                 break;
-            case F5C_EVENT_ALIGNMENT:
+            case PipelineStep.F5C_EVENT_ALIGNMENT:
                 rawFile = R.raw.f5c_event_align_arguments;
                 break;
-            case F5C_METH_FREQ:
+            case PipelineStep.F5C_METH_FREQ:
                 rawFile = R.raw.f5c_meth_freq_arguments;
+                break;
+            case PipelineStep.NANOPOLISH_INDEX:
+                rawFile = R.raw.nanopolish_index_arguments;
+                break;
+            case PipelineStep.NANOPOLISH_VARIANT:
+                rawFile = R.raw.nanopolish_variant_arguments;
+                break;
+            case PipelineStep.ARTIC_TRIM:
+                rawFile = R.raw.artic_arguments;
+                break;
+            case PipelineStep.BCFTOOLS_CONCAT:
+                rawFile = R.raw.bcftools_concat_arguments;
+                break;
+            case PipelineStep.BCFTOOLS_CONSENSUS:
+                rawFile = R.raw.bcftools_consensus_arguments;
+                break;
+            case PipelineStep.BCFTOOLS_INDEX:
+                rawFile = R.raw.bcftools_index_arguments;
+                break;
+            case PipelineStep.BCFTOOLS_REHEADER:
+                rawFile = R.raw.bcftools_reheader_arguments;
+                break;
+            case PipelineStep.BCFTOOLS_VIEW:
+                rawFile = R.raw.bcftools_view_arguments;
                 break;
             default:
                 Log.e(TAG, "Invalid Pipeline Step");
@@ -222,6 +253,16 @@ public class GUIConfiguration {
             arguments.add(argument);
         }
         return arguments;
+    }
+
+    private static int getSelectedStepCount() {
+        int count = 0;
+        for (Step step : steps) {
+            if (step.isSelected()) {
+                count++;
+            }
+        }
+        return count;
     }
 
     private static void configureDemoArgsFilePath(Argument argument, String folder) {
@@ -309,6 +350,108 @@ public class GUIConfiguration {
             argument.setArgValue(folder + "/f5c-methylation-freq.tsv");
         }
 
+        // nanopolish index input/output files
+        if (argument.getArgID().equals("NANOPOLISH_INDEX_FAST5_FILE")) {
+            argument.setArgValue(folder + "/fast5_files");
+        }
+        if (argument.getArgID().equals("NANOPOLISH_INDEX_FASTA_FILE")) {
+            argument.setArgValue(folder + "/reads.fasta");
+        }
+
+        // nanopolish variant input/output files
+        if (argument.getArgID().equals("NANOPOLISH_VARIANT_FASTA_FILE")) {
+            argument.setArgValue(folder + "/reads.fasta");
+        }
+        if (argument.getArgID().equals("NANOPOLISH_VARIANT_READ_SORTED_FILE")) {
+            argument.setArgValue(folder + "/reads.sorted.bam");
+        }
+        if (argument.getArgID().equals("NANOPOLISH_VARIANT_REF_FILE")) {
+            argument.setArgValue(folder + "/draft.fa");
+        }
+        if (argument.getArgID().equals("NANOPOLISH_VARIANT_OUTPUT_FILE")) {
+            argument.setArgValue(folder + "/nanopolish-variant.vcf");
+        }
+        // For the Demo set threads, window size and ploidy
+        if (argument.getArgID().equals("NANOPOLISH_VARIANT_THREADS")) {
+            argument.setSetByUser(true);
+            argument.setArgValue("4");
+        }
+        if (argument.getArgID().equals("NANOPOLISH_VARIANT_WINDOW")) {
+            argument.setSetByUser(true);
+            argument.setArgValue("tig00000001:200000-202000");
+        }
+        if (argument.getArgID().equals("NANOPOLISH_VARIANT_PLOIDY_LEVEL")) {
+            argument.setSetByUser(true);
+            argument.setArgValue("1");
+        }
+
+    }
+
+    public static ArrayList<Step> getArticPipelineAutoGeneratedSteps(Context context, int windowSize,
+            HashMap<String, String> userFilledArgs) {
+
+        ArrayList<Step> steps = new ArrayList<>();
+        JsonArray argsJsonArray = _getArticPipelineJsonMember(context, "commands");
+
+        for (JsonElement element : argsJsonArray) {
+
+            PipelineStep pipelineStep = new Gson()
+                    .fromJson(element.getAsJsonObject().getAsJsonObject("pipelineStep"), PipelineStep.class);
+            String command = element.getAsJsonObject().getAsJsonPrimitive("commandString").getAsString();
+
+            Pattern p = Pattern.compile("\\[(.*?)\\]");
+            Matcher m = p.matcher(command);
+
+            if (pipelineStep.getValue() == PipelineStep.NANOPOLISH_VARIANT) {
+
+                String[] windowArray = userFilledArgs.get("[WINDOW_ARRAY]").split(",");
+
+                for (int i = 0; i < windowSize; i++) {
+
+                    command = element.getAsJsonObject().getAsJsonPrimitive("commandString").getAsString();
+                    m = p.matcher(command);
+
+                    String windowWithId = windowArray[i];
+                    String variantVCFWithId = "out_" + i;
+
+                    while (m.find()) {
+                        String argValue;
+                        if (m.group(0).equals("[WINDOW]")) {
+                            argValue = windowWithId;
+                        } else if (m.group(0).equals("[VARIANT_OUTPUT]")) {
+                            argValue = variantVCFWithId;
+                        } else {
+                            argValue = userFilledArgs.get(m.group(0));
+                        }
+                        command = command.replace(m.group(0), argValue);
+                    }
+                    steps.add(new Step(pipelineStep, command));
+                }
+            } else {
+
+                while (m.find()) {
+                    command = command.replace(m.group(0), userFilledArgs.get(m.group(0)));
+                }
+
+                steps.add(new Step(pipelineStep, command));
+            }
+        }
+        return steps;
+    }
+
+    public static ArrayList<ArticPipelineArgument> getArticPipelineUserFilledArgs(Context context) {
+        ArrayList<ArticPipelineArgument> arguments = new ArrayList<>();
+        JsonArray argsJsonArray = _getArticPipelineJsonMember(context, "user_filled_args");
+        for (JsonElement element : argsJsonArray) {
+            ArticPipelineArgument argument = new Gson().fromJson(element, ArticPipelineArgument.class);
+            arguments.add(argument);
+        }
+        return arguments;
+    }
+
+    private static JsonArray _getArticPipelineJsonMember(Context context, String member) {
+        JsonObject argsJson = JSONFileHelper.rawtoJsonObject(context, R.raw.artic_auto_generate_arguments);
+        return argsJson.getAsJsonArray(member);
     }
 
     public static void setLogMessage(String log) {

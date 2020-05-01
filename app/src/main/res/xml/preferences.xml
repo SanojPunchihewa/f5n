@@ -42,6 +42,13 @@
             app:iconSpaceReserved="false"
             app:persistent="false"/>
 
+        <ListPreference
+            android:title="@string/title_default_pipeline_type"
+            android:key="@string/key_pipeline_type"
+            app:iconSpaceReserved="false"
+            android:entries="@array/pipelineListArray"
+            android:entryValues="@array/pipelineListValues" />
+
     </PreferenceCategory>
 
     <PreferenceCategory
