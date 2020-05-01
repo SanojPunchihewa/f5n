@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -84,7 +85,8 @@ public class ChoosePipelineActivity extends AppCompatActivity {
         } else if (type == PipelineType.PIPELINE_ARTIC) {
             if (pipelineType == PipelineType.PIPELINE_ARTIC.ordinal()) {
                 if (GUIConfiguration.getAppMode() == AppMode.DEMO) {
-                    startActivity(new Intent(ChoosePipelineActivity.this, DemoActivity.class));
+                    Toast.makeText(ChoosePipelineActivity.this, "Artic Pipeline Demo is under development",
+                            Toast.LENGTH_SHORT).show();
                 } else {
                     startActivity(new Intent(ChoosePipelineActivity.this, ArticPipelineActivity.class));
                 }
