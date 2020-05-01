@@ -113,10 +113,12 @@ public class GUIConfiguration {
     }
 
     public static String[] getSelectedCommandStrings() {
-        String[] commandArray = new String[steps.size()];
+        String[] commandArray = new String[getSelectedStepCount()];
         int stepId = 0;
         for (Step step : steps) {
-            commandArray[stepId++] = step.getCommandString();
+            if (step.isSelected()) {
+                commandArray[stepId++] = step.getCommandString();
+            }
         }
         return commandArray;
     }
@@ -124,8 +126,10 @@ public class GUIConfiguration {
     public static void createPipeline() {
         pipelineComponents = new ArrayList<>();
         for (Step step : steps) {
-            PipelineComponent pipelineComponent = new PipelineComponent(step.getStep(), step.getCommandString());
-            pipelineComponents.add(pipelineComponent);
+            if (step.isSelected()) {
+                PipelineComponent pipelineComponent = new PipelineComponent(step.getStep(), step.getCommandString());
+                pipelineComponents.add(pipelineComponent);
+            }
         }
     }
 
@@ -230,6 +234,16 @@ public class GUIConfiguration {
             arguments.add(argument);
         }
         return arguments;
+    }
+
+    private static int getSelectedStepCount() {
+        int count = 0;
+        for (Step step : steps) {
+            if (step.isSelected()) {
+                count++;
+            }
+        }
+        return count;
     }
 
     private static void configureDemoArgsFilePath(Argument argument, String folder) {

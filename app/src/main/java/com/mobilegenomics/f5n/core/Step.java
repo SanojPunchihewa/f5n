@@ -13,14 +13,18 @@ public class Step implements Serializable {
 
     private String command;
 
+    private boolean isSelected;
+
     public Step(final PipelineStep stepName, final String command) {
         this.stepName = stepName;
         this.command = command;
+        this.isSelected = true;
     }
 
     public Step(final PipelineStep stepName, final ArrayList<Argument> arguments) {
         this.stepName = stepName;
         this.arguments = arguments;
+        this.isSelected = true;
         buildCommandString();
     }
 
@@ -45,8 +49,15 @@ public class Step implements Serializable {
         return command;
     }
 
+    public boolean isSelected() {
+        return isSelected;
+    }
+
     public void setCommandString(final String command) {
         this.command = command;
     }
 
+    public void setSelected(final boolean selected) {
+        isSelected = selected;
+    }
 }
