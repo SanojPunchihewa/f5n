@@ -54,7 +54,7 @@
     },
     {
       "pipelineStep": {
-        "value": 1,
+        "value": 10,
         "name": "SAMTOOLS_SORT",
         "command": "samtools sort"
       },
@@ -62,7 +62,7 @@
     },
     {
       "pipelineStep": {
-        "value": 2,
+        "value": 11,
         "name": "SAMTOOLS_INDEX",
         "command": "samtools index"
       },
@@ -70,7 +70,7 @@
     },
     {
       "pipelineStep": {
-        "value": 9,
+        "value": 40,
         "name": "ARTIC_TRIM",
         "command": "artic"
       },
@@ -78,7 +78,7 @@
     },
     {
       "pipelineStep": {
-        "value": 1,
+        "value": 10,
         "name": "SAMTOOLS_SORT",
         "command": "samtools sort"
       },
@@ -86,7 +86,7 @@
     },
     {
       "pipelineStep": {
-        "value": 2,
+        "value": 11,
         "name": "SAMTOOLS_INDEX",
         "command": "samtools index"
       },
@@ -94,7 +94,7 @@
     },
     {
       "pipelineStep": {
-        "value": 7,
+        "value": 30,
         "name": "NANOPOLISH_INDEX",
         "command": "nanopolish index"
       },
@@ -102,7 +102,7 @@
     },
     {
       "pipelineStep": {
-        "value": 8,
+        "value": 31,
         "name": "NANOPOLISH_VARIANT",
         "command": "nanopolish variants"
       },
