@@ -1,0 +1,16 @@
+{
+  "args": [
+    {
+      "argName": "bgzip compressed VCF/BCF file",
+      "argValue": null,
+      "argDescription": "bgzip compressed VCF/BCF file",
+      "flag": "",
+      "argID": "",
+      "isDependentOn": "null",
+      "hasFlag": false,
+      "flagOnly": false,
+      "required": true,
+      "isFile": true
+    }
+  ]
+}

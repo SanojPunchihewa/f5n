@@ -17,9 +17,9 @@ public class VariantPipelineStep extends PipelineStep {
     @Override
     public PipelineStep[] values() {
         PipelineStep[] common = super.values();
-        PipelineStep[] f5cSteps = new PipelineStep[]{nanopolishIndex, nanopolishVariant};
-        PipelineStep[] merged = Arrays.copyOf(common, common.length + f5cSteps.length);
-        System.arraycopy(f5cSteps, 0, merged, common.length, f5cSteps.length);
+        PipelineStep[] nanopolishSteps = new PipelineStep[]{nanopolishIndex, nanopolishVariant};
+        PipelineStep[] merged = Arrays.copyOf(common, common.length + nanopolishSteps.length);
+        System.arraycopy(nanopolishSteps, 0, merged, common.length, nanopolishSteps.length);
         return merged;
     }
 

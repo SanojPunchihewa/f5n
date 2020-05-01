@@ -1,0 +1,40 @@
+{
+  "args": [
+    {
+      "argName": ".fai index file",
+      "argValue": null,
+      "argDescription": "add to the header contig names and their lengths from the provided fasta index file (.fai)",
+      "flag": "-f",
+      "argID": "",
+      "isDependentOn": "null",
+      "hasFlag": true,
+      "flagOnly": false,
+      "required": true,
+      "isFile": true
+    },
+    {
+      "argName": "VCF file",
+      "argValue": null,
+      "argDescription": "VCF file path",
+      "flag": "",
+      "argID": "",
+      "isDependentOn": "null",
+      "hasFlag": false,
+      "flagOnly": false,
+      "required": true,
+      "isFile": true
+    },
+    {
+      "argName": "output file",
+      "argValue": null,
+      "argDescription": "header modified VCF/BCF file",
+      "flag": "-o",
+      "argID": "",
+      "isDependentOn": "null",
+      "hasFlag": true,
+      "flagOnly": false,
+      "required": true,
+      "isFile": true
+    }
+  ]
+}

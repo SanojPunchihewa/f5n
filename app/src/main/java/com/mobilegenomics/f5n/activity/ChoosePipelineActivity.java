@@ -21,6 +21,8 @@ public class ChoosePipelineActivity extends AppCompatActivity {
 
     private Button btnPipelineTypeVariant;
 
+    private Button btnPipelineTypeArtic;
+
     private int pipelineType;
 
     @Override
@@ -30,6 +32,7 @@ public class ChoosePipelineActivity extends AppCompatActivity {
 
         btnPipelineTypeMethylation = findViewById(R.id.btn_pipeline_type_methylation);
         btnPipelineTypeVariant = findViewById(R.id.btn_pipeline_type_variant);
+        btnPipelineTypeArtic = findViewById(R.id.btn_pipeline_type_artic);
 
         pipelineType = PreferenceUtil.getSharedPreferenceInt(R.string.key_pipeline_type_preference);
 
@@ -47,6 +50,13 @@ public class ChoosePipelineActivity extends AppCompatActivity {
             }
         });
 
+        btnPipelineTypeArtic.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                openPipelineActivity(PipelineType.PIPELINE_ARTIC);
+            }
+        });
+
     }
 
     private void openPipelineActivity(PipelineType type) {
@@ -61,7 +71,7 @@ public class ChoosePipelineActivity extends AppCompatActivity {
             } else {
                 showSettingsDialog("METHYLATION");
             }
-        } else {
+        } else if (type == PipelineType.PIPELINE_VARIANT) {
             if (pipelineType == PipelineType.PIPELINE_VARIANT.ordinal()) {
                 if (GUIConfiguration.getAppMode() == AppMode.DEMO) {
                     startActivity(new Intent(ChoosePipelineActivity.this, DemoActivity.class));
@@ -70,6 +80,16 @@ public class ChoosePipelineActivity extends AppCompatActivity {
                 }
             } else {
                 showSettingsDialog("VARIANT");
+            }
+        } else if (type == PipelineType.PIPELINE_ARTIC) {
+            if (pipelineType == PipelineType.PIPELINE_ARTIC.ordinal()) {
+                if (GUIConfiguration.getAppMode() == AppMode.DEMO) {
+                    startActivity(new Intent(ChoosePipelineActivity.this, DemoActivity.class));
+                } else {
+                    startActivity(new Intent(ChoosePipelineActivity.this, ArticPipelineActivity.class));
+                }
+            } else {
+                showSettingsDialog("ARTIC");
             }
         }
     }

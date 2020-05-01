@@ -1,0 +1,52 @@
+{
+  "args": [
+    {
+      "argName": "BED file or TAB file",
+      "argValue": null,
+      "argDescription": "BED file or TAB file with regions to be replaced",
+      "flag": "-m",
+      "argID": "",
+      "isDependentOn": "null",
+      "hasFlag": true,
+      "flagOnly": false,
+      "required": true,
+      "isFile": true
+    },
+    {
+      "argName": "Reference sequence in fasta format",
+      "argValue": null,
+      "argDescription": "Reference sequence in fasta format",
+      "flag": "-f",
+      "argID": "",
+      "isDependentOn": "null",
+      "hasFlag": true,
+      "flagOnly": false,
+      "required": true,
+      "isFile": true
+    },
+    {
+      "argName": "VCF file",
+      "argValue": null,
+      "argDescription": "VCF file path",
+      "flag": "",
+      "argID": "",
+      "isDependentOn": "null",
+      "hasFlag": false,
+      "flagOnly": false,
+      "required": true,
+      "isFile": true
+    },
+    {
+      "argName": "output file",
+      "argValue": null,
+      "argDescription": "consensus sequence output file",
+      "flag": "-o",
+      "argID": "BCFTOOLS_CONSENSUS_OUTPUT_FILE",
+      "isDependentOn": "null",
+      "hasFlag": true,
+      "flagOnly": false,
+      "required": true,
+      "isFile": true
+    }
+  ]
+}

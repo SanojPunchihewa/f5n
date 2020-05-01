@@ -1,0 +1,112 @@
+{
+  "user_filled_args": [
+    {
+      "argID": "[WORKING_DIRECTORY]",
+      "argDescription": "Path to the Working Directory",
+      "flagOnly": false,
+      "isFile": false,
+      "value": null
+    },
+    {
+      "argID": "[REFERENCE_GENOME]",
+      "argDescription": "Path to the Reference Genome",
+      "flagOnly": false,
+      "isFile": true,
+      "value": null
+    },
+    {
+      "argID": "[FAST_A_Q_FILE]",
+      "argDescription": "Path to the Fast(a|q) file",
+      "flagOnly": false,
+      "isFile": true,
+      "value": null
+    },
+    {
+      "argID": "[FAST_5_FILE]",
+      "argDescription": "Path to the Fast5 directory",
+      "flagOnly": false,
+      "isFile": true,
+      "value": null
+    },
+    {
+      "argID": "[ARTIC_TRIM_BED_FILE]",
+      "argDescription": "Path to the Bed file for Artic Trim",
+      "flagOnly": false,
+      "isFile": true,
+      "value": null
+    },
+    {
+      "argID": "[WINDOW_ARRAY]",
+      "argDescription": "Windows separated by comma(,) (format: <chromsome_name>:<start>-<end> , <chromsome_name>:<start>-<end>)",
+      "flagOnly": false,
+      "isFile": false,
+      "value": null
+    }
+  ],
+  "commands": [
+    {
+      "pipelineStep": {
+        "value": 0,
+        "name": "MINIMAP2_SEQUENCE_ALIGNMENT",
+        "command": "minimap2 -x map-ont"
+      },
+      "commandString": "minimap2 -ax map-ont [REFERENCE_GENOME] [FAST_A_Q_FILE] -o [WORKING_DIRECTORY]/min-align.sam"
+    },
+    {
+      "pipelineStep": {
+        "value": 1,
+        "name": "SAMTOOLS_SORT",
+        "command": "samtools sort"
+      },
+      "commandString": "samtools sort [WORKING_DIRECTORY]/min-align.sam -o [WORKING_DIRECTORY]/sorted.bam"
+    },
+    {
+      "pipelineStep": {
+        "value": 2,
+        "name": "SAMTOOLS_INDEX",
+        "command": "samtools index"
+      },
+      "commandString": "samtools index [WORKING_DIRECTORY]/sorted.bam"
+    },
+    {
+      "pipelineStep": {
+        "value": 9,
+        "name": "ARTIC_TRIM",
+        "command": "artic"
+      },
+      "commandString": "artic -b [ARTIC_TRIM_BED_FILE] -i [WORKING_DIRECTORY]/sorted.bam -o [WORKING_DIRECTORY]/trimmed.bam -n 200"
+    },
+    {
+      "pipelineStep": {
+        "value": 1,
+        "name": "SAMTOOLS_SORT",
+        "command": "samtools sort"
+      },
+      "commandString": "samtools sort [WORKING_DIRECTORY]/trimmed.bam -o [WORKING_DIRECTORY]/trimmed.sorted.bam"
+    },
+    {
+      "pipelineStep": {
+        "value": 2,
+        "name": "SAMTOOLS_INDEX",
+        "command": "samtools index"
+      },
+      "commandString": "samtools index [WORKING_DIRECTORY]/trimmed.sorted.bam"
+    },
+    {
+      "pipelineStep": {
+        "value": 7,
+        "name": "NANOPOLISH_INDEX",
+        "command": "nanopolish index"
+      },
+      "commandString": "nanopolish index -d [FAST_5_FILE] [FAST_A_Q_FILE]"
+    },
+    {
+      "pipelineStep": {
+        "value": 8,
+        "name": "NANOPOLISH_VARIANT",
+        "command": "nanopolish variants"
+      },
+      "commandString": "nanopolish variants -r [FAST_A_Q_FILE] -b [WORKING_DIRECTORY]/trimmed.sorted.bam -g [REFERENCE_GENOME] -o [WORKING_DIRECTORY]/[VARIANT_OUTPUT].vcf -t 8 -w [WINDOW] -m 0.1 --snps --fix-homopolymers -x 1000000 -p 1"
+    }
+  ]
+}

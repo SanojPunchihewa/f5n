@@ -65,6 +65,9 @@
         <activity
             android:name=".activity.ChoosePipelineActivity"
             android:label="Choose a Pipeline" />
+        <activity
+            android:name=".activity.ArticPipelineActivity"
+            android:label="Artic Pipeline" />
     </application>
 
 </manifest>

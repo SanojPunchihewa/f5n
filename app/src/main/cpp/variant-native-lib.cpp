@@ -17,6 +17,7 @@ int fdo;
 #include "interface_minimap.h"
 #include "interface_samtool.h"
 #include "interface_nanopolish.h"
+#include "interface_artic.h"
 
 jmp_buf jmpBuf;
 

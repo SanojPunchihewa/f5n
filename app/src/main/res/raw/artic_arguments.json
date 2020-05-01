@@ -1,0 +1,100 @@
+{
+  "args": [
+    {
+      "argName": "Bed file",
+      "argValue": null,
+      "argDescription": "Path to the Bed file",
+      "flag": "-b",
+      "argID": "ARTIC_BED_FILE",
+      "isDependentOn": "null",
+      "hasFlag": true,
+      "flagOnly": false,
+      "required": true,
+      "isFile": true
+    },
+    {
+      "argName": "Input sam file",
+      "argValue": null,
+      "argDescription": "Path to the input sam file",
+      "flag": "-i",
+      "argID": "ARTIC_INPUT_SAM_FILE",
+      "isDependentOn": "null",
+      "hasFlag": true,
+      "flagOnly": false,
+      "required": true,
+      "isFile": true
+    },
+    {
+      "argName": "Output sam file",
+      "argValue": null,
+      "argDescription": "Path to the output sam file",
+      "flag": "-o",
+      "argID": "ARTIC_OUTPUT_SAM_FILE",
+      "isDependentOn": "null",
+      "hasFlag": true,
+      "flagOnly": false,
+      "required": true,
+      "isFile": true
+    },
+    {
+      "argName": "Do not divide reads into groups",
+      "argValue": null,
+      "argDescription": "Do not divide reads into groups in SAM output",
+      "flag": "-g",
+      "argID": "tobedecided",
+      "isDependentOn": "argIDofanotherArg",
+      "hasFlag": true,
+      "flagOnly": true,
+      "required": false,
+      "isFile": false
+    },
+    {
+      "argName": "Remove incorrect pairs",
+      "argValue": null,
+      "argDescription": "Remove incorrect pairs",
+      "flag": "-r",
+      "argID": "tobedecided",
+      "isDependentOn": "argIDofanotherArg",
+      "hasFlag": true,
+      "flagOnly": true,
+      "required": false,
+      "isFile": false
+    },
+    {
+      "argName": "Trim to start of primers instead of ends",
+      "argValue": null,
+      "argDescription": "Trim to start of primers instead of ends",
+      "flag": "-s",
+      "argID": "tobedecided",
+      "isDependentOn": "argIDofanotherArg",
+      "hasFlag": true,
+      "flagOnly": true,
+      "required": false,
+      "isFile": false
+    },
+    {
+      "argName": "Subsample to n coverage per strand",
+      "argValue": 200,
+      "argDescription": "Subsample to n coverage per strand",
+      "flag": "-n",
+      "argID": "tobedecided",
+      "isDependentOn": "argIDofanotherArg",
+      "hasFlag": true,
+      "flagOnly": false,
+      "required": false,
+      "isFile": false
+    },
+    {
+      "argName": "Show Verbose logs",
+      "argValue": null,
+      "argDescription": "Show Verbose logs",
+      "flag": "-v",
+      "argID": "tobedecided",
+      "isDependentOn": "argIDofanotherArg",
+      "hasFlag": true,
+      "flagOnly": true,
+      "required": false,
+      "isFile": false
+    }
+  ]
+}
