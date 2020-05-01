@@ -22,6 +22,8 @@ public class PipelineStep implements EnumHelper {
 
     public static final int SAMTOOLS_INDEX = 11;
 
+    public static final int SAMTOOLS_DEPTH = 12;
+
     // Use 20-29 for f5c subcommands
     public static final int F5C_INDEX = 20;
 
@@ -39,6 +41,10 @@ public class PipelineStep implements EnumHelper {
     // Use 40-49 for artic subcommands
     public static final int ARTIC_TRIM = 40;
 
+    public static final int ARTIC_MASK = 41;
+
+    public static final int ARTIC_MULTIINTER = 42;
+
     // Use 50-59 for bcftools subcommands
     public static final int BCFTOOLS_CONSENSUS = 50;
 
@@ -49,6 +55,8 @@ public class PipelineStep implements EnumHelper {
     public static final int BCFTOOLS_VIEW = 53;
 
     public static final int BCFTOOLS_INDEX = 54;
+
+    public static final int BCFTOOLS_QUERY = 55;
 
     private final int value;
 
