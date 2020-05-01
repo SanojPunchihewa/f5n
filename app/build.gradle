@@ -109,6 +109,6 @@ dependencies {
     implementation 'com.liulishuo.okdownload:okdownload:1.0.5'
     implementation 'com.liulishuo.okdownload:sqlite:1.0.5'
     implementation 'com.liulishuo.okdownload:okhttp:1.0.5'
-    implementation 'com.squareup.okhttp3:okhttp:4.2.2'
+    implementation 'com.squareup.okhttp3:okhttp:4.6.0'
     implementation 'commons-net:commons-net:3.6'
 }
