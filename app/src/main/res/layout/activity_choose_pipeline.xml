@@ -7,14 +7,15 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true">
+        android:layout_height="match_parent"
+        android:layout_above="@id/txt_sub_tool_info">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center_horizontal"
+            android:layout_gravity="center"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp">
 
@@ -48,5 +49,13 @@
         </LinearLayout>
 
     </ScrollView>
+
+    <TextView
+        android:id="@+id/txt_sub_tool_info"
+        android:text="@string/txt_how_to_run_subtool"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:padding="10dp" />
 
 </RelativeLayout>
