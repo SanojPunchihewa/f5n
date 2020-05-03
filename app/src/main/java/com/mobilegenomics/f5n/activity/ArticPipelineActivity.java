@@ -244,6 +244,28 @@ public class ArticPipelineActivity extends AppCompatActivity {
             }
         });
         linearLayout.addView(btnNext);
+
+        Button btnLoadPreviousConfig = new Button(this);
+        btnLoadPreviousConfig.setText(getString(R.string.btn_load_prev_config));
+        btnLoadPreviousConfig.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                loadPreviousConfig();
+            }
+        });
+        linearLayout.addView(btnLoadPreviousConfig);
+
+    }
+
+    private void loadPreviousConfig() {
+        if ((PreferenceUtil.getSharedPreferenceString(R.string.id_folder_path) != null) &&
+                (PreferenceUtil.getSharedPreferenceStepList(R.string.id_step_list) != null) &&
+                !(PreferenceUtil.getSharedPreferenceStepList(R.string.id_step_list).isEmpty())) {
+            GUIConfiguration.setPipelineState(PipelineState.PREV_CONFIG_LOAD);
+            startActivity(new Intent(ArticPipelineActivity.this, TerminalActivity.class));
+        } else {
+            Toast.makeText(ArticPipelineActivity.this, "No previous configs to load", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void openFileManager() {
