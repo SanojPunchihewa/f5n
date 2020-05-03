@@ -22,27 +22,27 @@
                 android:id="@+id/btn_pipeline_type_methylation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Minimap2, Samtools and F5C" />
+                android:text="@string/btn_methylation" />
 
             <Button
                 android:id="@+id/btn_pipeline_type_variant"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Minimap2, Samtools and Nanopolish"
+                android:text="@string/btn_variant"
                 android:layout_marginTop="100dp" />
 
             <Button
                 android:id="@+id/btn_pipeline_type_artic"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Minimap2, Samtools, Artic, Nanopolish"
+                android:text="@string/btn_artic"
                 android:layout_marginTop="100dp" />
 
             <Button
                 android:id="@+id/btn_pipeline_type_consensus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Bcftools Consensus Generation"
+                android:text="@string/btn_consensus"
                 android:layout_marginTop="100dp" />
 
         </LinearLayout>
