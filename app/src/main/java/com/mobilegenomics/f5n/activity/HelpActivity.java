@@ -83,7 +83,11 @@ public class HelpActivity extends AppCompatActivity {
                         +
                         "- F5C v0.3-beta, commit <a href=\"https://github.com/hasindu2008/f5c/compare/cea05f7...master\">cea05f7</a><br><br>"
                         +
-                        "- Nanopolish v0.11.3, commit <a href=\"https://github.com/jts/nanopolish/compare/v0.11.3...master\">ae341d6</a>"));
+                        "- Nanopolish v0.11.3, commit <a href=\"https://github.com/jts/nanopolish/compare/v0.11.3...master\">ae341d6</a><br><br>"
+                        +
+                        "- Artic C, commit <a href=\"https://github.com/hiruna72/artic_c/compare/841ff5d...master\">841ff5d</a><br><br>"
+                        +
+                        "- Bcftools v1.10.2, commit <a href=\"https://github.com/samtools/bcftools/compare/034b466...develop\">034b466</a><br>"));
         linearLayout.addView(txtToolVersions);
 
         TextView txtContribute = new TextView(this);
