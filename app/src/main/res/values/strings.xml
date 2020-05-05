@@ -62,7 +62,7 @@
     <string name="summary_faq">View frequently asked questions</string>
     <string name="url_faq">https://github.com/SanojPunchihewa/f5n/blob/master/README.md</string>
     <string name="title_terms">Terms &amp; Conditions</string>
-    <string name="url_terms">https://github.com/SanojPunchihewa/f5n/blob/master/README.md</string>
+    <string name="url_terms">https://github.com/SanojPunchihewa/f5n/blob/master/LICENSE</string>
     <string name="key_storage_permission">key_storage_permission</string>
     <string name="key_sdcard_storage_permission">key_sdcard_storage_permission</string>
     <string name="key_write_settings_permission">key_write_settings_permission</string>
