@@ -48,6 +48,16 @@ add_library( # Sets the name of the library.
         consensus-native-lib.cpp
         )
 
+add_library( # Sets the name of the library.
+        single-tool-native-lib
+
+        # Sets the library as a shared library.
+        SHARED
+
+        # Provides a relative path to your source file(s).
+        single-tool-native-lib.cpp
+        )
+
 # add needed libraries
 add_library(libnanopolish SHARED IMPORTED)
 set_target_properties(libnanopolish PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libnanopolish.so)
@@ -66,6 +76,9 @@ set_target_properties(libartic PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/
 
 add_library(libbcftool SHARED IMPORTED)
 set_target_properties(libbcftool PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libbcftools.so)
+
+add_library(libbioawk SHARED IMPORTED)
+set_target_properties(libbioawk PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libbioawk.so)
 
 add_library(libhts SHARED IMPORTED)
 set_target_properties(libhts PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libhts.so)
@@ -89,3 +102,5 @@ target_link_libraries(variant-native-lib libminimap libsamtool libnanopolish lib
 target_link_libraries(artic-native-lib libminimap libsamtool libnanopolish libartic libbcftool libhts ${log-lib})
 
 target_link_libraries(consensus-native-lib libsamtool libartic libbcftool libhts ${log-lib})
+
+target_link_libraries(single-tool-native-lib libartic libbcftool libbioawk libhts ${log-lib})
