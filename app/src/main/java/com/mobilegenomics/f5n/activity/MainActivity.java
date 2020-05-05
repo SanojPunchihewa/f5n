@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private void showAlert() {
         new AlertDialog.Builder(this)
-                .setTitle("F5N")
+                .setTitle("Genopo a.k.a. F5N")
                 .setMessage(getResources().getString(R.string.app_info))
                 .setPositiveButton("I Understood", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {

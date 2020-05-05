@@ -28,7 +28,7 @@ public class HelpActivity extends AppCompatActivity {
 
         TextView txtIntro1 = new TextView(this);
         txtIntro1.setText(
-                "F5N is a Mobile application for Reference Guided Sequence Alignment using Oxford Nanopore Technology Data\n");
+                "Genopo a.k.a. F5N is a Mobile application for Reference Guided Sequence Alignment using Oxford Nanopore Technology Data\n");
         txtIntro1.setTypeface(null, Typeface.BOLD);
         linearLayout.addView(txtIntro1);
 
