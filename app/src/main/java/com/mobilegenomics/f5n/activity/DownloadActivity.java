@@ -15,11 +15,9 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.liulishuo.okdownload.core.cause.EndCause;
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
@@ -30,7 +28,6 @@ import com.mobilegenomics.f5n.support.PreferenceUtil;
 import com.mobilegenomics.f5n.support.ZipListener;
 import com.mobilegenomics.f5n.support.ZipManager;
 import com.obsez.android.lib.filechooser.ChooserDialog;
-
 import java.io.File;
 
 public class DownloadActivity extends AppCompatActivity {
@@ -178,7 +175,8 @@ public class DownloadActivity extends AppCompatActivity {
 
         TextView txtSDCardWarning = new TextView(this);
         txtSDCardWarning.setText(
-                "Cannot download or extract to SD card? Please check Settings");
+                "Cannot download or extract to SD card? Please check Settings\n" + getResources()
+                        .getText(R.string.summary_reduce_brightness));
         txtSDCardWarning.setTextColor(getResources().getColor(R.color.colorRead));
         linearLayout.addView(txtSDCardWarning);
     }
@@ -241,7 +239,8 @@ public class DownloadActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onComplete(@NonNull final boolean success, @NonNull final long timeTook, @Nullable final Exception exception) {
+            public void onComplete(@NonNull final boolean success, @NonNull final long timeTook,
+                    @Nullable final Exception exception) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

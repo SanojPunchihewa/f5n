@@ -96,7 +96,7 @@
         <item>event-align.txt</item>
         <item>freq.tsv</item>
     </string-array>
-    <string name="summary_reduce_brightness">Brightness will reduce once the pipeline starts. Do not minimize or turn off the display, process may crash</string>
+    <string name="summary_reduce_brightness">Brightness will reduce once the pipeline starts. <b>Do not</b> minimize, rotate or turn off the display, process may crash</string>
     <string name="title_default_pipeline_type">Pipeline Type</string>
     <string name="btn_methylation">Methylation Calling\n<font color="#5F5F5F" size="12">(Minimap2, Samtools, F5C)</font></string>
     <string name="btn_variant">Variant Calling\n<font color="#5F5F5F" size="12">(Minimap2, Samtools, Nanopolish)</font></string>
