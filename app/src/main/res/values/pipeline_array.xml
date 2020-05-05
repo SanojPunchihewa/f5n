@@ -5,6 +5,7 @@
         <item>Variant Calling\n<font color="#5F5F5F" size="14">(Minimap2, Samtools and Nanopolish)</font></item>
         <item>Artic\n<font color="#5F5F5F" size="14">(Minimap2, Samtools, Artic, Nanopolish and Bcftools)</font></item>
         <item>Consensus\n<font color="#5F5F5F" size="14">(Samtools, Artic, and Bcftools)</font></item>
+        <item>Single Tool\n<font color="#5F5F5F" size="14">(Artic, Bcftools, Bioawk)</font></item>
     </string-array>
 
     <string-array name="pipelineListValues">
@@ -12,5 +13,6 @@
         <item>1</item>
         <item>2</item>
         <item>3</item>
+        <item>4</item>
     </string-array>
 </resources>
