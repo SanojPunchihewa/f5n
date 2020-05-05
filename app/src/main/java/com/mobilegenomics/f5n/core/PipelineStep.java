@@ -45,6 +45,8 @@ public class PipelineStep implements EnumHelper {
 
     public static final int ARTIC_MULTIINTER = 42;
 
+    public static final int ARTIC = 49;
+
     // Use 50-59 for bcftools subcommands
     public static final int BCFTOOLS_CONSENSUS = 50;
 
@@ -57,6 +59,11 @@ public class PipelineStep implements EnumHelper {
     public static final int BCFTOOLS_INDEX = 54;
 
     public static final int BCFTOOLS_QUERY = 55;
+
+    public static final int BCFTOOLS = 59;
+
+    // Use 60-69 for bioawk subcommands
+    public static final int BIOAWK = 69;
 
     private final int value;
 
