@@ -35,6 +35,10 @@ public class ChoosePipelineActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_pipeline);
 
+        if (GUIConfiguration.getAppMode() == AppMode.DEMO) {
+            findViewById(R.id.txt_sub_tool_info).setVisibility(View.GONE);
+        }
+
         btnPipelineTypeMethylation = findViewById(R.id.btn_pipeline_type_methylation);
         btnPipelineTypeVariant = findViewById(R.id.btn_pipeline_type_variant);
         btnPipelineTypeArtic = findViewById(R.id.btn_pipeline_type_artic);
