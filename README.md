@@ -7,7 +7,7 @@ f5n can run the following on ARM devices [more details](https://github.com/Sanoj
  1. [minimap2](https://github.com/lh3/minimap2)
  2. [samtools](https://github.com/samtools/samtools)
  3. [f5c](https://github.com/hasindu2008/f5c)
- 4. [nanopolish](https://github.com/hasindu2008/f5c)
+ 4. [nanopolish](https://github.com/jts/nanopolish)
  5. [bcftools](https://github.com/samtools/bcftools)
  6. [artic_c](https://github.com/hiruna72/artic_c) 
  7. [bioawk](https://github.com/lh3/bioawk)
