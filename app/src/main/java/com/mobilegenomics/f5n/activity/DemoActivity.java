@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -14,11 +15,9 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.liulishuo.okdownload.core.cause.EndCause;
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
@@ -33,7 +32,6 @@ import com.mobilegenomics.f5n.support.PreferenceUtil;
 import com.mobilegenomics.f5n.support.TimeFormat;
 import com.mobilegenomics.f5n.support.ZipListener;
 import com.mobilegenomics.f5n.support.ZipManager;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -107,6 +105,12 @@ public class DemoActivity extends AppCompatActivity {
                 "If you have already downloaded and extracted the ecoli data set to main-storage/mobile-genomics folder, you can skip Download & Extract");
         txtSkipDownload.setPadding(0, 10, 0, 0);
         linearLayout.addView(txtSkipDownload);
+
+        TextView crashWarning = new TextView(this);
+        crashWarning.setText(Html.fromHtml(
+                "<b>Do not</b> minimize, rotate or turn off the display, process may crash"));
+        crashWarning.setTextColor(getResources().getColor(R.color.colorRead));
+        linearLayout.addView(crashWarning);
 
         statusTextView = new TextView(this);
         linearLayout.addView(statusTextView);
@@ -232,7 +236,8 @@ public class DemoActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onComplete(@NonNull final boolean success, @NonNull final long timeTook, @Nullable final Exception exception) {
+            public void onComplete(@NonNull final boolean success, @NonNull final long timeTook,
+                    @Nullable final Exception exception) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
