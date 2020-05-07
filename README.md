@@ -2,7 +2,7 @@
 ## Genopo a.k.a. F5N
 
 ### Overview
-f5n can run the following on ARM devices [more details](https://github.com/SanojPunchihewa/f5n/blob/master/docs/Supplementary_materials.pdf)
+Genopo can run the following on ARM devices [more details](https://github.com/SanojPunchihewa/f5n/blob/master/docs/Supplementary_materials.pdf)
 
  1. [minimap2](https://github.com/lh3/minimap2)
  2. [samtools](https://github.com/samtools/samtools)
@@ -24,7 +24,7 @@ The source code for the Server can be found [here](https://github.com/AnjanaSena
 ![Diagram](https://github.com/hiruna72/f5n/blob/master/server_mobile_connection.png)
 
 ### Installation
-f5n application can be obtained from:
+Genopo application can be obtained from:
 
 [Google Play](https://play.google.com/store/apps/details?id=com.mobilegenomics.f5n)
 
@@ -36,7 +36,7 @@ ARCHITECTURE=armeabi-v7a
 wget "https://github.com/SanojPunchihewa/f5n/releases/download/$VERSION/mobilegenomics-f5n-v$VERSION-$ARCHITECTURE-release.apk"
 ```
 
-Signature keys of builds are different. Before you switch the installation source, you will have to uninstall the f5n application.
+Signature keys of builds are different. Before you switch the installation source, you will have to uninstall the existing Genopo application.
 
 ### Demo
 
