@@ -46,6 +46,13 @@
                 android:text="@string/btn_consensus"
                 android:layout_marginTop="100dp" />
 
+            <Button
+                android:id="@+id/btn_pipeline_type_single_tool"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Artic, Bcftools, Bioawk"
+                android:layout_marginTop="100dp" />
+
         </LinearLayout>
 
     </ScrollView>

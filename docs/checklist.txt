@@ -1,0 +1,41 @@
+Just things to check after installing the app. 
+Should write test cases for these.
+
+Overall---------
+1.File Permission Message at Installation
+2.Install message makes sense and updated
+3.All the buttons are available and clickable
+4.Rotating device doesn't crash app
+5.FIle permission in settings working
+6.Brightness permission in settings working
+8.Reference genomes folder select works
+9.Working dir select works
+10.Pipeline types can be changed
+
+
+Basic---------
+1.Download file works
+2.Extract file works
+3.Standalone single step works
+4.Standalone multiple steps work
+5.Select/unselect steps in terminal activity works
+6.f5n.txt and tmp.txt are created and do get written
+
+Pipelines------
+1.Methylation calling pip works
+2.Artic pip works
+
+Demo--------
+1.Methylation pip works
+2.Variant calling pip works
+
+MinIt------
+1.Manual process works
+2.Automatic process works
+3.Burst mode works
+4.Time interval between jobs can be set in settings
+
+
+More--------
+1.Help is updated
+2.Tools' github commits are updated and correct

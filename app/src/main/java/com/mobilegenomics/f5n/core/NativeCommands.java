@@ -18,6 +18,8 @@ public class NativeCommands {
             System.loadLibrary("artic-native-lib");
         } else if (pipelineType == PipelineType.PIPELINE_CONSENSUS.ordinal()) {
             System.loadLibrary("consensus-native-lib");
+        } else if (pipelineType == PipelineType.SINGLE_TOOL.ordinal()) {
+            System.loadLibrary("single-tool-native-lib");
         }
     }
 

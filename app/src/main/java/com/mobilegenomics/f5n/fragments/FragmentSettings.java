@@ -129,6 +129,8 @@ public class FragmentSettings extends PreferenceFragmentCompat {
             pipelineTypePreference.setSummary(getResources().getStringArray(R.array.pipelineListArray)[2]);
         } else if (pipelineType == PipelineType.PIPELINE_CONSENSUS.ordinal()) {
             pipelineTypePreference.setSummary(getResources().getStringArray(R.array.pipelineListArray)[3]);
+        } else if (pipelineType == PipelineType.SINGLE_TOOL.ordinal()) {
+            pipelineTypePreference.setSummary(getResources().getStringArray(R.array.pipelineListArray)[4]);
         }
 
         if (PreferenceUtil.getSharedPreferenceUri(R.string.sdcard_uri) != null) {
@@ -376,6 +378,8 @@ public class FragmentSettings extends PreferenceFragmentCompat {
             strType = "ARTIC";
         } else if (type == PipelineType.PIPELINE_CONSENSUS.ordinal()) {
             strType = "CONSENSUS";
+        } else if (type == PipelineType.PIPELINE_CONSENSUS.ordinal()) {
+            strType = "SINGLE_TOOL";
         }
 
         String message = "Pipeline type will be changed to " + strType

@@ -1,17 +1,23 @@
 [![Build Status](https://travis-ci.com/SanojPunchihewa/f5n.svg?branch=master)](https://travis-ci.com/SanojPunchihewa/f5n)
-## f5n
-
-Motivated from [f5p](https://github.com/hasindu2008/f5p) - we build a network of mobiles to process [ONT](https://nanoporetech.com/) data. The work is under construction! 
+## Genopo a.k.a. F5N is an Android application for Portable Genomics
 
 ### Overview
-f5n can run the following on ARM devices [more details](https://hasindu2008.github.io/linux-tools-on-phone/)
+Genopo can run following analysis tools on mobile devices [more details](https://github.com/SanojPunchihewa/f5n/blob/master/docs/Supplementary_materials.pdf)
 
- 1. [minimap2](https://github.com/lh3/minimap2) sequence alignment
- 2. [samtools](https://github.com/samtools/samtools) sort
- 3. [samtools](https://github.com/samtools/samtools) index
- 4. [f5c](https://github.com/hasindu2008/f5c) index
- 5. [f5c](https://github.com/hasindu2008/f5c) call-methylation
- 6. [f5c](https://github.com/hasindu2008/f5c) event alignment
+ 1. [minimap2](https://github.com/lh3/minimap2)
+ 2. [samtools](https://github.com/samtools/samtools)
+ 3. [f5c](https://github.com/hasindu2008/f5c)
+ 4. [nanopolish](https://github.com/jts/nanopolish)
+ 5. [bcftools](https://github.com/samtools/bcftools)
+ 6. [artic_c](https://github.com/hiruna72/artic_c) 
+ 7. [bioawk](https://github.com/lh3/bioawk)
+ 
+In particular, Genopo has buit in pipelines for
+ 1. [Methylation Calling](https://hasindu2008.github.io/f5c/docs/commands#calling-methylation)
+ 2. [Event Alignment](https://hasindu2008.github.io/f5c/docs/commands#aligning-events)
+ 2. [Variant Calling](https://nanopolish.readthedocs.io/en/latest/manual.html#variants)
+ 3. [Consensus Building](http://samtools.github.io/bcftools/bcftools.html#consensus)
+ 4. nCoV-2019 novel coronavirus bioinformatics protocol [(Artic pipeline)](https://artic.network/ncov-2019)
 
 We build a standalone application and a cluster of nodes where a master orchestrates the other nodes. 
 In this way ONT data can be corrected for errors in the field, on the fly!
@@ -25,7 +31,7 @@ The source code for the Server can be found [here](https://github.com/AnjanaSena
 ![Diagram](https://github.com/hiruna72/f5n/blob/master/server_mobile_connection.png)
 
 ### Installation
-f5n application can be obtained from:
+Genopo application can be obtained from:
 
 [Google Play](https://play.google.com/store/apps/details?id=com.mobilegenomics.f5n)
 
@@ -37,7 +43,7 @@ ARCHITECTURE=armeabi-v7a
 wget "https://github.com/SanojPunchihewa/f5n/releases/download/$VERSION/mobilegenomics-f5n-v$VERSION-$ARCHITECTURE-release.apk"
 ```
 
-Signature keys of builds are different. Before you switch the installation source, you will have to uninstall the f5n application.
+Signature keys of builds are different. Before you switch the installation source, you will have to uninstall the existing Genopo application.
 
 ### Demo
 
