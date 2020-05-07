@@ -28,7 +28,7 @@ public class HelpActivity extends AppCompatActivity {
 
         TextView txtIntro1 = new TextView(this);
         txtIntro1.setText(
-                "F5N is a Mobile application for Reference Guided Sequence Alignment using Oxford Nanopore Technology Data\n");
+                "Genopo a.k.a. F5N is a Mobile application for Reference Guided Sequence Alignment using Oxford Nanopore Technology Data\n");
         txtIntro1.setTypeface(null, Typeface.BOLD);
         linearLayout.addView(txtIntro1);
 
@@ -63,6 +63,13 @@ public class HelpActivity extends AppCompatActivity {
                         + "Refer <b>tmp.log.txt</b> in main_storage/mobile-genomics folder in cases where the app fails in the middle of a process.<br>"));
         linearLayout.addView(txtIntro7);
 
+        TextView txtIntro8 = new TextView(this);
+        txtIntro8.setMovementMethod(LinkMovementMethod.getInstance());
+        txtIntro8.setText(
+                Html.fromHtml(
+                        "You can find <b>Frequently Asked Question</b> about this App at <a href=\"https://github.com/SanojPunchihewa/f5n/blob/master/docs/Supplementary_materials.pdf\">https://github.com/SanojPunchihewa/f5n/blob/master/docs/Supplementary_materials.pdf</a><br>"));
+        linearLayout.addView(txtIntro8);
+
         Button btnTutorial = new Button(this);
         btnTutorial.setText("View Tutorial");
         btnTutorial.setOnClickListener(new OnClickListener() {
@@ -83,7 +90,13 @@ public class HelpActivity extends AppCompatActivity {
                         +
                         "- F5C v0.3-beta, commit <a href=\"https://github.com/hasindu2008/f5c/compare/cea05f7...master\">cea05f7</a><br><br>"
                         +
-                        "- Nanopolish v0.11.3, commit <a href=\"https://github.com/jts/nanopolish/compare/v0.11.3...master\">ae341d6</a>"));
+                        "- Nanopolish v0.11.3, commit <a href=\"https://github.com/jts/nanopolish/compare/v0.11.3...master\">ae341d6</a><br><br>"
+                        +
+                        "- Artic C, commit <a href=\"https://github.com/hiruna72/artic_c/compare/841ff5d...master\">841ff5d</a><br><br>"
+                        +
+                        "- Bcftools v1.10.2, commit <a href=\"https://github.com/samtools/bcftools/compare/034b466...develop\">034b466</a><br><br>"
+                        +
+                        "- Bioawk, commit <a href=\"https://github.com/lh3/bioawk/compare/fd40150...master\">fd40150</a><br>"));
         linearLayout.addView(txtToolVersions);
 
         TextView txtContribute = new TextView(this);

@@ -13,7 +13,6 @@ import android.os.Handler;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.provider.Settings.SettingNotFoundException;
-import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -225,8 +224,8 @@ public class ConfirmationActivity extends AppCompatActivity {
 
         TextView txtBrightnessInfo = new TextView(this);
 
-        txtBrightnessInfo.setText(Html.fromHtml(
-                "Brightness will reduce once the pipeline starts. <b>Do not</b> minimize or turn off the display, process may crash\n"));
+        txtBrightnessInfo.setText(
+                getResources().getText(R.string.summary_reduce_brightness));
 
         linearLayout.addView(txtBrightnessInfo);
 

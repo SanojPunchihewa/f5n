@@ -1,7 +1,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory
-        android:title="General"
+        android:title="Choose Directories"
         app:iconSpaceReserved="false">
         <Preference
             android:key="@string/key_log_file_preference"
@@ -26,6 +26,25 @@
             app:enableCopying="true"
             app:persistent="false" />
 
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="Choose Pipeline Type"
+        app:iconSpaceReserved="false">
+
+        <ListPreference
+            android:title="@string/title_default_pipeline_type"
+            android:key="@string/key_pipeline_type"
+            app:iconSpaceReserved="false"
+            android:entries="@array/pipelineListArray"
+            android:entryValues="@array/pipelineListValues" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="MinIT Configuration"
+        app:iconSpaceReserved="false">
+
         <MultiSelectListPreference
             android:key="@string/key_min_it_upload_files"
             android:title="@string/title_Select_files_upload"
@@ -41,13 +60,6 @@
             android:summary="Time value"
             app:iconSpaceReserved="false"
             app:persistent="false"/>
-
-        <ListPreference
-            android:title="@string/title_default_pipeline_type"
-            android:key="@string/key_pipeline_type"
-            app:iconSpaceReserved="false"
-            android:entries="@array/pipelineListArray"
-            android:entryValues="@array/pipelineListValues" />
 
     </PreferenceCategory>
 

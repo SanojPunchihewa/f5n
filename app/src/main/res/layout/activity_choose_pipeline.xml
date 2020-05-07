@@ -7,14 +7,15 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true">
+        android:layout_height="match_parent"
+        android:layout_above="@id/txt_sub_tool_info">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center_horizontal"
+            android:layout_gravity="center"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp">
 
@@ -22,38 +23,46 @@
                 android:id="@+id/btn_pipeline_type_methylation"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Minimap2, Samtools and F5C" />
+                android:text="@string/btn_methylation" />
 
             <Button
                 android:id="@+id/btn_pipeline_type_variant"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Minimap2, Samtools and Nanopolish"
-                android:layout_marginTop="100dp" />
+                android:text="@string/btn_variant"
+                android:layout_marginTop="60dp" />
 
             <Button
                 android:id="@+id/btn_pipeline_type_artic"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Minimap2, Samtools, Artic, Nanopolish"
-                android:layout_marginTop="100dp" />
+                android:text="@string/btn_artic"
+                android:layout_marginTop="60dp" />
 
             <Button
                 android:id="@+id/btn_pipeline_type_consensus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Bcftools Consensus Generation"
-                android:layout_marginTop="100dp" />
+                android:text="@string/btn_consensus"
+                android:layout_marginTop="60dp" />
 
             <Button
                 android:id="@+id/btn_pipeline_type_single_tool"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Artic, Bcftools, Bioawk"
-                android:layout_marginTop="100dp" />
+                android:text="@string/btn_single_tool"
+                android:layout_marginTop="60dp" />
 
         </LinearLayout>
 
     </ScrollView>
+
+    <TextView
+        android:id="@+id/txt_sub_tool_info"
+        android:text="@string/txt_how_to_run_subtool"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:padding="10dp" />
 
 </RelativeLayout>

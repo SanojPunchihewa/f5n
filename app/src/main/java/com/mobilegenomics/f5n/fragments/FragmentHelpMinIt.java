@@ -1,6 +1,8 @@
 package com.mobilegenomics.f5n.fragments;
 
 import android.os.Bundle;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +53,12 @@ public class FragmentHelpMinIt extends Fragment {
         ImageView img3 = new ImageView(getContext());
         img3.setImageDrawable(getActivity().getResources().getDrawable(R.drawable.help_minit_configure));
         linearLayout.addView(img3);
+
+        TextView txt4 = new TextView(getContext());
+        txt4.setMovementMethod(LinkMovementMethod.getInstance());
+        txt4.setText(Html.fromHtml(
+                "Download F5N Server from <a href=\"https://github.com/AnjanaSenanayake/f5n_server\">https://github.com/AnjanaSenanayake/f5n_server</a>"));
+        linearLayout.addView(txt4);
 
         return view;
     }

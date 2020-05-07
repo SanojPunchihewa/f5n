@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">F5N</string>
+    <string name="app_name">Genopo</string>
 
     <!--Strings used in standalone-->"
     <string name="btn_use_gui_mode">Use GUI Mode</string>
@@ -16,7 +16,7 @@
     <!--Strings used in Demo-->
     <string name="pipeline_description">This will run all the 5 pipeline steps on Ecoli dataset(10MB)\n\nYou can find all the files downloaded, created and the logcat in the <b>mobile-genomics</b> folder in your main storage</string>
 
-    <string name="app_info">F5N is a Mobile application for Reference Guided Sequence Alignment using Oxford Nanopore Technology Data.\n\nPlease read the following terms before you use this application.\n\n
+    <string name="app_info">Genopo a.k.a. F5N is a Mobile application for Reference Guided Sequence Alignment using Oxford Nanopore Technology Data.\n\nPlease read the following terms before you use this application.\n\n
     - This app needs storage permission inorder to read/write files generated from the pipeline steps\n
     - Grant System Settings Write permission to dim the display to save power when running a pipeline. Check help for more information\n
     - This app needs at least 2GB free RAM to smoothly function\n
@@ -53,7 +53,7 @@
 
     <string name="pref_header_about">About</string>
     <string name="key_version_preference">key_version_preference</string>
-    <string name="summary_about">F5N is a Mobile application for Reference Guided Sequence Alignment and Analysis using Nanopore Data. You can find out more from https://github.com/SanojPunchihewa/f5n</string>
+    <string name="summary_about">Genopo a.k.a. F5N is a Mobile application for Reference Guided Sequence Alignment and Analysis using Nanopore Data. You can find out more from https://github.com/SanojPunchihewa/f5n</string>
     <string name="title_version">Version</string>
     <string name="key_feedback_preference">key_feedback_preference</string>
     <string name="title_send_feedback">Send Feedback</string>
@@ -62,7 +62,7 @@
     <string name="summary_faq">View frequently asked questions</string>
     <string name="url_faq">https://github.com/SanojPunchihewa/f5n/blob/master/README.md</string>
     <string name="title_terms">Terms &amp; Conditions</string>
-    <string name="url_terms">https://github.com/SanojPunchihewa/f5n/blob/master/README.md</string>
+    <string name="url_terms">https://github.com/SanojPunchihewa/f5n/blob/master/LICENSE</string>
     <string name="key_storage_permission">key_storage_permission</string>
     <string name="key_sdcard_storage_permission">key_sdcard_storage_permission</string>
     <string name="key_write_settings_permission">key_write_settings_permission</string>
@@ -96,6 +96,13 @@
         <item>event-align.txt</item>
         <item>freq.tsv</item>
     </string-array>
-    <string name="summary_reduce_brightness">Brightness will reduce once the pipeline starts. Do not minimize or turn off the display, process may crash</string>
+    <string name="summary_reduce_brightness">Brightness will reduce once the pipeline starts. <b>Do not</b> minimize, rotate or turn off the display, process may crash</string>
     <string name="title_default_pipeline_type">Pipeline Type</string>
+    <string name="btn_methylation">Methylation Calling\n<font color="#5F5F5F" size="12">(Minimap2, Samtools, F5C)</font></string>
+    <string name="btn_variant">Variant Calling\n<font color="#5F5F5F" size="12">(Minimap2, Samtools, Nanopolish)</font></string>
+    <string name="btn_artic">Artic Pipeline\n<font color="#5F5F5F" size="12">(nCoV-2019 novel coronavirus bioinformatics protocol)</font></string>
+    <string name="btn_consensus">Consensus Generation\n<font color="#5F5F5F" size="12">(bcftools)</font></string>
+
+    <string name="btn_single_tool">Run a Single Tool\n<font color="#5F5F5F" size="12">(Artic, Bcftools, Bioawk)</font></string>
+    <string name="txt_how_to_run_subtool">To run an individual analysis tool, select a pipeline that has the particular toll. GUI Mode is provided only for a limited number of sub-tools. Use Terminal Mode to run any sub-tool of an analysis toool</string>
 </resources>

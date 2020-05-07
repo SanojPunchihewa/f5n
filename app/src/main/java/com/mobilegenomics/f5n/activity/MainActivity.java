@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import com.google.android.material.snackbar.Snackbar;
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
 import com.mobilegenomics.f5n.core.AppMode;
@@ -25,6 +28,7 @@ import com.mobilegenomics.f5n.support.PermissionResultCallback;
 import com.mobilegenomics.f5n.support.PermissionUtils;
 import com.mobilegenomics.f5n.support.PreferenceUtil;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements
         ActivityCompat.OnRequestPermissionsResultCallback, PermissionResultCallback {
@@ -39,6 +43,8 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Objects.requireNonNull(getSupportActionBar()).setTitle("Genopo a.k.a. F5N");
 
         SharedPreferences preferences = getApplicationContext().getSharedPreferences("F5N", MODE_PRIVATE);
         firstOpen = preferences.getBoolean("FIRST_OPEN", true);
@@ -73,11 +79,45 @@ public class MainActivity extends AppCompatActivity implements
             e.printStackTrace();
         }
 
+        showStoragePermissionSnackbar();
+
+    }
+
+    private void showStoragePermissionSnackbar() {
+        if (!isStoragePermissionGranted()) {
+            Snackbar.make(findViewById(android.R.id.content),
+                    Html.fromHtml(
+                            "<font color=\"#ffffff\">This App needs storage access to function properly</font>"),
+                    Snackbar.LENGTH_INDEFINITE)
+                    .setAction("Allow", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            permissionUtils.check_permission(permissions,
+                                    "The app needs storage permission for reading and writing pipeline data",
+                                    1);
+                        }
+                    })
+                    .setActionTextColor(getResources().getColor(android.R.color.holo_red_light))
+                    .show();
+        }
+    }
+
+    private boolean isStoragePermissionGranted() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;
+        }
     }
 
     private void showAlert() {
         new AlertDialog.Builder(this)
-                .setTitle("F5N")
+                .setTitle("Genopo a.k.a. F5N")
                 .setMessage(getResources().getString(R.string.app_info))
                 .setPositiveButton("I Understood", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
