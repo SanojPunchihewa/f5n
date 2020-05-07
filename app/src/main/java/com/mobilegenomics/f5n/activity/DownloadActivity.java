@@ -5,6 +5,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Html;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -174,9 +175,8 @@ public class DownloadActivity extends AppCompatActivity {
         });
 
         TextView txtSDCardWarning = new TextView(this);
-        txtSDCardWarning.setText(
-                "Cannot download or extract to SD card? Please check Settings\n" + getResources()
-                        .getText(R.string.summary_reduce_brightness));
+        txtSDCardWarning.setText(Html.fromHtml(
+                "Cannot download or extract to SD card? Please check Settings<br><b>Do not</b> minimize, rotate or turn off the display, process may crash"));
         txtSDCardWarning.setTextColor(getResources().getColor(R.color.colorRead));
         linearLayout.addView(txtSDCardWarning);
     }
