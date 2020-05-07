@@ -63,6 +63,13 @@ public class HelpActivity extends AppCompatActivity {
                         + "Refer <b>tmp.log.txt</b> in main_storage/mobile-genomics folder in cases where the app fails in the middle of a process.<br>"));
         linearLayout.addView(txtIntro7);
 
+        TextView txtIntro8 = new TextView(this);
+        txtIntro8.setMovementMethod(LinkMovementMethod.getInstance());
+        txtIntro8.setText(
+                Html.fromHtml(
+                        "You can find <b>Frequently Asked Question</b> about this App at <a href=\"https://github.com/SanojPunchihewa/f5n/blob/master/docs/Supplementary_materials.pdf\">https://github.com/SanojPunchihewa/f5n/blob/master/docs/Supplementary_materials.pdf</a><br>"));
+        linearLayout.addView(txtIntro8);
+
         Button btnTutorial = new Button(this);
         btnTutorial.setText("View Tutorial");
         btnTutorial.setOnClickListener(new OnClickListener() {
