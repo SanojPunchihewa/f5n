@@ -19,7 +19,6 @@ before_install:
   - yes | sdkmanager "build-tools;28.0.3"
 install:
   - echo y | sdkmanager "ndk-bundle"
-  - echo y | sdkmanager "lldb;3.1"
   - wget --no-check-certificate "https://cmake.org/files/v3.10/cmake-3.10.2-Linux-x86_64.tar.gz"
   - tar -xzf cmake-3.10.2-Linux-x86_64.tar.gz
   - wget --no-check-certificate https://github.com/ninja-build/ninja/releases/download/v1.8.2/ninja-linux.zip
