@@ -104,5 +104,5 @@
     <string name="btn_consensus">Consensus Generation\n<font color="#5F5F5F" size="12">(bcftools)</font></string>
 
     <string name="btn_single_tool">Run a Single Tool\n<font color="#5F5F5F" size="12">(Artic, Bcftools, Bioawk)</font></string>
-    <string name="txt_how_to_run_subtool">To run an individual analysis tool, select a pipeline that has the particular toll. GUI Mode is provided only for a limited number of sub-tools. Use Terminal Mode to run any sub-tool of an analysis toool</string>
+    <string name="txt_how_to_run_subtool">To run an individual analysis tool, select a pipeline that has the particular tool. GUI Mode is provided only for a limited number of sub-tools. Use Terminal Mode to run any sub-tool of an analysis tool</string>
 </resources>
