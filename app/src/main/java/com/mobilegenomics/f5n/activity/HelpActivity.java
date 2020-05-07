@@ -87,7 +87,9 @@ public class HelpActivity extends AppCompatActivity {
                         +
                         "- Artic C, commit <a href=\"https://github.com/hiruna72/artic_c/compare/841ff5d...master\">841ff5d</a><br><br>"
                         +
-                        "- Bcftools v1.10.2, commit <a href=\"https://github.com/samtools/bcftools/compare/034b466...develop\">034b466</a><br>"));
+                        "- Bcftools v1.10.2, commit <a href=\"https://github.com/samtools/bcftools/compare/034b466...develop\">034b466</a><br><br>"
+                        +
+                        "- Bioawk, commit <a href=\"https://github.com/lh3/bioawk/compare/fd40150...master\">fd40150</a><br>"));
         linearLayout.addView(txtToolVersions);
 
         TextView txtContribute = new TextView(this);
