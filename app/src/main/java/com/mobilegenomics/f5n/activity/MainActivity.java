@@ -25,6 +25,7 @@ import com.mobilegenomics.f5n.support.PermissionResultCallback;
 import com.mobilegenomics.f5n.support.PermissionUtils;
 import com.mobilegenomics.f5n.support.PreferenceUtil;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements
         ActivityCompat.OnRequestPermissionsResultCallback, PermissionResultCallback {
@@ -39,6 +40,8 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Objects.requireNonNull(getSupportActionBar()).setTitle("Genopo a.k.a. F5N");
 
         SharedPreferences preferences = getApplicationContext().getSharedPreferences("F5N", MODE_PRIVATE);
         firstOpen = preferences.getBoolean("FIRST_OPEN", true);

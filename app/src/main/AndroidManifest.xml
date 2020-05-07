@@ -20,9 +20,7 @@
         <activity
             android:name=".activity.SettingsActivity"
             android:label="@string/title_activity_settings" />
-        <activity
-            android:name=".activity.MainActivity"
-            android:label="Genopo a.k.a. F5N">
+        <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
