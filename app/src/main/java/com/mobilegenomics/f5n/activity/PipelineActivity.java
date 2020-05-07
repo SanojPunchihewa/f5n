@@ -16,6 +16,8 @@ import com.mobilegenomics.f5n.core.ArticPipelineStep;
 import com.mobilegenomics.f5n.core.MethylationPipelineStep;
 import com.mobilegenomics.f5n.core.PipelineStep;
 import com.mobilegenomics.f5n.core.PipelineType;
+import com.mobilegenomics.f5n.core.SingleToolPipelineStep;
+import com.mobilegenomics.f5n.core.Step;
 import com.mobilegenomics.f5n.core.VariantPipelineStep;
 import com.mobilegenomics.f5n.support.PipelineState;
 import com.mobilegenomics.f5n.support.PreferenceUtil;
@@ -33,6 +35,8 @@ public class PipelineActivity extends AppCompatActivity {
 
     private PipelineStep pipelineStep;
 
+    private int pipelineType;
+
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,14 +44,16 @@ public class PipelineActivity extends AppCompatActivity {
 
         LinearLayout linearLayout = findViewById(R.id.vertical_linear_layout);
 
-        int pipelineType = PreferenceUtil.getSharedPreferenceInt(R.string.key_pipeline_type_preference);
+        pipelineType = PreferenceUtil.getSharedPreferenceInt(R.string.key_pipeline_type_preference);
 
         if (pipelineType == PipelineType.PIPELINE_METHYLATION.ordinal()) {
             pipelineStep = new MethylationPipelineStep();
         } else if (pipelineType == PipelineType.PIPELINE_VARIANT.ordinal()) {
             pipelineStep = new VariantPipelineStep();
-        } else {
+        } else if (pipelineType == PipelineType.PIPELINE_ARTIC.ordinal()) {
             pipelineStep = new ArticPipelineStep();
+        } else if (pipelineType == PipelineType.SINGLE_TOOL.ordinal()) {
+            pipelineStep = new SingleToolPipelineStep();
         }
 
         int i = 0;
@@ -60,15 +66,19 @@ public class PipelineActivity extends AppCompatActivity {
             linearLayout.addView(checkBox);
         }
 
-        Button btnGUIMode = new Button(this);
-        btnGUIMode.setText(getString(R.string.btn_use_gui_mode));
-        btnGUIMode.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                initPipelineSteps(MODE_GUI);
-            }
-        });
-        linearLayout.addView(btnGUIMode);
+        if (pipelineType != PipelineType.SINGLE_TOOL.ordinal()) {
+
+            Button btnGUIMode = new Button(this);
+            btnGUIMode.setText(getString(R.string.btn_use_gui_mode));
+            btnGUIMode.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(final View v) {
+                    initPipelineSteps(MODE_GUI);
+                }
+            });
+            linearLayout.addView(btnGUIMode);
+
+        }
 
         Button btnTerminalMode = new Button(this);
         btnTerminalMode.setText(getString(R.string.btn_use_terminal_mode));
@@ -94,19 +104,25 @@ public class PipelineActivity extends AppCompatActivity {
     private void initPipelineSteps(int mode) {
         GUIConfiguration.eraseSelectedPipeline();
         GUIConfiguration.resetSteps();
+        ArrayList<Step> singleTools = new ArrayList<>();
         boolean clickedNone = true;
         int i = 0;
         for (PipelineStep step : pipelineStep.values()) {
             CheckBox checkBox = findViewById(i++);
             if (checkBox.isChecked()) {
                 GUIConfiguration.addPipelineStep(step);
+                singleTools.add(new Step(step, step.getCommand()));
                 clickedNone = false;
             }
         }
         if (!clickedNone) {
             GUIConfiguration.setPipelineState(PipelineState.TO_BE_CONFIGURED);
             GUIConfiguration.printList();
-            GUIConfiguration.configureSteps(PipelineActivity.this, null);
+            if (pipelineType == PipelineType.SINGLE_TOOL.ordinal()) {
+                GUIConfiguration.configureSteps(singleTools);
+            } else {
+                GUIConfiguration.configureSteps(PipelineActivity.this, null);
+            }
             if (mode == MODE_GUI) {
                 startActivity(new Intent(PipelineActivity.this, StepActivity.class));
             } else if (mode == MODE_TERMINAL) {

@@ -11,5 +11,6 @@
 #define NANOPOLISH 3
 #define ARTIC 4
 #define BCFTOOLS 5
+#define BIOAWK 6
 
 #endif //F5N_TOOLS_H

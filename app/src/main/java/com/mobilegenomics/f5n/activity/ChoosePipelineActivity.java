@@ -24,7 +24,9 @@ public class ChoosePipelineActivity extends AppCompatActivity {
 
     private Button btnPipelineTypeArtic;
 
-    private Button getBtnPipelineTypeConsensus;
+    private Button btnPipelineTypeConsensus;
+
+    private Button btnPipelineTypeSingleTool;
 
     private int pipelineType;
 
@@ -36,7 +38,8 @@ public class ChoosePipelineActivity extends AppCompatActivity {
         btnPipelineTypeMethylation = findViewById(R.id.btn_pipeline_type_methylation);
         btnPipelineTypeVariant = findViewById(R.id.btn_pipeline_type_variant);
         btnPipelineTypeArtic = findViewById(R.id.btn_pipeline_type_artic);
-        getBtnPipelineTypeConsensus = findViewById(R.id.btn_pipeline_type_consensus);
+        btnPipelineTypeConsensus = findViewById(R.id.btn_pipeline_type_consensus);
+        btnPipelineTypeSingleTool = findViewById(R.id.btn_pipeline_type_single_tool);
 
         pipelineType = PreferenceUtil.getSharedPreferenceInt(R.string.key_pipeline_type_preference);
 
@@ -61,10 +64,17 @@ public class ChoosePipelineActivity extends AppCompatActivity {
             }
         });
 
-        getBtnPipelineTypeConsensus.setOnClickListener(new OnClickListener() {
+        btnPipelineTypeConsensus.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(final View v) {
                 openPipelineActivity(PipelineType.PIPELINE_CONSENSUS);
+            }
+        });
+
+        btnPipelineTypeSingleTool.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                openPipelineActivity(PipelineType.SINGLE_TOOL);
             }
         });
 
@@ -113,6 +123,17 @@ public class ChoosePipelineActivity extends AppCompatActivity {
                 }
             } else {
                 showSettingsDialog("CONSENSUS");
+            }
+        } else if (type == PipelineType.SINGLE_TOOL) {
+            if (pipelineType == PipelineType.SINGLE_TOOL.ordinal()) {
+                if (GUIConfiguration.getAppMode() == AppMode.DEMO) {
+                    Toast.makeText(ChoosePipelineActivity.this, "Single Tool Demo is under development",
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    startActivity(new Intent(ChoosePipelineActivity.this, PipelineActivity.class));
+                }
+            } else {
+                showSettingsDialog("SINGLE_TOOL");
             }
         }
     }
