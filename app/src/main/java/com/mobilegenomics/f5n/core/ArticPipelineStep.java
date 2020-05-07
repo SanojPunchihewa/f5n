@@ -5,7 +5,7 @@ import java.util.Arrays;
 public class ArticPipelineStep extends PipelineStep {
 
     private static final PipelineStep articTrim = new PipelineStep(ARTIC_TRIM, "ARTIC_TRIM",
-            "artic");
+            "artic trim");
 
     private static final PipelineStep samtoolsSort = new PipelineStep(SAMTOOLS_SORT, "SAMTOOLS_SORT",
             "samtools sort");

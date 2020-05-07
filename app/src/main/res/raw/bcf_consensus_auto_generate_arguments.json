@@ -1,0 +1,98 @@
+{
+  "user_filled_args": [
+    {
+      "argID": "[WORKING_DIRECTORY]",
+      "argDescription": "Path to the Working Directory",
+      "flagOnly": false,
+      "isFile": false,
+      "value": null
+    },
+    {
+      "argID": "[REFERENCE_GENOME]",
+      "argDescription": "Path to the Reference Genome",
+      "flagOnly": false,
+      "isFile": true,
+      "value": null
+    },
+    {
+      "argID": "[BAM_FILE]",
+      "argDescription": "Path to the bam file",
+      "flagOnly": false,
+      "isFile": true,
+      "value": null
+    },
+    {
+      "argID": "[LIST_VCF_FILES]",
+      "argDescription": "List of VCF File Paths",
+      "flagOnly": false,
+      "isFile": false,
+      "value": null
+    }
+  ],
+  "commands": [
+    {
+      "pipelineStep": {
+        "value": 52,
+        "name": "BCFTOOLS_REHEADER",
+        "command": "bcftools reheader"
+      },
+      "commandString": "bcftools reheader -f [REFERENCE_GENOME].fai [VCF_FILE] -o [WORKING_DIRECTORY]/[REHEADER_VCF]"
+    },
+    {
+      "pipelineStep": {
+        "value": 51,
+        "name": "BCFTOOLS_CONCAT",
+        "command": "bcftools concat"
+      },
+      "commandString": "bcftools concat [LIST_REHEADED_VCF_FILES] -O b -o [WORKING_DIRECTORY]/concat.vcf"
+    },
+    {
+      "pipelineStep": {
+        "value": 54,
+        "name": "BCFTOOLS_INDEX",
+        "command": "bcftools index"
+      },
+      "commandString": "bcftools index [WORKING_DIRECTORY]/concat.vcf"
+    },
+    {
+      "pipelineStep": {
+        "value": 12,
+        "name": "SAMTOOLS_DEPTH",
+        "command": "samtools depth"
+      },
+      "commandString": "samtools depth -a [BAM_FILE] -o [WORKING_DIRECTORY]/depth.bed"
+    },
+    {
+      "pipelineStep": {
+        "value": 41,
+        "name": "ARTIC_MASK",
+        "command": "artic_c mask"
+      },
+      "commandString": "artic_c mask -d 20 -i [WORKING_DIRECTORY]/depth.bed -o [WORKING_DIRECTORY]/mask.bed"
+    },
+    {
+      "pipelineStep": {
+        "value": 55,
+        "name": "BCFTOOLS_QUERY",
+        "command": "bcftools query"
+      },
+      "commandString": "bcftools query -i QUAL<200||INFO/TotalReads<20 -f %CHROM\\t%POS0\\t%END\\t%ID\\n [WORKING_DIRECTORY]/concat.vcf -o [WORKING_DIRECTORY]/badvariants.bed"
+    },
+    {
+      "pipelineStep": {
+        "value": 42,
+        "name": "ARTIC_MULTIINTER",
+        "command": "artic_c multiinter"
+      },
+      "commandString": "artic_c multiinter -i [WORKING_DIRECTORY]/mask.bed [WORKING_DIRECTORY]/badvariants.bed -o [WORKING_DIRECTORY]/concat_artic.bed"
+    },
+    {
+      "pipelineStep": {
+        "value": 50,
+        "name": "BCFTOOLS_CONSENSUS",
+        "command": "bcftools consensus"
+      },
+      "commandString": "bcftools consensus -m [WORKING_DIRECTORY]/concat_artic.bed -f [REFERENCE_GENOME] [WORKING_DIRECTORY]/concat.vcf -o [WORKING_DIRECTORY]/consensus.fasta"
+    }
+  ]
+}

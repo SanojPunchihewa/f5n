@@ -24,6 +24,8 @@ public class ChoosePipelineActivity extends AppCompatActivity {
 
     private Button btnPipelineTypeArtic;
 
+    private Button getBtnPipelineTypeConsensus;
+
     private int pipelineType;
 
     @Override
@@ -34,6 +36,7 @@ public class ChoosePipelineActivity extends AppCompatActivity {
         btnPipelineTypeMethylation = findViewById(R.id.btn_pipeline_type_methylation);
         btnPipelineTypeVariant = findViewById(R.id.btn_pipeline_type_variant);
         btnPipelineTypeArtic = findViewById(R.id.btn_pipeline_type_artic);
+        getBtnPipelineTypeConsensus = findViewById(R.id.btn_pipeline_type_consensus);
 
         pipelineType = PreferenceUtil.getSharedPreferenceInt(R.string.key_pipeline_type_preference);
 
@@ -55,6 +58,13 @@ public class ChoosePipelineActivity extends AppCompatActivity {
             @Override
             public void onClick(final View v) {
                 openPipelineActivity(PipelineType.PIPELINE_ARTIC);
+            }
+        });
+
+        getBtnPipelineTypeConsensus.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                openPipelineActivity(PipelineType.PIPELINE_CONSENSUS);
             }
         });
 
@@ -92,6 +102,17 @@ public class ChoosePipelineActivity extends AppCompatActivity {
                 }
             } else {
                 showSettingsDialog("ARTIC");
+            }
+        } else if (type == PipelineType.PIPELINE_CONSENSUS) {
+            if (pipelineType == PipelineType.PIPELINE_CONSENSUS.ordinal()) {
+                if (GUIConfiguration.getAppMode() == AppMode.DEMO) {
+                    Toast.makeText(ChoosePipelineActivity.this, "Consensus Pipeline Demo is under development",
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    startActivity(new Intent(ChoosePipelineActivity.this, ArticPipelineActivity.class));
+                }
+            } else {
+                showSettingsDialog("CONSENSUS");
             }
         }
     }
