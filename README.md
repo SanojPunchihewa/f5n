@@ -2,7 +2,7 @@
 ## Genopo a.k.a. F5N is an Android application for Portable Genomics
 
 ### Overview
-Genopo can run the following on ARM devices [more details](https://github.com/SanojPunchihewa/f5n/blob/master/docs/Supplementary_materials.pdf)
+Genopo can run following analysis tools on mobile devices [more details](https://github.com/SanojPunchihewa/f5n/blob/master/docs/Supplementary_materials.pdf)
 
  1. [minimap2](https://github.com/lh3/minimap2)
  2. [samtools](https://github.com/samtools/samtools)
@@ -11,6 +11,13 @@ Genopo can run the following on ARM devices [more details](https://github.com/Sa
  5. [bcftools](https://github.com/samtools/bcftools)
  6. [artic_c](https://github.com/hiruna72/artic_c) 
  7. [bioawk](https://github.com/lh3/bioawk)
+ 
+In particular, Genopo has buit in pipelines for
+ 1. [Methylation Calling](https://hasindu2008.github.io/f5c/docs/commands#calling-methylation)
+ 2. [Event Alignment](https://hasindu2008.github.io/f5c/docs/commands#aligning-events)
+ 2. [Variant Calling](https://nanopolish.readthedocs.io/en/latest/manual.html#variants)
+ 3. [Consensus Building](http://samtools.github.io/bcftools/bcftools.html#consensus)
+ 4. nCoV-2019 novel coronavirus bioinformatics protocol [(Artic pipeline)](https://artic.network/ncov-2019)
 
 We build a standalone application and a cluster of nodes where a master orchestrates the other nodes. 
 In this way ONT data can be corrected for errors in the field, on the fly!
