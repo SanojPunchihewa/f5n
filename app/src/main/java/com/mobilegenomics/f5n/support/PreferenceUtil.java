@@ -4,15 +4,19 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+
 import androidx.annotation.Nullable;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.mobilegenomics.f5n.Application;
 import com.mobilegenomics.f5n.core.Step;
 import com.mobilegenomics.f5n.dto.WrapperObject;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class PreferenceUtil {
 
@@ -142,6 +146,16 @@ public class PreferenceUtil {
     }
 
     /**
+     * Retrieve app state shared preference.
+     *
+     * @param preferenceId the id of the shared preference.
+     * @return the corresponding preference value if not the default
+     */
+    public static int getSharedPreferenceInt(final int preferenceId, int defaultValue) {
+        return getSharedPreferences().getInt(Application.getAppContext().getString(preferenceId), defaultValue);
+    }
+
+    /**
      * Set a shared preference for app state
      *
      * @param preferenceId the id of the shared preference.
@@ -206,6 +220,16 @@ public class PreferenceUtil {
         Editor editor = getSharedPreferences().edit();
         editor.putString(Application.getAppContext().getString(preferenceId), value);
         editor.apply();
+    }
+
+    /**
+     * Retrieve app state shared preference.
+     *
+     * @param preferenceId the id of the shared list preference.
+     * @return checked list preferences.
+     */
+    public static Set<String> getSharedPreferencesStringList(final int preferenceId) {
+        return getSharedPreferences().getStringSet(Application.getAppContext().getString(preferenceId), null);
     }
 
 }

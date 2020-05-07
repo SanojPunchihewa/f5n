@@ -24,6 +24,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import com.mobilegenomics.f5n.GUIConfiguration;
 import com.mobilegenomics.f5n.R;
+import com.mobilegenomics.f5n.core.AppMode;
 import com.mobilegenomics.f5n.core.Step;
 import com.mobilegenomics.f5n.support.PipelineState;
 import com.mobilegenomics.f5n.support.PreferenceUtil;
@@ -123,7 +124,7 @@ public class TerminalActivity extends AppCompatActivity {
             steps = GUIConfiguration.getSteps();
 
             // If resumed, set the folder path
-            if (PreferenceUtil.getSharedPreferenceInt(R.string.id_app_mode) == PipelineState.MINIT_RUNNING
+            if (PreferenceUtil.getSharedPreferenceInt(R.string.id_app_mode) == PipelineState.MINIT_CONFIGURE
                     .ordinal()) {
                 folderPath = PreferenceUtil.getSharedPreferenceString(R.string.id_folder_path);
             }
@@ -187,12 +188,11 @@ public class TerminalActivity extends AppCompatActivity {
                     }
                     GUIConfiguration.setSteps(steps);
 
-                    // TODO App mode state is always the same?, change to get it from the calling activity
-                    PreferenceUtil
-                            .setSharedPreferenceInt(R.string.id_app_mode, PipelineState.MINIT_RUNNING.ordinal());
                     PreferenceUtil.setSharedPreferenceStepList(R.string.id_step_list, steps);
                     PreferenceUtil.setSharedPreferenceString(R.string.id_folder_path, folderPath);
-                    GUIConfiguration.setPipelineState(PipelineState.CONFIGURED);
+                    if (GUIConfiguration.getAppMode() != AppMode.SLAVE) {
+                        GUIConfiguration.setPipelineState(PipelineState.CONFIGURED);
+                    }
 
                     Intent intent = new Intent(TerminalActivity.this, ConfirmationActivity.class);
                     intent.putExtra("FOLDER_PATH", folderPath);
@@ -234,7 +234,7 @@ public class TerminalActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle("F5N Crashed")
                 .setMessage(
-                        "One of the Native libraries has encountered a problem, most probably an Out Of Memory. Refer tmp.log in main storage/mobile-genomics folder for more information")
+                        "One of the Native libraries has encountered a problem, most probably an Out Of Memory. Refer tmp.log.txt in main storage/mobile-genomics folder for more information")
                 .setPositiveButton("Go to Start page", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();

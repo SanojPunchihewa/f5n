@@ -2,7 +2,9 @@ package com.mobilegenomics.f5n;
 
 import android.content.Context;
 import android.util.Log;
+
 import androidx.annotation.RawRes;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -15,7 +17,9 @@ import com.mobilegenomics.f5n.core.PipelineStep;
 import com.mobilegenomics.f5n.core.Step;
 import com.mobilegenomics.f5n.support.JSONFileHelper;
 import com.mobilegenomics.f5n.support.PipelineState;
+import com.mobilegenomics.f5n.support.PreferenceUtil;
 import com.mobilegenomics.f5n.support.TimeFormat;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +36,8 @@ public class GUIConfiguration {
 
     private static ArrayList<PipelineStep> selectedPipelineSteps = new ArrayList<>();
 
+    private static PipelineStep failedPipelineStep;
+
     private static ArrayList<Step> steps = new ArrayList<>();
 
     private static int current = 0;
@@ -40,8 +46,11 @@ public class GUIConfiguration {
 
     private static HashMap<String, String> linkedFileArguments = new HashMap<>();
 
+    private static StringBuilder logMessage = new StringBuilder();
+
     public static void setPipelineState(PipelineState state) {
         pipelineState = state;
+        PreferenceUtil.setSharedPreferenceInt(R.string.id_app_mode, state.ordinal());
     }
 
     public static PipelineState getPipelineState() {
@@ -50,6 +59,14 @@ public class GUIConfiguration {
 
     public static void addPipelineStep(PipelineStep step) {
         selectedPipelineSteps.add(step);
+    }
+
+    public static PipelineStep getFailedPipelineStep() {
+        return failedPipelineStep;
+    }
+
+    public static void setFailedPipelineStep(PipelineStep failedPipelineStep) {
+        GUIConfiguration.failedPipelineStep = failedPipelineStep;
     }
 
     public static void eraseSelectedPipeline() {
@@ -141,8 +158,10 @@ public class GUIConfiguration {
             String status = returnCode == 0 ? "Success" : "Error";
             pipelineComponent.setRuntime(TimeFormat.millisToShortDHMS(time) + " status = " + status);
             if (returnCode != 0) {
+                setFailedPipelineStep(pipelineComponent.getPipelineStep());
                 break;
             }
+            setFailedPipelineStep(null);
         }
     }
 
@@ -167,7 +186,7 @@ public class GUIConfiguration {
     }
 
     private static ArrayList<Argument> configureArguments(Context context, PipelineStep pipelineStep,
-            String folderPath) {
+                                                          String folderPath) {
         int rawFile = 0;
         switch (pipelineStep.getValue()) {
             case PipelineStep.MINIMAP2_SEQUENCE_ALIGNMENT:
@@ -433,6 +452,18 @@ public class GUIConfiguration {
     private static JsonArray _getArticPipelineJsonMember(Context context, String member) {
         JsonObject argsJson = JSONFileHelper.rawtoJsonObject(context, R.raw.artic_auto_generate_arguments);
         return argsJson.getAsJsonArray(member);
+    }
+
+    public static void setLogMessage(String log) {
+        logMessage.delete(0, logMessage.length()).append(log);
+        PreferenceUtil.setSharedPreferenceString(R.string.id_prev_conn_log, logMessage.toString());
+    }
+
+    public static String getLogMessage() {
+        if (!logMessage.toString().isEmpty())
+            return logMessage.toString();
+        else
+            return PreferenceUtil.getSharedPreferenceString(R.string.id_prev_conn_log);
     }
 
 }

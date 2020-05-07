@@ -4,6 +4,13 @@
         android:title="General"
         app:iconSpaceReserved="false">
         <Preference
+            android:key="@string/key_log_file_preference"
+            android:title="@string/title_log_file"
+            app:iconSpaceReserved="false"
+            app:allowDividerBelow="true"
+            app:enableCopying="true"
+            app:persistent="false" />
+        <Preference
             android:key="@string/key_storage_preference"
             android:title="@string/title_default_storage"
             app:iconSpaceReserved="false"
@@ -19,6 +26,22 @@
             app:enableCopying="true"
             app:persistent="false" />
 
+        <MultiSelectListPreference
+            android:key="@string/key_min_it_upload_files"
+            android:title="@string/title_Select_files_upload"
+            android:dialogTitle="@string/dialog_title_min_it_upload_files"
+            android:summary="@string/summery_select_upload_files"
+            app:iconSpaceReserved="false"
+            android:entries="@array/min_it_upload_files"
+            android:entryValues="@array/min_it_upload_files" />
+
+        <Preference
+            android:key="@string/key_time_preference"
+            android:title="@string/title_time_preference"
+            android:summary="Time value"
+            app:iconSpaceReserved="false"
+            app:persistent="false"/>
+
         <ListPreference
             android:title="@string/title_default_pipeline_type"
             android:key="@string/key_pipeline_type"
@@ -31,6 +54,11 @@
     <PreferenceCategory
         android:title="Permissions"
         app:iconSpaceReserved="false">
+        <SwitchPreference
+            android:key="@string/key_storage_permission"
+            android:title="@string/title_storage_write"
+            android:defaultValue="false"
+            app:iconSpaceReserved="false" />
         <SwitchPreference
             android:key="@string/key_sdcard_storage_permission"
             android:title="@string/title_sdcard_write"

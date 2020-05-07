@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -47,9 +48,15 @@ public class MainActivity extends AppCompatActivity implements
         permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
         if (firstOpen) {
+
+            String logFileDirectory = Environment.getExternalStorageDirectory() + "/"
+                    + "mobile-genomics/";
+            PreferenceUtil.setSharedPreferenceString(R.string.key_log_file_preference, logFileDirectory);
+
             // Set Pipeline type to Methylation by default
             PreferenceUtil.setSharedPreferenceInt(R.string.key_pipeline_type_preference,
                     PipelineType.PIPELINE_METHYLATION.ordinal());
+
             showAlert();
         } else {
             int tempPipelineType = PreferenceUtil.getSharedPreferenceInt(R.string.key_pipeline_type_temp_preference);
