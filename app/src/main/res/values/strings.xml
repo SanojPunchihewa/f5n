@@ -60,7 +60,7 @@
     <string name="summary_feedback">Got any queries? We are happy to help!</string>
     <string name="title_faq">FAQ</string>
     <string name="summary_faq">View frequently asked questions</string>
-    <string name="url_faq">https://github.com/SanojPunchihewa/f5n/blob/master/README.md</string>
+    <string name="url_faq">https://github.com/SanojPunchihewa/f5n/blob/master/docs/</string>
     <string name="title_terms">Terms &amp; Conditions</string>
     <string name="url_terms">https://github.com/SanojPunchihewa/f5n/blob/master/LICENSE</string>
     <string name="key_storage_permission">key_storage_permission</string>
