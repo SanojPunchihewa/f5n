@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.com/SanojPunchihewa/f5n.svg?branch=master)](https://travis-ci.com/SanojPunchihewa/f5n)
-## Genopo a.k.a. F5N is an Android application for Portable Genomics
+## Genopo a.k.a. F5N is a nanopore sequencing analysis toolkit for Android smartphones
 
 ### Overview
 Genopo can run following analysis tools on mobile devices [more details](https://github.com/SanojPunchihewa/f5n/blob/master/docs/Supplementary_materials.pdf)
