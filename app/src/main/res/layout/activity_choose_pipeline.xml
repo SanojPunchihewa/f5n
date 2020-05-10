@@ -31,28 +31,28 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/btn_variant"
-                android:layout_marginTop="60dp" />
+                android:layout_marginTop="30dp" />
 
             <Button
                 android:id="@+id/btn_pipeline_type_artic"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/btn_artic"
-                android:layout_marginTop="60dp" />
+                android:layout_marginTop="30dp" />
 
             <Button
                 android:id="@+id/btn_pipeline_type_consensus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/btn_consensus"
-                android:layout_marginTop="60dp" />
+                android:layout_marginTop="30dp" />
 
             <Button
                 android:id="@+id/btn_pipeline_type_single_tool"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/btn_single_tool"
-                android:layout_marginTop="60dp" />
+                android:layout_marginTop="30dp" />
 
         </LinearLayout>
 
