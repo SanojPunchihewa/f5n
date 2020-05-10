@@ -16,6 +16,7 @@ ext {
     gitVersionCodeTime = git.head().time
     gitBranch = git.branch.current().name
     gitCommitHash = git.head().abbreviatedId
+    gitTagList = git.tag.list().name
 }
 
 task printVersion() {
@@ -24,4 +25,5 @@ task printVersion() {
     println("Version Code Time: $gitVersionCodeTime")
     println("Current Branch: $gitBranch")
     println("Commit Hash: $gitCommitHash")
+    println("Tag List: $gitTagList")
 }
