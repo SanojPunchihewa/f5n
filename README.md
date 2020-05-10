@@ -24,8 +24,6 @@ In particular, Genopo has buit in pipelines for
 Real-time methylation calling on nanopore sequencing batch datasets is experimented.
 More details can be found at [here](https://github.com/AnjanaSenanayake/f5n_server) 
 
-![Diagram](https://github.com/hiruna72/f5n/blob/master/server_mobile_connection.png)
-
 ### Installation
 Genopo application can be obtained from:
 
