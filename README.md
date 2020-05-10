@@ -19,14 +19,10 @@ In particular, Genopo has buit in pipelines for
  3. [Consensus Building](http://samtools.github.io/bcftools/bcftools.html#consensus)
  4. nCoV-2019 novel coronavirus bioinformatics protocol [(Artic pipeline)](https://artic.network/ncov-2019)
 
-We build a standalone application and a cluster of nodes where a master orchestrates the other nodes. 
-In this way ONT data can be corrected for errors in the field, on the fly!
-
-### Flowchart
-![Diagram](https://github.com/hiruna72/f5n/blob/master/flowchart.png)
 
 ### Real-time sequence analysis (in alpha phase)
-The source code for the Server can be found [here](https://github.com/AnjanaSenanayake/f5n_server) 
+Real-time methylation calling on nanopore sequencing batch datasets is experimented.
+More details can be found at [here](https://github.com/AnjanaSenanayake/f5n_server) 
 
 ![Diagram](https://github.com/hiruna72/f5n/blob/master/server_mobile_connection.png)
 
