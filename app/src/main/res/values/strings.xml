@@ -53,14 +53,14 @@
 
     <string name="pref_header_about">About</string>
     <string name="key_version_preference">key_version_preference</string>
-    <string name="summary_about">Genopo a.k.a. F5N is a Mobile application for Reference Guided Sequence Alignment and Analysis using Nanopore Data. You can find out more from https://github.com/SanojPunchihewa/f5n</string>
+    <string name="summary_about">Genopo a.k.a. F5N is a nanopore sequencing analysis toolkit for Android smartphones. You can find out more from https://github.com/SanojPunchihewa/f5n</string>
     <string name="title_version">Version</string>
     <string name="key_feedback_preference">key_feedback_preference</string>
     <string name="title_send_feedback">Send Feedback</string>
     <string name="summary_feedback">Got any queries? We are happy to help!</string>
     <string name="title_faq">FAQ</string>
     <string name="summary_faq">View frequently asked questions</string>
-    <string name="url_faq">https://github.com/SanojPunchihewa/f5n/blob/master/README.md</string>
+    <string name="url_faq">https://github.com/SanojPunchihewa/f5n/blob/master/docs/</string>
     <string name="title_terms">Terms &amp; Conditions</string>
     <string name="url_terms">https://github.com/SanojPunchihewa/f5n/blob/master/LICENSE</string>
     <string name="key_storage_permission">key_storage_permission</string>
@@ -100,9 +100,9 @@
     <string name="title_default_pipeline_type">Pipeline Type</string>
     <string name="btn_methylation">Methylation Calling\n<font color="#5F5F5F" size="12">(Minimap2, Samtools, F5C)</font></string>
     <string name="btn_variant">Variant Calling\n<font color="#5F5F5F" size="12">(Minimap2, Samtools, Nanopolish)</font></string>
-    <string name="btn_artic">Artic Pipeline\n<font color="#5F5F5F" size="12">(nCoV-2019 novel coronavirus bioinformatics protocol)</font></string>
+    <string name="btn_artic">Artic_C Pipeline\n<font color="#5F5F5F" size="12">(nCoV-2019 novel coronavirus bioinformatics protocol)</font></string>
     <string name="btn_consensus">Consensus Generation\n<font color="#5F5F5F" size="12">(bcftools)</font></string>
 
-    <string name="btn_single_tool">Run a Single Tool\n<font color="#5F5F5F" size="12">(Artic, Bcftools, Bioawk)</font></string>
-    <string name="txt_how_to_run_subtool">To run an individual analysis tool, select a pipeline that has the particular toll. GUI Mode is provided only for a limited number of sub-tools. Use Terminal Mode to run any sub-tool of an analysis toool</string>
+    <string name="btn_single_tool">Run a Single Tool\n<font color="#5F5F5F" size="12">(Artic_C, Bcftools, Bioawk)</font></string>
+    <string name="txt_how_to_run_subtool">To run an individual analysis tool, select a pipeline that has the particular tool. <b>GUI Mode</b> is provided only for a limited number of sub-tools. Use <b>Terminal Mode</b> to run any sub-tool of an analysis tool</string>
 </resources>

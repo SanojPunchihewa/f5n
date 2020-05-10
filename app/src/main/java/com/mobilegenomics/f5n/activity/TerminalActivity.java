@@ -234,7 +234,7 @@ public class TerminalActivity extends AppCompatActivity {
         new AlertDialog.Builder(this)
                 .setTitle("F5N Crashed")
                 .setMessage(
-                        "One of the Native libraries has encountered a problem, most probably an Out Of Memory. Refer tmp.log.txt in main storage/mobile-genomics folder for more information about the error. You may also check the FAQ in Help")
+                        "One of the Native libraries has encountered a problem, most probably an Out Of Memory. Refer tmp.log.txt in main storage/mobile-genomics folder for more information about the error. You may also check the FAQ in Settings")
                 .setPositiveButton("Go to Start page", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();

@@ -35,11 +35,22 @@ public class ChoosePipelineActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose_pipeline);
 
+        if (GUIConfiguration.getAppMode() == AppMode.DEMO) {
+            findViewById(R.id.txt_sub_tool_info).setVisibility(View.GONE);
+        }
+
         btnPipelineTypeMethylation = findViewById(R.id.btn_pipeline_type_methylation);
         btnPipelineTypeVariant = findViewById(R.id.btn_pipeline_type_variant);
         btnPipelineTypeArtic = findViewById(R.id.btn_pipeline_type_artic);
         btnPipelineTypeConsensus = findViewById(R.id.btn_pipeline_type_consensus);
         btnPipelineTypeSingleTool = findViewById(R.id.btn_pipeline_type_single_tool);
+
+        // Hide the Demo modes that are under developments
+        if (GUIConfiguration.getAppMode() == AppMode.DEMO) {
+            btnPipelineTypeArtic.setVisibility(View.GONE);
+            btnPipelineTypeConsensus.setVisibility(View.GONE);
+            btnPipelineTypeSingleTool.setVisibility(View.GONE);
+        }
 
         pipelineType = PreferenceUtil.getSharedPreferenceInt(R.string.key_pipeline_type_preference);
 

@@ -28,7 +28,7 @@ public class HelpActivity extends AppCompatActivity {
 
         TextView txtIntro1 = new TextView(this);
         txtIntro1.setText(
-                "Genopo a.k.a. F5N is a Mobile application for Reference Guided Sequence Alignment using Oxford Nanopore Technology Data\n");
+                "Genopo a.k.a. F5N is a nanopore sequencing analysis toolkit for Android smartphones\n");
         txtIntro1.setTypeface(null, Typeface.BOLD);
         linearLayout.addView(txtIntro1);
 
@@ -62,13 +62,6 @@ public class HelpActivity extends AppCompatActivity {
                 Html.fromHtml("Refer <b>f5n.log.txt</b> in main_storage/mobile-genomics folder to read the log.<br>"
                         + "Refer <b>tmp.log.txt</b> in main_storage/mobile-genomics folder in cases where the app fails in the middle of a process.<br>"));
         linearLayout.addView(txtIntro7);
-
-        TextView txtIntro8 = new TextView(this);
-        txtIntro8.setMovementMethod(LinkMovementMethod.getInstance());
-        txtIntro8.setText(
-                Html.fromHtml(
-                        "You can find <b>Frequently Asked Question</b> about this App at <a href=\"https://github.com/SanojPunchihewa/f5n/blob/master/docs/Supplementary_materials.pdf\">https://github.com/SanojPunchihewa/f5n/blob/master/docs/Supplementary_materials.pdf</a><br>"));
-        linearLayout.addView(txtIntro8);
 
         Button btnTutorial = new Button(this);
         btnTutorial.setText("View Tutorial");
