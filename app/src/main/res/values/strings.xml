@@ -100,7 +100,7 @@
     <string name="title_default_pipeline_type">Pipeline Type</string>
     <string name="btn_methylation">Methylation Calling\n<font color="#5F5F5F" size="12">(Minimap2, Samtools, F5C)</font></string>
     <string name="btn_variant">Variant Calling\n<font color="#5F5F5F" size="12">(Minimap2, Samtools, Nanopolish)</font></string>
-    <string name="btn_artic">Artic_C Pipeline\n<font color="#5F5F5F" size="12">(nCoV-2019 novel coronavirus bioinformatics protocol)</font></string>
+    <string name="btn_artic">Artic_C Pipeline</string>
     <string name="btn_consensus">Consensus Generation\n<font color="#5F5F5F" size="12">(bcftools)</font></string>
 
     <string name="btn_single_tool">Run a Single Tool\n<font color="#5F5F5F" size="12">(Artic_C, Bcftools, Bioawk)</font></string>
