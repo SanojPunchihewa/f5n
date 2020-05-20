@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.mobilegenomics.f5n">
+    package="com.mobilegenomics.genopo">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -9,7 +9,7 @@
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
 
     <application
-        android:name=".Application"
+        android:name="com.mobilegenomics.genopo.Application"
         android:allowBackup="true"
         android:icon="@mipmap/launcher"
         android:label="@string/app_name"
@@ -18,9 +18,9 @@
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
-            android:name=".activity.SettingsActivity"
+            android:name="com.mobilegenomics.genopo.activity.SettingsActivity"
             android:label="@string/title_activity_settings" />
-        <activity android:name=".activity.MainActivity">
+        <activity android:name="com.mobilegenomics.genopo.activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,45 +28,45 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.PipelineActivity"
+            android:name="com.mobilegenomics.genopo.activity.PipelineActivity"
             android:label="Select Steps" />
 
         <activity
-            android:name=".activity.StepActivity"
+            android:name="com.mobilegenomics.genopo.activity.StepActivity"
             android:label="Configure tool GUI Mode" />
 
         <activity
-            android:name=".activity.ConfirmationActivity"
+            android:name="com.mobilegenomics.genopo.activity.ConfirmationActivity"
             android:label="Pipeline Execution" />
 
         <activity
-            android:name=".activity.DownloadActivity"
+            android:name="com.mobilegenomics.genopo.activity.DownloadActivity"
             android:label="Download and Extract" />
 
         <activity
-            android:name=".activity.MinITActivity"
+            android:name="com.mobilegenomics.genopo.activity.MinITActivity"
             android:label="Connect to F5N Server" />
 
         <activity
-            android:name=".activity.TerminalActivity"
+            android:name="com.mobilegenomics.genopo.activity.TerminalActivity"
             android:label="Configure tool Terminal Mode" />
 
         <activity
-            android:name=".activity.HelpActivity"
+            android:name="com.mobilegenomics.genopo.activity.HelpActivity"
             android:label="Help" />
 
         <activity
-            android:name=".activity.TutorialActivity"
+            android:name="com.mobilegenomics.genopo.activity.TutorialActivity"
             android:label="How To" />
 
         <activity
-            android:name=".activity.DemoActivity"
+            android:name="com.mobilegenomics.genopo.activity.DemoActivity"
             android:label="Demo Mode" />
         <activity
-            android:name=".activity.ChoosePipelineActivity"
+            android:name="com.mobilegenomics.genopo.activity.ChoosePipelineActivity"
             android:label="Choose a Pipeline" />
         <activity
-            android:name=".activity.ArticPipelineActivity"
+            android:name="com.mobilegenomics.genopo.activity.ArticPipelineActivity"
             android:label="Artic Pipeline" />
     </application>
 

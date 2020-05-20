@@ -14,7 +14,7 @@ android {
 
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.mobilegenomics.f5n"
+        applicationId "com.mobilegenomics.genopo"
         minSdkVersion 21
         targetSdkVersion 28
         versionCode gitVersionCode
@@ -25,7 +25,7 @@ android {
             versionName "${gitBranch}-${gitCommitHash}"
         }
 
-        setProperty("archivesBaseName", "mobilegenomics-f5n-v$versionName")
+        setProperty("archivesBaseName", "mobilegenomics-genopo-v$versionName")
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
