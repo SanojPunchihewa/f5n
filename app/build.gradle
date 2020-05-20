@@ -87,10 +87,10 @@ android {
 
 if (isRunningOnTravis) {
     play {
-        track = "beta"
+        track = "alpha"
         userFraction = 1
         serviceAccountEmail = System.getenv("SERVICE_ACCOUNT_NAME")
-        serviceAccountCredentials = file("../play.p12")
+        serviceAccountCredentials = file("../play.json")
     }
 }
 
