@@ -79,7 +79,7 @@ void resetOptInd() {
 }
 
 extern "C" JNIEXPORT jint JNICALL
-Java_com_mobilegenomics_f5n_core_NativeCommands_init(JNIEnv *env, jobject, jstring command, jint command_id) {
+Java_com_mobilegenomics_genopo_core_NativeCommands_init(JNIEnv *env, jobject, jstring command, jint command_id) {
   // try{TODO:exceptions
   // Convert command to cpp
   //TODO:casting not good
@@ -155,7 +155,7 @@ Java_com_mobilegenomics_f5n_core_NativeCommands_init(JNIEnv *env, jobject, jstri
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_mobilegenomics_f5n_core_NativeCommands_startPipeline(JNIEnv *env, jobject thiz, jstring pipe_path) {
+Java_com_mobilegenomics_genopo_core_NativeCommands_startPipeline(JNIEnv *env, jobject thiz, jstring pipe_path) {
   outfile = env->GetStringUTFChars(pipe_path, nullptr);
 
   int out = mkfifo(outfile, 0664);
@@ -168,7 +168,7 @@ Java_com_mobilegenomics_f5n_core_NativeCommands_startPipeline(JNIEnv *env, jobje
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_mobilegenomics_f5n_core_NativeCommands_finishPipeline(JNIEnv *env, jobject thiz, jstring pipe_path) {
+Java_com_mobilegenomics_genopo_core_NativeCommands_finishPipeline(JNIEnv *env, jobject thiz, jstring pipe_path) {
   fprintf(stderr, FILE_CLOSE_TAG);
   fflush(stderr);
   close(fdo);
