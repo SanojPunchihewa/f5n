@@ -115,7 +115,7 @@ public class DownloadManager {
                 final String statusWithSpeed = cause.toString() + " " + taskSpeed.averageSpeed();
                 statusTextView.setText(statusWithSpeed);
                 if (realCause != null) {
-                    Log.e(TAG, "Download Error : " + realCause);
+                    statusTextView.setText("Download Error : " + realCause.getMessage());
                 }
                 downloadListener.onComplete(cause, realCause);
             }
