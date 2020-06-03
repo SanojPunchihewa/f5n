@@ -41,8 +41,6 @@ public class DemoActivity extends AppCompatActivity {
 
     private static final String TAG = DemoActivity.class.getSimpleName();
 
-    private static final String ecoliDataSetURL = "https://zanojmobiapps.com/_tmp/genome/ecoli/ecoli-data-set.zip";
-
     private static final String folderName = "mobile-genomics";
 
     private static final String fileName = "ecoli-data-set.zip";
@@ -132,7 +130,7 @@ public class DemoActivity extends AppCompatActivity {
                 String datasetFolder = Environment.getExternalStorageDirectory() + "/" + folderName
                         + "/ecoli-data-set";
                 FileUtil.deleteFolder(new File(datasetFolder));
-                downloadDataSet(ecoliDataSetURL);
+                downloadDataSet(getResources().getString(R.string.ecoli_data_set_url));
             }
         });
         linearLayout.addView(btnDownloadAndExtract);

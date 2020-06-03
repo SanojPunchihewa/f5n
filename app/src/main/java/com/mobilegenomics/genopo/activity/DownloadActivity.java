@@ -37,8 +37,6 @@ public class DownloadActivity extends AppCompatActivity {
 
     private static String folderPath;
 
-    private static final String ecoliDataSetURL = "https://zanojmobiapps.com/_tmp/genome/ecoli/ecoli-data-set.zip";
-
     Button btnDownload;
 
     Button btnDownloadEcoli;
@@ -130,7 +128,7 @@ public class DownloadActivity extends AppCompatActivity {
         btnDownloadEcoli.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(final View v) {
-                downloadDataSet(ecoliDataSetURL);
+                downloadDataSet(getResources().getString(R.string.ecoli_data_set_url));
             }
         });
 

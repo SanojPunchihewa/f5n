@@ -105,4 +105,7 @@
 
     <string name="btn_single_tool">Run a Single Tool\n<font color="#5F5F5F" size="12">(Artic_C, Bcftools, Bioawk)</font></string>
     <string name="txt_how_to_run_subtool">To run an individual analysis tool, select a pipeline that has the particular tool. <b>GUI Mode</b> is provided only for a limited number of sub-tools. Use <b>Terminal Mode</b> to run any sub-tool of an analysis tool</string>
+
+    <string name="ecoli_data_set_url">https://mobile-genomics.github.io/genopo/data/ecoli-data-set.zip</string>
+
 </resources>
